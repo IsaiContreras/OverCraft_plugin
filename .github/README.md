@@ -7,10 +7,12 @@ This is a personal project to introduce myself into Minecraft Plugin
 development and to practice GitHub repository management.
 Any contribution or suggestion are welcome!
 
-OverCrafted is a plugin to implement a Overcooked themed
+OverCrafted is a plugin to implement an Overcooked themed
 mini-game into Minecraft.
 
 This is the draft idea:
+I apolgize for my english level. Let me know if I have something to correct.
+There will be a CONTRIBUTION.md file soon. C:
 
 ![image](images/Overcraft_idea_en.jpg)
 
