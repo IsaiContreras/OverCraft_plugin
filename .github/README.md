@@ -12,7 +12,7 @@ mini-game into Minecraft.
 
 This is the draft idea:
 
-![image](.github/images/Overcraft_idea_en.jpg)
+![image](images/Overcraft_idea_en.jpg)
 
 # OverCrafted | Minecraft Plugin
 
@@ -29,4 +29,4 @@ Overcooked en Minecraft.
 
 Aquí una descripción gráfica de la idea:
 
-![image](.github/images/Overcraft_idea_es.jpg)
+![image](images/Overcraft_idea_es.jpg)
