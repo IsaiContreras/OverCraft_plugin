@@ -15,7 +15,7 @@ public class MainCommand implements CommandExecutor {
     // -- Public
 
     // -- Private
-    private OverCrafted master;
+    private final OverCrafted master;
 
     // -- [[ METHODS ]] --
 
@@ -40,17 +40,17 @@ public class MainCommand implements CommandExecutor {
         String mainArg = args[0].toLowerCase();
 
         switch (mainArg) {
-            case "help":        // subcomand Help
+            case "help":        // subcommand Help
                 this.scmHelp(sender);
                 break;
-            case "addplayer":   // subcomand AddPlayer
+            case "addplayer":   // subcommand AddPlayer
                 this.scmAddPlayer(sender, args);
                 break;
-            case "outplayer":   // subcomand RemovePlayer
+            case "rmplayer":   // subcommand RemovePlayer
                 this.scmRemovePlayer(sender, args);
                 break;
-            case "seelist":
-                this.scmSeeList(sender);
+            case "playerlist":
+                this.scmPlayerList(sender);
                 break;
         }
     }
@@ -60,27 +60,28 @@ public class MainCommand implements CommandExecutor {
         if (!sender.hasPermission("overcrafted.manager")) {
             Messenger.sendToSender(
                 sender,
-                master.prefix + "&cNo tienes permiso para usar este comando."
+                OverCrafted.prefix + "&cNo tienes permiso para usar este comando."
             );
         }
         Messenger.sendToSender(sender, "&f&l------ OVERCRAFTED ------\n");
-        Messenger.sendToSender(sender, "&7- /overcrafted help" + "\t" + "Ayuda del plugin.");
-        Messenger.sendToSender(sender, "&7- /overcrafted addplayer" + "\t" + "Añadir jugador a la lista.");
-        Messenger.sendToSender(sender, "&7- /overcrafted outplayer" + "\t" + "Quitar jugador de la lista.");
+        Messenger.sendToSender(sender, "&7- /overcrafted help" + "\t" + "\t" + "Ayuda del plugin.");
+        Messenger.sendToSender(sender, "&7- /overcrafted addplayer" + "\t" + "\t" + "Añadir jugador a la lista.");
+        Messenger.sendToSender(sender, "&7- /overcrafted rmplayer" + "\t" + "\t" + "Quitar jugador de la lista.");
+        Messenger.sendToSender(sender, "&7- /overcrafted playerlist" + "\t" + "\t" + "Ver lista de jugadores.");
     }
 
     private void scmAddPlayer(CommandSender sender, String[] args) {
         if (!sender.hasPermission("overcrafted.manager")) {
             Messenger.sendToSender(
                 sender,
-                master.prefix + "&cNo tienes permiso para usar este comando."
+                OverCrafted.prefix + "&cNo tienes permiso para usar este comando."
             );
             return;
         }
         if (args.length != 2) {
             Messenger.sendToSender(
                 sender,
-                master.prefix + "&cArgumentos incompletos."
+                OverCrafted.prefix + "&cArgumentos incompletos."
             );
             return;
         }
@@ -89,7 +90,7 @@ public class MainCommand implements CommandExecutor {
         if (player == null) {
             Messenger.sendToSender(
                 sender,
-                master.prefix + "&cEl jugador &r&o" + args[1] + "&r&c no se encontró."
+                OverCrafted.prefix + "&cEl jugador &r&o" + args[1] + "&r&c no se encontró."
             );
             return;
         }
@@ -97,14 +98,14 @@ public class MainCommand implements CommandExecutor {
         if (master.getGamePlayers().size() == 4) {
             Messenger.sendToSender(
                 sender,
-                master.prefix + "&cLa lista de jugadores está llena."
+                OverCrafted.prefix + "&cLa lista de jugadores está llena."
             );
             return;
         }
         if (master.getGamePlayers().contains(player)) {
             Messenger.sendToSender(
                 sender,
-                master.prefix + "&cEl jugador &r&o" + player.getName() + "&r&c ya está en la lista."
+                OverCrafted.prefix + "&cEl jugador &r&o" + player.getName() + "&r&c ya está en la lista."
             );
             return;
         }
@@ -112,17 +113,17 @@ public class MainCommand implements CommandExecutor {
         if (!master.addPlayer(player)) {
             Messenger.sendToSender(
                 sender,
-                master.prefix + "&cNo se pudo añadir jugador."
+                OverCrafted.prefix + "&cNo se pudo añadir jugador."
             );
         } else {
             Messenger.sendToSender(
                 sender,
-                master.prefix + "&aSe añadió al jugador &r&o" + player.getName() + "&r&a."
+                OverCrafted.prefix + "&aSe añadió al jugador &r&o" + player.getName() + "&r&a."
             );
             if (sender != player)
                 Messenger.sendToSender(
                     player,
-                    master.prefix + "&aFuiste añadido a una lista de jugadores."
+                    OverCrafted.prefix + "&aFuiste añadido a una lista de jugadores."
                 );
         }
 
@@ -132,14 +133,14 @@ public class MainCommand implements CommandExecutor {
         if (!sender.hasPermission("overcrafted.manager")) {
             Messenger.sendToSender(
                 sender,
-                master.prefix + "&cNo tienes permiso para usar este comando."
+                OverCrafted.prefix + "&cNo tienes permiso para usar este comando."
             );
             return;
         }
         if (args.length != 2) {
             Messenger.sendToSender(
                 sender,
-                master.prefix + "&cArgumentos incompletos."
+                OverCrafted.prefix + "&cArgumentos incompletos."
             );
             return;
         }
@@ -148,7 +149,7 @@ public class MainCommand implements CommandExecutor {
         if (player == null) {
             Messenger.sendToSender(
                 sender,
-                master.prefix + "&cEl jugador &r&o" + args[1] + "&r&c no se encontró."
+                OverCrafted.prefix + "&cEl jugador &r&o" + args[1] + "&r&c no se encontró."
             );
             return;
         }
@@ -156,7 +157,7 @@ public class MainCommand implements CommandExecutor {
         if (master.getGamePlayers().isEmpty()) {
             Messenger.sendToSender(
                 sender,
-                master.prefix + "&cLa lista está vacía."
+                OverCrafted.prefix + "&cLa lista está vacía."
             );
             return;
         }
@@ -164,26 +165,26 @@ public class MainCommand implements CommandExecutor {
         if (!master.removePlayer(player)) {
             Messenger.sendToSender(
                 sender,
-                master.prefix + "&cNo se pudo eliminar o no se encontró al jugador."
+                OverCrafted.prefix + "&cNo se pudo eliminar o no se encontró al jugador."
             );
         } else {
             Messenger.sendToSender(
                 sender,
-                master.prefix + "&aSe removió al jugador &r&o" + player.getName() + "&r&a."
+                OverCrafted.prefix + "&aSe removió al jugador &r&o" + player.getName() + "&r&a."
             );
             if (sender != player)
                 Messenger.sendToSender(
                     player,
-                    master.prefix + "&aFuiste retirado de la lista de jugadores."
+                    OverCrafted.prefix + "&aFuiste retirado de la lista de jugadores."
                 );
         }
     }
 
-    private void scmSeeList(CommandSender sender) {
-        if (!sender.hasPermission("overcraft.manager")) {
+    private void scmPlayerList(CommandSender sender) {
+        if (!sender.hasPermission("overcrafted.manager")) {
             Messenger.sendToSender(
                 sender,
-                master.prefix + "&cNo tienes permiso para usar este comando."
+                OverCrafted.prefix + "&cNo tienes permiso para usar este comando."
             );
             return;
         }
@@ -193,11 +194,12 @@ public class MainCommand implements CommandExecutor {
 
         for(int i = 0; i < 4; i++) {
             Player current = null;
+
             try {
                  current = master.getGamePlayers().get(i);
-            } catch (Exception e) {
-                current = null;
+            } catch (Exception ignored) {
             }
+
             if (current == null) {
                 Messenger.sendToSender(sender, "&7" + (i + 1) + ".- " + "&o*** Vacío ***");
             } else {

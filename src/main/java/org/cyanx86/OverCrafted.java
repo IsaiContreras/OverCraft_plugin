@@ -7,6 +7,7 @@ import org.cyanx86.utils.Messenger;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 public class OverCrafted extends JavaPlugin {
 
@@ -50,7 +51,7 @@ public class OverCrafted extends JavaPlugin {
 
     // -- Private
     private void setupCommands() {
-        this.getCommand("overcrafted").setExecutor(new MainCommand(this));
+        Objects.requireNonNull(this.getCommand("overcrafted")).setExecutor(new MainCommand(this));
     }
 
     private void setupEvents() {
