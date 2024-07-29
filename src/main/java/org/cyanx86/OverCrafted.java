@@ -1,8 +1,12 @@
 package org.cyanx86;
 
+import org.bukkit.entity.Player;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.cyanx86.commands.MainCommand;
 import org.cyanx86.utils.Messenger;
+
+import java.util.ArrayList;
+import java.util.List;
 
 public class OverCrafted extends JavaPlugin {
 
@@ -12,7 +16,8 @@ public class OverCrafted extends JavaPlugin {
     public static String prefix = "&8[&c&lOverCrafted&8] ";
 
     // -- Private
-    private String version = getDescription().getVersion();
+    private final String version = getDescription().getVersion();
+    private final List<Player> game_players = new ArrayList<>();
 
     // -- [[ METHODS ]] --
 
@@ -29,6 +34,18 @@ public class OverCrafted extends JavaPlugin {
         Messenger.sendConsoleMessage(
             prefix + "ePlugin desactivado."
         );
+    }
+
+    public boolean addPlayer(Player player) {
+        return this.game_players.add(player);
+    }
+
+    public boolean removePlayer(Player player) {
+        return this.game_players.remove(player);
+    }
+
+    public List<Player> getGamePlayers() {
+        return this.game_players;
     }
 
     // -- Private
