@@ -10,3 +10,8 @@ commands:
     description: Comando principal
     aliases:
       - ocf
+
+  gamearea:
+    description: Administra GameAreas.
+    aliases:
+      - ga

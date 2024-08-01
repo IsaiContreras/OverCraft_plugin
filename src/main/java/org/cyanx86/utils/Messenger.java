@@ -6,13 +6,13 @@ import org.bukkit.command.CommandSender;
 
 public class Messenger {
 
-    public static void sendConsoleMessage(String message) {
+    public static void msgToConsole(String message) {
         Bukkit.getConsoleSender().sendMessage(
             coloredText(message)
         );
     }
 
-    public static void sendToSender(CommandSender sender, String message) {
+    public static void msgToSender(CommandSender sender, String message) {
         sender.sendMessage(
             coloredText(message)
         );
