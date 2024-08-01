@@ -6,6 +6,7 @@ import org.bukkit.plugin.java.JavaPlugin;
 import org.cyanx86.classes.GameArea;
 import org.cyanx86.commands.GameAreaCommand;
 import org.cyanx86.commands.MainCommand;
+import org.cyanx86.commands.PlayerListCommand;
 import org.cyanx86.listeners.PlayerListener;
 import org.cyanx86.utils.Messenger;
 import org.cyanx86.utils.Enums;
@@ -151,6 +152,7 @@ public class OverCrafted extends JavaPlugin {
     // -- Private
     private void setupCommands() {
         Objects.requireNonNull(this.getCommand("overcrafted")).setExecutor(new MainCommand(this));
+        Objects.requireNonNull(this.getCommand("playerlist")).setExecutor(new PlayerListCommand(this));
         Objects.requireNonNull(this.getCommand("gamearea")).setExecutor(new GameAreaCommand(this));
     }
 

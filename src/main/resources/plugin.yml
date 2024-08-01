@@ -11,6 +11,11 @@ commands:
     aliases:
       - ocf
 
+  playerlist:
+    description: Administra los jugadores.
+    aliases:
+      - pl
+
   gamearea:
     description: Administra GameAreas.
     aliases:

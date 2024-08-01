@@ -5,7 +5,6 @@ import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 import org.cyanx86.OverCrafted;
-import org.cyanx86.classes.GameArea;
 import org.cyanx86.utils.Enums;
 import org.cyanx86.utils.Messenger;
 

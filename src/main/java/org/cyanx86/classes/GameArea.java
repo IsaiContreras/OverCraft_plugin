@@ -10,6 +10,9 @@ public class GameArea {
 
     // -- Private
     private String name;
+
+    private String world;
+
     private final Location corner1;
     private final Location corner2;
 
