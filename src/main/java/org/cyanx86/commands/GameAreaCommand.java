@@ -1,12 +1,17 @@
 package org.cyanx86.commands;
 
+import org.bukkit.Location;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 import org.cyanx86.OverCrafted;
+import org.cyanx86.classes.GameArea;
 import org.cyanx86.utils.Enums;
 import org.cyanx86.utils.Messenger;
+
+import java.util.Objects;
+import java.util.Optional;
 
 public class GameAreaCommand implements CommandExecutor {
 
@@ -63,6 +68,12 @@ public class GameAreaCommand implements CommandExecutor {
             case "setcorner":   // subcommand SetCorner
                 this.scmSetCorner(sender, args);
                 break;
+            case "setspawn":
+                this.scmSetSpawnPoint(sender);
+                break;
+            case "resetspawns":
+                this.scmResetSpawns(sender, args);
+                break;
             case "list":
                 this.scmList(sender);
                 break;
@@ -86,11 +97,13 @@ public class GameAreaCommand implements CommandExecutor {
         // TODO: Language location of Help Page
         Messenger.msgToSender(sender, "&f&l------ OVERCRAFTED ------");
         Messenger.msgToSender(sender, "&7 [[ Comando /gamearea ]]");
-        Messenger.msgToSender(sender, "&7- /gamearea help" + "\t" + "\t" + "Ayuda del plugin.");
-        Messenger.msgToSender(sender, "&7- /gamearea create <nombre>" + "\t" + "\t" + "Crea una nueva área de juego.");
-        Messenger.msgToSender(sender, "&7- /gamearea setcorner <1 o 2>" + "\t" + "\t" + "Activa la selección de esquinas.");
-        Messenger.msgToSender(sender, "&7- /gamearea list" + "\t" + "\t" + "Muestra la lista de áreas.");
-        Messenger.msgToSender(sender, "&7- /gamearea delete <nombre>" + "\t" + "\t" + "Elimina un área de juego.");
+        Messenger.msgToSender(sender, "&7- /gamearea help");
+        Messenger.msgToSender(sender, "&7- /gamearea create <nombre>");
+        Messenger.msgToSender(sender, "&7- /gamearea setcorner <1 o 2>");
+        Messenger.msgToSender(sender, "&7- /gamearea setspawn");
+        Messenger.msgToSender(sender, "&7- /gamearea resetspawns <nombre>");
+        Messenger.msgToSender(sender, "&7- /gamearea list");
+        Messenger.msgToSender(sender, "&7- /gamearea delete <nombre>");
     }
 
     private void scmCreate(CommandSender sender, String[] args) {
@@ -152,6 +165,79 @@ public class GameAreaCommand implements CommandExecutor {
         Messenger.msgToSender(
             sender,
             OverCrafted.prefix + "&aListo para asignar esquina."    // TODO:
+        );
+    }
+
+    private void scmSetSpawnPoint(CommandSender sender) {
+        Location spawn_location = ((Player)sender).getLocation();
+        GameArea gma = null;
+        for (int i = 0; i < master.getGameAreas().size(); i++) {
+            GameArea current = master.getGameAreas().get(i);
+            if (
+                current.isInsideBoundaries(spawn_location) &&
+                current.getWorld().equals(Objects.requireNonNull(spawn_location.getWorld()).getName())
+            ) {
+                gma = current;
+                break;
+            }
+        }
+
+        if (gma == null) {
+            Messenger.msgToSender(
+                sender,
+                OverCrafted.prefix + "&cEstas fuera de un GameArea."
+            );
+            return;
+        }
+
+        switch (gma.addSpawnPoint(spawn_location)) {
+            case NULL -> {
+                Messenger.msgToSender(
+                    sender,
+                    OverCrafted.prefix + "&cSe intentó añadir un objeto vacío."
+                );
+                return;
+            }
+            case INVALID_ITEM -> {
+                Messenger.msgToSender(
+                    sender,
+                    OverCrafted.prefix + "&cEl punto no se encuentra dentro de los límites del GameArea."
+                );
+                return;
+            }
+        }
+
+        Messenger.msgToSender(
+            sender,
+            OverCrafted.prefix + "&aSpawnpoint añadido al GameArea &r&o" + gma.getName() + "&r&a."
+        );
+    }
+
+    private void scmResetSpawns(CommandSender sender, String[] args) {
+        if (args.length != 2) {
+            Messenger.msgToSender(
+                sender,
+                OverCrafted.prefix + "&cArgumentos incompletos."    // TODO: Invalid arguments message.
+            );
+            return;
+        }
+
+        String name = args[1].toLowerCase();
+        Optional<GameArea> query = master.getGameAreas().stream().filter(ga -> ga.getName().equals(name)).findFirst();
+        if (query.isEmpty()) {
+            Messenger.msgToSender(
+                sender,
+                OverCrafted.prefix + "&cNo se encontró un GameArea con este nombre."
+            );
+            return;
+        }
+        GameArea gamearea = query.get();
+
+        gamearea.clearSpawnPointList();
+
+        Messenger.msgToSender(
+            sender,
+            OverCrafted.prefix + "&aSe limpiaron los spawnpoints del GameArea &r&o" + gamearea.getName() + "&r&a."
         );
     }
 

@@ -14,9 +14,9 @@ commands:
   playerlist:
     description: Administra los jugadores.
     aliases:
-      - pl
+      - pyl
 
   gamearea:
     description: Administra GameAreas.
     aliases:
-      - ga
+      - gma

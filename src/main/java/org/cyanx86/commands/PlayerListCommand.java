@@ -67,11 +67,11 @@ public class PlayerListCommand implements CommandExecutor {
         // TODO: Language location of Help Page
         Messenger.msgToSender(sender, "&f&l------ OVERCRAFTED ------\n");
         Messenger.msgToSender(sender, "&7 [[ Comando /playerlist ]]");
-        Messenger.msgToSender(sender, "&7- /playerlist help" + "\t" + "\t" + "Ayuda del plugin.");
-        Messenger.msgToSender(sender, "&7- /playerlist add <jugador>" + "\t" + "\t" + "Añadir jugador a la lista.");
-        Messenger.msgToSender(sender, "&7- /playerlist rm <jugador>" + "\t" + "\t" + "Quitar jugador de la lista.");
-        Messenger.msgToSender(sender, "&7- /playerlist show" + "\t" + "\t" + "Ver lista de jugadores.");
-        Messenger.msgToSender(sender, "&7- /playerlist clear" + "\t" + "\t" + "Limpia la lista de jugadores.");
+        Messenger.msgToSender(sender, "&7- /playerlist help");
+        Messenger.msgToSender(sender, "&7- /playerlist add <jugador>");
+        Messenger.msgToSender(sender, "&7- /playerlist rm <jugador>");
+        Messenger.msgToSender(sender, "&7- /playerlist show");
+        Messenger.msgToSender(sender, "&7- /playerlist clear");
     }
 
     private void scmAdd(CommandSender sender, String[] args) {
