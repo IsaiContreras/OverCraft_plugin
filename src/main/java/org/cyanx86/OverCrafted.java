@@ -8,13 +8,13 @@ import org.cyanx86.commands.GameAreaCommand;
 import org.cyanx86.commands.MainCommand;
 import org.cyanx86.commands.PlayerListCommand;
 import org.cyanx86.listeners.PlayerListener;
+import org.cyanx86.managers.GameAreaManager;
 import org.cyanx86.utils.Messenger;
 import org.cyanx86.utils.Enums;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
-import java.util.Optional;
 
 public class OverCrafted extends JavaPlugin {
 
@@ -25,8 +25,10 @@ public class OverCrafted extends JavaPlugin {
 
     // -- Private
     private final String version = getDescription().getVersion();
+
+    private GameAreaManager gameAreaManager;
+
     private final List<Player> game_players = new ArrayList<>();
-    private final List<GameArea> game_areas = new ArrayList<>();
 
     private int cornerIndex = 0;
     private Location gaCorner1 = null;
@@ -38,6 +40,7 @@ public class OverCrafted extends JavaPlugin {
     public void onEnable() {
         this.setupCommands();
         this.setupEvents();
+        gameAreaManager = new GameAreaManager(this);
 
         Messenger.msgToConsole(
                 prefix + "&ePlugin activo. &fVersion: " + version
@@ -45,6 +48,7 @@ public class OverCrafted extends JavaPlugin {
     }
 
     public void onDisable() {
+        gameAreaManager.saveConfig();
         Messenger.msgToConsole(
                 prefix + "ePlugin desactivado."
         );
@@ -83,7 +87,7 @@ public class OverCrafted extends JavaPlugin {
     }
 
     public Enums.ListResult addGameArea(String name) {
-        if (game_areas.stream().anyMatch(item -> item.getName().equals(name))) {
+        if (this.gameAreaManager.alreadyExists(name)) {
             return Enums.ListResult.ALREADY_IN;
         }
         GameArea gamearea = new GameArea(
@@ -91,29 +95,28 @@ public class OverCrafted extends JavaPlugin {
             gaCorner1,
             gaCorner2
         );
-        this.game_areas.add(gamearea);
+
+        this.gameAreaManager.addNewGameArea(gamearea);
         return Enums.ListResult.SUCCESS;
     }
 
     public Enums.ListResult removeGameArea(String name) {
-        if (game_areas.isEmpty()) {
+        if (this.gameAreaManager.isEmpty()) {
             return Enums.ListResult.EMPTY_LIST;
         }
 
-        GameArea gamearea;
-        Optional<GameArea> query_gamearea = game_areas.stream().filter(item -> item.getName().equals(name)).findFirst();
-        if (query_gamearea.isEmpty()) {
+        GameArea gamearea = this.gameAreaManager.getByName(name);
+
+        if (gamearea == null) {
             return Enums.ListResult.NOT_FOUND;
         }
 
-        gamearea = query_gamearea.get();
-
-        this.game_areas.remove(gamearea);
+        this.gameAreaManager.removeGameArea(gamearea);
         return Enums.ListResult.SUCCESS;
     }
 
     public List<GameArea> getGameAreas() {
-        return this.game_areas;
+        return this.gameAreaManager.getGameAreas();
     }
 
     public void setCornerIndex(int index) {

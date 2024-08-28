@@ -71,6 +71,9 @@ public class GameAreaCommand implements CommandExecutor {
             case "setspawn":
                 this.scmSetSpawnPoint(sender);
                 break;
+            case "spcount":
+                this.scmSpawnCount(sender);
+                break;
             case "resetspawns":
                 this.scmResetSpawns(sender, args);
                 break;
@@ -211,6 +214,36 @@ public class GameAreaCommand implements CommandExecutor {
             sender,
             OverCrafted.prefix + "&aSpawnpoint añadido al GameArea &r&o" + gma.getName() + "&r&a."
         );
+    }
+
+    private void scmSpawnCount(CommandSender sender) {
+        Location playerlocat = ((Player)sender).getLocation();
+
+        GameArea gma = null;
+        for (int i = 0; i < master.getGameAreas().size(); i++) {
+            GameArea current = master.getGameAreas().get(i);
+            if (
+                current.isInsideBoundaries(playerlocat) &&
+                current.getWorld().equals(Objects.requireNonNull(playerlocat.getWorld()).getName())
+            ) {
+                gma = current;
+                break;
+            }
+        }
+
+        if (gma == null) {
+            Messenger.msgToSender(
+                    sender,
+                    OverCrafted.prefix + "&cEstas fuera de un GameArea."
+            );
+            return;
+        }
+
+        Messenger.msgToSender(
+            sender,
+            OverCrafted.prefix + "&cEste GameArea tiene " + gma.spawnPointCount() + " spawnpoints."
+        );
+
     }
 
     private void scmResetSpawns(CommandSender sender, String[] args) {
