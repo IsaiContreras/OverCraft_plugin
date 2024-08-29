@@ -68,17 +68,17 @@ public class GameAreaCommand implements CommandExecutor {
             case "setcorner":   // subcommand SetCorner
                 this.scmSetCorner(sender, args);
                 break;
-            case "setspawn":
+            case "setspawn":    // subCommand SetSpawn
                 this.scmSetSpawnPoint(sender);
                 break;
-            case "spcount":
-                this.scmSpawnCount(sender);
-                break;
-            case "resetspawns":
+            case "resetspawns": // subCommand ResetSpawns
                 this.scmResetSpawns(sender, args);
                 break;
-            case "list":
+            case "list":        // subCommand List
                 this.scmList(sender);
+                break;
+            case "info":        // subCommand Info
+                this.scmInfo(sender, args);
                 break;
             case "delete":      // subcommand Delete
                 this.scmDelete(sender, args);
@@ -106,6 +106,7 @@ public class GameAreaCommand implements CommandExecutor {
         Messenger.msgToSender(sender, "&7- /gamearea setspawn");
         Messenger.msgToSender(sender, "&7- /gamearea resetspawns <nombre>");
         Messenger.msgToSender(sender, "&7- /gamearea list");
+        Messenger.msgToSender(sender, "&7- /gamearea info <nombre>");
         Messenger.msgToSender(sender, "&7- /gamearea delete <nombre>");
     }
 
@@ -128,12 +129,21 @@ public class GameAreaCommand implements CommandExecutor {
 
         String name = args[1].toLowerCase();
 
-        if (master.addGameArea(name) == Enums.ListResult.ALREADY_IN) {
-            Messenger.msgToSender(
-                sender,
-                OverCrafted.prefix + "&cYa hay un elemento con este nombre."    // TODO: GameArea already in list message.
-            );
-            return;
+        switch (master.addGameArea(name)) {
+            case ALREADY_IN -> {
+                Messenger.msgToSender(
+                    sender,
+                    OverCrafted.prefix + "&cYa hay un elemento con este nombre."    // TODO: GameArea already in list message.
+                );
+                return;
+            }
+            case INVALID_ITEM -> {
+                Messenger.msgToSender(
+                    sender,
+                    OverCrafted.prefix + "&cHay un GameArea ocupando parte de este espacio."    // TODO: GameArea overlapped.
+                );
+                return;
+            }
         }
 
         master.resetCorners();
@@ -216,36 +226,6 @@ public class GameAreaCommand implements CommandExecutor {
         );
     }
 
-    private void scmSpawnCount(CommandSender sender) {
-        Location playerlocat = ((Player)sender).getLocation();
-
-        GameArea gma = null;
-        for (int i = 0; i < master.getGameAreas().size(); i++) {
-            GameArea current = master.getGameAreas().get(i);
-            if (
-                current.isInsideBoundaries(playerlocat) &&
-                current.getWorld().equals(Objects.requireNonNull(playerlocat.getWorld()).getName())
-            ) {
-                gma = current;
-                break;
-            }
-        }
-
-        if (gma == null) {
-            Messenger.msgToSender(
-                    sender,
-                    OverCrafted.prefix + "&cEstas fuera de un GameArea."
-            );
-            return;
-        }
-
-        Messenger.msgToSender(
-            sender,
-            OverCrafted.prefix + "&cEste GameArea tiene " + gma.spawnPointCount() + " spawnpoints."
-        );
-
-    }
-
     private void scmResetSpawns(CommandSender sender, String[] args) {
         if (args.length != 2) {
             Messenger.msgToSender(
@@ -280,6 +260,38 @@ public class GameAreaCommand implements CommandExecutor {
 
         for(int i = 0; i < master.getGameAreas().size(); i++) {
             Messenger.msgToSender(sender, "&7" + (i + 1) + ".- " + "&o" + master.getGameAreas().get(i).getName());
+        }
+    }
+
+    private void scmInfo(CommandSender sender, String[] args) {
+        if (args.length != 2) {
+            Messenger.msgToSender(
+                sender,
+                OverCrafted.prefix + "&cArgumentos incompletos."    // TODO: Invalid arguments message.
+            );
+            return;
+        }
+
+        String name = args[1].toLowerCase();
+        GameArea gma = this.master.getGameAreaByName(name);
+
+        if (gma == null) {
+            Messenger.msgToSender(
+                sender,
+                OverCrafted.prefix + "&cNo existe un GameArea con este nombre."    // TODO: GameArea not found message.
+            );
+            return;
+        }
+
+        Messenger.msgToSender(sender, "&f&l---- OverCrafted GameArea ----");
+        Messenger.msgToSender(sender, "&b&o" + gma.getName() + " properties:");
+        Messenger.msgToSender(sender, "&6&o  world: &r&e" + gma.getWorld());
+        Messenger.msgToSender(sender, "&6&o  corner1: &r&e(" + "&r&c" + gma.getCorner1().getBlockX() + "&r&e, &r&a" + gma.getCorner1().getBlockY() + "&r&e, &r&9" + gma.getCorner1().getBlockZ() + "&r&e)");
+        Messenger.msgToSender(sender, "&6&o  corner2: &r&e(" + "&r&c" + gma.getCorner2().getBlockX() + "&r&e, &r&a" + gma.getCorner2().getBlockY() + "&r&e, &r&9" + gma.getCorner2().getBlockZ() + "&r&e)");
+        Messenger.msgToSender(sender, "&6&o  spawnpoints (&e" + gma.getSpawnPointsCount() + "&6):");
+        for (int i = 0; i < gma.getSpawnPointsCount(); i++) {
+            Location spawn = gma.getSpawnPoints().get(i);
+            Messenger.msgToSender(sender, "&6&o    [" + (i + 1) + "]: &r&e(" + "&c" + String.format("%.2f", spawn.getX()) + "&e, &a" + String.format("%.2f", spawn.getY()) + "&e, &9" + String.format("%.2f", spawn.getZ()) + "&e, &b" + String.format("%.2f", spawn.getYaw()) + "&e, &d" + String.format("%.2f", spawn.getPitch()) + "&e)");
         }
     }
 

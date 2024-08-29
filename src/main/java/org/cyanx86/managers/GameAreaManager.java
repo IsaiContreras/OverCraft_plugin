@@ -1,13 +1,11 @@
 package org.cyanx86.managers;
 
-import org.bukkit.Bukkit;
 import org.bukkit.Location;
-import org.bukkit.World;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.cyanx86.OverCrafted;
 import org.cyanx86.classes.GameArea;
+import org.cyanx86.utils.Enums.ListResult;
 
-import java.io.File;
 import java.util.*;
 
 public class GameAreaManager {
@@ -18,77 +16,104 @@ public class GameAreaManager {
 
     // -- Private
     private final OverCrafted master;
-    private final CustomConfigFile config_file;
+    private final CustomConfigFile configFile;
 
     private final String filename = "gameareas.yml";
     private final String folder = "ocf_settings";
 
-    private final List<GameArea> game_areas = new ArrayList<>();
+    private final List<GameArea> gameAreas = new ArrayList<>();
 
     // -- [[ METHODS ]]
 
     // -- Public
     public GameAreaManager(OverCrafted master) {
         this.master = master;
-        this.config_file = new CustomConfigFile(
+        this.configFile = new CustomConfigFile(
             filename,
             folder,
             master,
             true
         );
-        config_file.registerConfig();
-        loadConfig();
+        this.configFile.registerConfig();
+        this.loadConfig();
     }
 
+    // Read/Write Methods
     public void loadConfig() {
-        FileConfiguration config = config_file.getConfig();
+        FileConfiguration config = this.configFile.getConfig();
         List<Map<?, ?>> gmaMapList = config.getMapList("gameareas");
 
         for (Map<?, ?> gmaMap : gmaMapList) {
-            game_areas.add(GameArea.deserialize((Map<String, Object>) gmaMap));
+            gameAreas.add(GameArea.deserialize((Map<String, Object>) gmaMap));
         }
     }
 
     public void reloadConfig() {
-        config_file.reloadConfig();
-        loadConfig();
+        this.configFile.reloadConfig();
+        this.loadConfig();
     }
 
     public void saveConfig() {
-        FileConfiguration config = this.config_file.getConfig();
+        FileConfiguration config = this.configFile.getConfig();
 
         List<Map<String, Object>> gmaMapList = new ArrayList<>();
 
-        for (GameArea gma : this.game_areas) {
+        for (GameArea gma : this.gameAreas) {
             gmaMapList.add(gma.serialize());
         }
 
         config.set("gameareas", gmaMapList);
-        this.config_file.saveConfig();
+        this.configFile.saveConfig();
     }
 
-    public void addNewGameArea(GameArea gamearea) {
-        this.game_areas.add(gamearea);
+    // List managing
+    public ListResult addNewGameArea(String name, Location corner1, Location corner2) {
+        if (this.alreadyExists(name)) {
+            return ListResult.ALREADY_IN;
+        }
+
+        GameArea gma = new GameArea(
+            name,
+            corner1,
+            corner2
+        );
+
+        for (GameArea gmaItem : this.gameAreas) {
+            if (gmaItem.isRegionOverlapping(gma))
+                return ListResult.INVALID_ITEM;
+        }
+
+        this.gameAreas.add(gma);
+        return ListResult.SUCCESS;
     }
 
-    public void removeGameArea(GameArea gamearea) {
-        this.game_areas.remove(gamearea);
+    public ListResult removeGameArea(String name) {
+        if (this.isEmpty())
+            return ListResult.EMPTY_LIST;
+
+        GameArea gma = this.getByName(name);
+
+        if (gma == null)
+            return ListResult.NOT_FOUND;
+
+        this.gameAreas.remove(gma);
+        return ListResult.SUCCESS;
     }
 
     public GameArea getByName(String name) {
-        Optional<GameArea> query_gamearea = game_areas.stream().filter(item -> item.getName().equals(name)).findFirst();
+        Optional<GameArea> query_gamearea = gameAreas.stream().filter(item -> item.getName().equals(name)).findFirst();
         return query_gamearea.orElse(null);
     }
 
     public boolean alreadyExists(String name) {
-        return this.game_areas.stream().anyMatch(item -> item.getName().equals(name));
+        return this.gameAreas.stream().anyMatch(item -> item.getName().equals(name));
     }
 
     public boolean isEmpty() {
-        return this.game_areas.isEmpty();
+        return this.gameAreas.isEmpty();
     }
 
-    public List<GameArea> getGameAreas() { return this.game_areas; }
+    public List<GameArea> getGameAreas() { return this.gameAreas; }
 
     // -- Private
 

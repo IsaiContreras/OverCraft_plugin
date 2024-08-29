@@ -10,7 +10,7 @@ import org.cyanx86.commands.PlayerListCommand;
 import org.cyanx86.listeners.PlayerListener;
 import org.cyanx86.managers.GameAreaManager;
 import org.cyanx86.utils.Messenger;
-import org.cyanx86.utils.Enums;
+import org.cyanx86.utils.Enums.ListResult;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -28,7 +28,7 @@ public class OverCrafted extends JavaPlugin {
 
     private GameAreaManager gameAreaManager;
 
-    private final List<Player> game_players = new ArrayList<>();
+    private final List<Player> gamePlayers = new ArrayList<>();
 
     private int cornerIndex = 0;
     private Location gaCorner1 = null;
@@ -37,6 +37,8 @@ public class OverCrafted extends JavaPlugin {
     // -- [[ METHODS ]] --
 
     // -- Public
+
+    // Events
     public void onEnable() {
         this.setupCommands();
         this.setupEvents();
@@ -54,65 +56,54 @@ public class OverCrafted extends JavaPlugin {
         );
     }
 
-    public Enums.ListResult addPlayer(Player player) {
-        if (this.game_players.size() == 4)
-            return Enums.ListResult.FULL_LIST;
-        if (this.game_players.contains(player)) {
-            return Enums.ListResult.ALREADY_IN;
+    // Player managing
+    public ListResult addPlayer(Player player) {
+        if (this.gamePlayers.size() == 4)
+            return ListResult.FULL_LIST;
+        if (this.gamePlayers.contains(player)) {
+            return ListResult.ALREADY_IN;
         }
-        this.game_players.add(player);
-        return Enums.ListResult.SUCCESS;
+        this.gamePlayers.add(player);
+        return ListResult.SUCCESS;
     }
 
-    public Enums.ListResult removePlayer(Player player) {
-        if (this.game_players.isEmpty()) {
-            return Enums.ListResult.EMPTY_LIST;
+    public ListResult removePlayer(Player player) {
+        if (this.gamePlayers.isEmpty()) {
+            return ListResult.EMPTY_LIST;
         }
-        if (!this.game_players.remove(player))
-            return Enums.ListResult.NOT_FOUND;
+        if (!this.gamePlayers.remove(player))
+            return ListResult.NOT_FOUND;
         else
-            return Enums.ListResult.SUCCESS;
+            return ListResult.SUCCESS;
     }
 
-    public Enums.ListResult clearPlayerList() {
-        if (game_players.isEmpty()) {
-            return Enums.ListResult.EMPTY_LIST;
+    public ListResult clearPlayerList() {
+        if (gamePlayers.isEmpty()) {
+            return ListResult.EMPTY_LIST;
         }
-        this.game_players.clear();
-        return Enums.ListResult.SUCCESS;
+        this.gamePlayers.clear();
+        return ListResult.SUCCESS;
     }
 
     public List<Player> getGamePlayers() {
-        return this.game_players;
+        return this.gamePlayers;
     }
 
-    public Enums.ListResult addGameArea(String name) {
-        if (this.gameAreaManager.alreadyExists(name)) {
-            return Enums.ListResult.ALREADY_IN;
-        }
-        GameArea gamearea = new GameArea(
+    // GameArea managing
+    public ListResult addGameArea(String name) {
+        return this.gameAreaManager.addNewGameArea(
             name,
             gaCorner1,
             gaCorner2
         );
-
-        this.gameAreaManager.addNewGameArea(gamearea);
-        return Enums.ListResult.SUCCESS;
     }
 
-    public Enums.ListResult removeGameArea(String name) {
-        if (this.gameAreaManager.isEmpty()) {
-            return Enums.ListResult.EMPTY_LIST;
-        }
+    public ListResult removeGameArea(String name) {
+        return this.gameAreaManager.removeGameArea(name);
+    }
 
-        GameArea gamearea = this.gameAreaManager.getByName(name);
-
-        if (gamearea == null) {
-            return Enums.ListResult.NOT_FOUND;
-        }
-
-        this.gameAreaManager.removeGameArea(gamearea);
-        return Enums.ListResult.SUCCESS;
+    public GameArea getGameAreaByName(String name) {
+        return this.gameAreaManager.getByName(name);
     }
 
     public List<GameArea> getGameAreas() {
