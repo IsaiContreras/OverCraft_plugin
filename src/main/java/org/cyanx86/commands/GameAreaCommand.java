@@ -7,7 +7,7 @@ import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 import org.cyanx86.OverCrafted;
 import org.cyanx86.classes.GameArea;
-import org.cyanx86.utils.Enums;
+import org.cyanx86.classes.GameAreaCornerAssistant;
 import org.cyanx86.utils.Messenger;
 
 import java.util.Objects;
@@ -65,9 +65,6 @@ public class GameAreaCommand implements CommandExecutor {
             case "create":      // subcommand Create
                 this.scmCreate(sender, args);
                 break;
-            case "setcorner":   // subcommand SetCorner
-                this.scmSetCorner(sender, args);
-                break;
             case "setspawn":    // subCommand SetSpawn
                 this.scmSetSpawnPoint(sender);
                 break;
@@ -94,7 +91,7 @@ public class GameAreaCommand implements CommandExecutor {
         if (!sender.hasPermission("overcrafted.manager")) {
             Messenger.msgToSender(
                 sender,
-                OverCrafted.prefix + "&cNo tienes permiso para usar este comando."
+                OverCrafted.prefix + "&cNo tienes permiso para usar este comando."      // TODO: No permissions message.
             );
         }
         // TODO: Language location of Help Page
@@ -102,7 +99,6 @@ public class GameAreaCommand implements CommandExecutor {
         Messenger.msgToSender(sender, "&7 [[ Comando /gamearea ]]");
         Messenger.msgToSender(sender, "&7- /gamearea help");
         Messenger.msgToSender(sender, "&7- /gamearea create <nombre>");
-        Messenger.msgToSender(sender, "&7- /gamearea setcorner <1 o 2>");
         Messenger.msgToSender(sender, "&7- /gamearea setspawn");
         Messenger.msgToSender(sender, "&7- /gamearea resetspawns <nombre>");
         Messenger.msgToSender(sender, "&7- /gamearea list");
@@ -111,6 +107,16 @@ public class GameAreaCommand implements CommandExecutor {
     }
 
     private void scmCreate(CommandSender sender, String[] args) {
+        Player player = (Player)sender;
+        GameAreaCornerAssistant gacAssistant = master.getAssistantByName(player.getName());
+        if (gacAssistant == null) {
+            Messenger.msgToSender(
+                sender,
+                OverCrafted.prefix + "&cNo hay asistente registrado."   // TODO: Invalid assistant message.
+            );
+            return;
+        }
+
         if (args.length != 2) {
             Messenger.msgToSender(
                 sender,
@@ -119,7 +125,7 @@ public class GameAreaCommand implements CommandExecutor {
             return;
         }
 
-        if (master.getCorner(1) == null || master.getCorner(2) == null) {
+        if (!gacAssistant.isDefinedCorners()) {
             Messenger.msgToSender(
                 sender,
                 OverCrafted.prefix + "&cFaltan esquinas por definir."   // TODO: Undefined GameArea corners message.
@@ -129,7 +135,7 @@ public class GameAreaCommand implements CommandExecutor {
 
         String name = args[1].toLowerCase();
 
-        switch (master.addGameArea(name)) {
+        switch (master.addGameArea(name, gacAssistant.getCorner(0), gacAssistant.getCorner(1))) {
             case ALREADY_IN -> {
                 Messenger.msgToSender(
                     sender,
@@ -146,56 +152,28 @@ public class GameAreaCommand implements CommandExecutor {
             }
         }
 
-        master.resetCorners();
-        Messenger.msgToSender(
-                sender,
-                OverCrafted.prefix + "&aSe ha creado el área de juego &r&o" + name + "&r&a."
-        );
-    }
-
-    private void scmSetCorner(CommandSender sender, String[] args) {
-        if (args.length != 2) {
-            Messenger.msgToSender(
-                sender,
-                OverCrafted.prefix + "&cArgumentos incompletos."    // TODO: Invalid arguments message.
-            );
-            return;
-        }
-
-        int index;
-        try {
-            index = Integer.parseInt(args[1]);
-        } catch (NumberFormatException ignored) {
-            Messenger.msgToSender(
-                sender,
-                OverCrafted.prefix + "&cSe requiere un número para éste parámetro."     // TODO: Number parameter format required message.
-            );
-            return;
-        }
-
-        master.setCornerIndex(index);
-
+        gacAssistant.resetCorners();
         Messenger.msgToSender(
             sender,
-            OverCrafted.prefix + "&aListo para asignar esquina."    // TODO:
+            OverCrafted.prefix + "&aSe ha creado el área de juego &r&o" + name + "&r&a."
         );
     }
 
     private void scmSetSpawnPoint(CommandSender sender) {
-        Location spawn_location = ((Player)sender).getLocation();
-        GameArea gma = null;
+        Location spawnLocation = ((Player)sender).getLocation();
+        GameArea gamearea = null;
         for (int i = 0; i < master.getGameAreas().size(); i++) {
             GameArea current = master.getGameAreas().get(i);
             if (
-                current.isInsideBoundaries(spawn_location) &&
-                current.getWorld().equals(Objects.requireNonNull(spawn_location.getWorld()).getName())
+                current.isPointInsideBoundaries(spawnLocation) &&
+                current.getWorld().equals(Objects.requireNonNull(spawnLocation.getWorld()).getName())
             ) {
-                gma = current;
+                gamearea = current;
                 break;
             }
         }
 
-        if (gma == null) {
+        if (gamearea == null) {
             Messenger.msgToSender(
                 sender,
                 OverCrafted.prefix + "&cEstas fuera de un GameArea."
@@ -203,7 +181,7 @@ public class GameAreaCommand implements CommandExecutor {
             return;
         }
 
-        switch (gma.addSpawnPoint(spawn_location)) {
+        switch (gamearea.addSpawnPoint(spawnLocation)) {
             case NULL -> {
                 Messenger.msgToSender(
                     sender,
@@ -222,7 +200,7 @@ public class GameAreaCommand implements CommandExecutor {
 
         Messenger.msgToSender(
             sender,
-            OverCrafted.prefix + "&aSpawnpoint añadido al GameArea &r&o" + gma.getName() + "&r&a."
+            OverCrafted.prefix + "&aSpawnpoint añadido al GameArea &r&o" + gamearea.getName() + "&r&a."
         );
     }
 
@@ -258,6 +236,13 @@ public class GameAreaCommand implements CommandExecutor {
         Messenger.msgToSender(sender, "&f&l------ OVERCRAFTED ------\n");
         Messenger.msgToSender(sender, "&f&lÁreas de juego:");  // TODO: Language location.
 
+        if (master.getGameAreas().isEmpty()) {
+            Messenger.msgToSender(
+                sender,
+                "&7&o** Vacío **"
+            );
+            return;
+        }
         for(int i = 0; i < master.getGameAreas().size(); i++) {
             Messenger.msgToSender(sender, "&7" + (i + 1) + ".- " + "&o" + master.getGameAreas().get(i).getName());
         }
@@ -273,9 +258,9 @@ public class GameAreaCommand implements CommandExecutor {
         }
 
         String name = args[1].toLowerCase();
-        GameArea gma = this.master.getGameAreaByName(name);
+        GameArea gamearea = this.master.getGameAreaByName(name);
 
-        if (gma == null) {
+        if (gamearea == null) {
             Messenger.msgToSender(
                 sender,
                 OverCrafted.prefix + "&cNo existe un GameArea con este nombre."    // TODO: GameArea not found message.
@@ -284,14 +269,28 @@ public class GameAreaCommand implements CommandExecutor {
         }
 
         Messenger.msgToSender(sender, "&f&l---- OverCrafted GameArea ----");
-        Messenger.msgToSender(sender, "&b&o" + gma.getName() + " properties:");
-        Messenger.msgToSender(sender, "&6&o  world: &r&e" + gma.getWorld());
-        Messenger.msgToSender(sender, "&6&o  corner1: &r&e(" + "&r&c" + gma.getCorner1().getBlockX() + "&r&e, &r&a" + gma.getCorner1().getBlockY() + "&r&e, &r&9" + gma.getCorner1().getBlockZ() + "&r&e)");
-        Messenger.msgToSender(sender, "&6&o  corner2: &r&e(" + "&r&c" + gma.getCorner2().getBlockX() + "&r&e, &r&a" + gma.getCorner2().getBlockY() + "&r&e, &r&9" + gma.getCorner2().getBlockZ() + "&r&e)");
-        Messenger.msgToSender(sender, "&6&o  spawnpoints (&e" + gma.getSpawnPointsCount() + "&6):");
-        for (int i = 0; i < gma.getSpawnPointsCount(); i++) {
-            Location spawn = gma.getSpawnPoints().get(i);
-            Messenger.msgToSender(sender, "&6&o    [" + (i + 1) + "]: &r&e(" + "&c" + String.format("%.2f", spawn.getX()) + "&e, &a" + String.format("%.2f", spawn.getY()) + "&e, &9" + String.format("%.2f", spawn.getZ()) + "&e, &b" + String.format("%.2f", spawn.getYaw()) + "&e, &d" + String.format("%.2f", spawn.getPitch()) + "&e)");
+        Messenger.msgToSender(sender, "&b&o" + gamearea.getName() + " properties:");
+        Messenger.msgToSender(sender, "&6&o  world: &r&e" + gamearea.getWorld());
+        Messenger.msgToSender(sender,
+                "&6&o  corner1: &r&e(" + "&r&c" + gamearea.getCorner(0).getBlockX() +
+                        "&r&e, &r&a" + gamearea.getCorner(0).getBlockY() +
+                        "&r&e, &r&9" + gamearea.getCorner(0).getBlockZ() + "&r&e)"
+        );
+        Messenger.msgToSender(sender,
+                "&6&o  corner2: &r&e(" + "&r&c" + gamearea.getCorner(1).getBlockX()+
+                        "&r&e, &r&a" + gamearea.getCorner(1).getBlockY() +
+                        "&r&e, &r&9" + gamearea.getCorner(1).getBlockZ() + "&r&e)"
+        );
+        Messenger.msgToSender(sender, "&6&o  spawnpoints (&e" + gamearea.getSpawnPointsCount() + "&6):");
+        for (int i = 0; i < gamearea.getSpawnPointsCount(); i++) {
+            Location spawn = gamearea.getSpawnPoints().get(i);
+            Messenger.msgToSender(sender,
+                    "&6&o    [" + (i + 1) + "]: &r&e(" + "&c" + String.format("%.2f", spawn.getX()) +
+                            "&e, &a" + String.format("%.2f", spawn.getY()) +
+                            "&e, &9" + String.format("%.2f", spawn.getZ()) +
+                            "&e, &b" + String.format("%.2f", spawn.getYaw()) +
+                            "&e, &d" + String.format("%.2f", spawn.getPitch()) + "&e)"
+            );
         }
     }
 
@@ -309,23 +308,23 @@ public class GameAreaCommand implements CommandExecutor {
         switch(master.removeGameArea(name)) {
             case NOT_FOUND -> {
                 Messenger.msgToSender(
-                        sender,
-                        OverCrafted.prefix + "&cNo se encontró el elemento con este nombre."    // TODO: Not found GameArea message.
+                    sender,
+                    OverCrafted.prefix + "&cNo se encontró el elemento con este nombre."    // TODO: Not found GameArea message.
                 );
                 return;
             }
             case EMPTY_LIST -> {
                 Messenger.msgToSender(
-                        sender,
-                        OverCrafted.prefix + "&cLa lista está vacía"    // TODO: Emtpy list message.
+                    sender,
+                    OverCrafted.prefix + "&cLa lista está vacía"    // TODO: Emtpy list message.
                 );
                 return;
             }
         }
 
         Messenger.msgToSender(
-                sender,
-                OverCrafted.prefix + "&aSe ha eliminado el área de juego &r&o" + name + "&r&a."
+            sender,
+            OverCrafted.prefix + "&aSe ha eliminado el área de juego &r&o" + name + "&r&a."
         );
     }
 

@@ -72,18 +72,18 @@ public class GameAreaManager {
             return ListResult.ALREADY_IN;
         }
 
-        GameArea gma = new GameArea(
+        GameArea gamearea = new GameArea(
             name,
             corner1,
             corner2
         );
 
-        for (GameArea gmaItem : this.gameAreas) {
-            if (gmaItem.isRegionOverlapping(gma))
+        for (GameArea gameareaItem : this.gameAreas) {
+            if (gameareaItem.isRegionOverlapping(gamearea))
                 return ListResult.INVALID_ITEM;
         }
 
-        this.gameAreas.add(gma);
+        this.gameAreas.add(gamearea);
         return ListResult.SUCCESS;
     }
 
@@ -91,18 +91,18 @@ public class GameAreaManager {
         if (this.isEmpty())
             return ListResult.EMPTY_LIST;
 
-        GameArea gma = this.getByName(name);
+        GameArea gamearea = this.getByName(name);
 
-        if (gma == null)
+        if (gamearea == null)
             return ListResult.NOT_FOUND;
 
-        this.gameAreas.remove(gma);
+        this.gameAreas.remove(gamearea);
         return ListResult.SUCCESS;
     }
 
     public GameArea getByName(String name) {
-        Optional<GameArea> query_gamearea = gameAreas.stream().filter(item -> item.getName().equals(name)).findFirst();
-        return query_gamearea.orElse(null);
+        Optional<GameArea> queryGameArea = gameAreas.stream().filter(item -> item.getName().equals(name)).findFirst();
+        return queryGameArea.orElse(null);
     }
 
     public boolean alreadyExists(String name) {

@@ -187,7 +187,7 @@ public class PlayerListCommand implements CommandExecutor {
     }
 
     private void scmClear(CommandSender sender) {
-        List<Player> game_players = master.getGamePlayers();
+        List<Player> gamePlayers = master.getGamePlayers();
 
         switch(master.clearPlayerList()) {
             case EMPTY_LIST -> {
@@ -206,7 +206,7 @@ public class PlayerListCommand implements CommandExecutor {
             }
         }
 
-        for (Player gamePlayer : game_players) {
+        for (Player gamePlayer : gamePlayers) {
             Player current;
             try {
                 current = gamePlayer;

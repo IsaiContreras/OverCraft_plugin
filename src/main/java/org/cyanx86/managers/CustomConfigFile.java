@@ -19,10 +19,10 @@ public class CustomConfigFile {
     private final String filename;
     private final String foldername;
 
-    private FileConfiguration file_config;
+    private FileConfiguration fileConfig;
     private File file;
 
-    private boolean must_create;
+    private boolean mustCreate;
 
     // -- [[ METHODS ]] --
 
@@ -31,7 +31,7 @@ public class CustomConfigFile {
         this.filename = filename;
         this.foldername = foldername;
         this.master = master;
-        this.must_create = must_create;
+        this.mustCreate = must_create;
     }
     public String getPath() { return this.filename; }
 
@@ -44,7 +44,7 @@ public class CustomConfigFile {
         }
 
         if (!file.exists()) {
-            if (must_create) {
+            if (mustCreate) {
                 try {
                     file.createNewFile();
                 } catch (IOException e) {
@@ -59,9 +59,9 @@ public class CustomConfigFile {
             }
         }
 
-        file_config = new YamlConfiguration();
+        fileConfig = new YamlConfiguration();
         try {
-            file_config.load(file);
+            fileConfig.load(file);
         } catch(IOException | InvalidConfigurationException e) {
             e.printStackTrace();
         }
@@ -69,21 +69,21 @@ public class CustomConfigFile {
 
     public void saveConfig() {
         try {
-            file_config.save(file);
+            fileConfig.save(file);
         } catch (IOException e) {
             e.printStackTrace();
         }
     }
 
     public FileConfiguration getConfig() {
-        if (file_config == null) {
+        if (fileConfig == null) {
             reloadConfig();
         }
-        return file_config;
+        return fileConfig;
     }
 
     public void reloadConfig() {
-        if (file_config == null) {
+        if (fileConfig == null) {
             if (foldername != null) {
                 file = new File(master.getDataFolder() + File.separator + foldername, filename);
             } else {
@@ -91,10 +91,10 @@ public class CustomConfigFile {
             }
         }
 
-        file_config = YamlConfiguration.loadConfiguration(file);
+        fileConfig = YamlConfiguration.loadConfiguration(file);
         if (file != null) {
             YamlConfiguration defConfig = YamlConfiguration.loadConfiguration(file);
-            file_config.setDefaults(defConfig);
+            fileConfig.setDefaults(defConfig);
         }
     }
 

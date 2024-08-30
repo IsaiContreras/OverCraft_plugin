@@ -13,12 +13,11 @@ public class GameArea {
     // -- Public
 
     // -- Private
-    private String name;
+    private final String name;
 
-    private String world;
+    private final String world;
 
-    private final Location corner1;
-    private final Location corner2;
+    private final Location[] corners = new Location[2];
 
     private final Cube cubeArea;
 
@@ -30,15 +29,15 @@ public class GameArea {
     public GameArea(String name, Location corner1, Location corner2) {
         this.name = name;
         this.world = Objects.requireNonNull(corner1.getWorld()).getName();
-        this.corner1 = corner1;
-        this.corner2 = corner2;
+        this.corners[0] = corner1;
+        this.corners[1] = corner2;
         this.cubeArea = new Cube(corner1, corner2);
     }
     public GameArea(String name, String world, Location corner1, Location corner2, List<Location> spawn_points) {
         this.name = name;
         this.world = world;
-        this.corner1 = corner1;
-        this.corner2 = corner2;
+        this.corners[0] = corner1;
+        this.corners[1] = corner2;
         this.cubeArea = new Cube(corner1, corner2);
         this.spawnPoints = spawn_points;
     }
@@ -47,15 +46,18 @@ public class GameArea {
         return this.name;
     }
     public String getWorld() { return this.world; }
-    public Location getCorner1() { return this.corner1; }
-    public Location getCorner2() { return this.corner2; }
+    public Location getCorner(int index) {
+        if (index < 0 || index > 1)
+            return null;
+        return this.corners[index];
+    }
 
     public ListResult addSpawnPoint(Location location) {
         if (location == null)
             return ListResult.NULL;
         if (!Objects.requireNonNull(location.getWorld()).getName().equals(this.world))
-            return ListResult.INVALID_ITEM;
-        if (!this.isInsideBoundaries(location))
+            return ListResult.ERROR;
+        if (!this.isPointInsideBoundaries(location))
             return ListResult.INVALID_ITEM;
 
         this.spawnPoints.add(location);
@@ -74,7 +76,7 @@ public class GameArea {
         this.spawnPoints.clear();
     }
 
-    public boolean isInsideBoundaries(Location point) {
+    public boolean isPointInsideBoundaries(Location point) {
         return (
             !(point.getBlockX() < cubeArea.left || point.getBlockX() > cubeArea.right) &&
             !(point.getBlockY() < cubeArea.bottom || point.getBlockY() > cubeArea.top) &&
@@ -103,19 +105,19 @@ public class GameArea {
 
         data.put("name", this.name);
         data.put("world", this.world);
-        data.put("corner1", this.corner1.serialize());
-        data.put("corner2", this.corner2.serialize());
+        data.put("corner1", this.corners[0].serialize());
+        data.put("corner2", this.corners[1].serialize());
         data.put("spawnpoints", sppListMap);
 
         return data;
     }
 
     public static GameArea deserialize(Map<String, Object> args) {
-        List<Location> spawnpoints_list = new ArrayList<>();
+        List<Location> spawnpointsList = new ArrayList<>();
         List<Map<String, Object>> sppMapList = (List<Map<String, Object>>) args.get("spawnpoints");
 
         for (Map<String, Object> sppMap : sppMapList) {
-            spawnpoints_list.add(Location.deserialize(sppMap));
+            spawnpointsList.add(Location.deserialize(sppMap));
         }
 
         return new GameArea(
@@ -123,7 +125,7 @@ public class GameArea {
             (String)args.get("world"),
             Location.deserialize((Map<String, Object>) args.get("corner1")),
             Location.deserialize((Map<String, Object>) args.get("corner2")),
-            spawnpoints_list
+            spawnpointsList
         );
     }
 

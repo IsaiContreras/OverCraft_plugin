@@ -3,11 +3,14 @@ package org.cyanx86;
 import org.bukkit.Location;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.java.JavaPlugin;
+
 import org.cyanx86.classes.GameArea;
+import org.cyanx86.classes.GameAreaCornerAssistant;
 import org.cyanx86.commands.GameAreaCommand;
 import org.cyanx86.commands.MainCommand;
 import org.cyanx86.commands.PlayerListCommand;
 import org.cyanx86.listeners.PlayerListener;
+import org.cyanx86.managers.GameAreaCornerAssistantManager;
 import org.cyanx86.managers.GameAreaManager;
 import org.cyanx86.utils.Messenger;
 import org.cyanx86.utils.Enums.ListResult;
@@ -27,12 +30,9 @@ public class OverCrafted extends JavaPlugin {
     private final String version = getDescription().getVersion();
 
     private GameAreaManager gameAreaManager;
+    private GameAreaCornerAssistantManager gacaManager;
 
     private final List<Player> gamePlayers = new ArrayList<>();
-
-    private int cornerIndex = 0;
-    private Location gaCorner1 = null;
-    private Location gaCorner2 = null;
 
     // -- [[ METHODS ]] --
 
@@ -43,6 +43,7 @@ public class OverCrafted extends JavaPlugin {
         this.setupCommands();
         this.setupEvents();
         gameAreaManager = new GameAreaManager(this);
+        gacaManager = new GameAreaCornerAssistantManager(this);
 
         Messenger.msgToConsole(
                 prefix + "&ePlugin activo. &fVersion: " + version
@@ -60,17 +61,15 @@ public class OverCrafted extends JavaPlugin {
     public ListResult addPlayer(Player player) {
         if (this.gamePlayers.size() == 4)
             return ListResult.FULL_LIST;
-        if (this.gamePlayers.contains(player)) {
+        if (this.gamePlayers.contains(player))
             return ListResult.ALREADY_IN;
-        }
         this.gamePlayers.add(player);
         return ListResult.SUCCESS;
     }
 
     public ListResult removePlayer(Player player) {
-        if (this.gamePlayers.isEmpty()) {
+        if (this.gamePlayers.isEmpty())
             return ListResult.EMPTY_LIST;
-        }
         if (!this.gamePlayers.remove(player))
             return ListResult.NOT_FOUND;
         else
@@ -90,7 +89,19 @@ public class OverCrafted extends JavaPlugin {
     }
 
     // GameArea managing
-    public ListResult addGameArea(String name) {
+    public ListResult signPlayerAssistant(Player player) {
+        return this.gacaManager.signInAssistant(player);
+    }
+
+    public ListResult logoutPlayerAssistant(Player player) {
+        return this.gacaManager.eraseAssistant(player);
+    }
+
+    public GameAreaCornerAssistant getAssistantByName(String name) {
+        return this.gacaManager.getAssistantByName(name);
+    }
+
+    public ListResult addGameArea(String name, Location gaCorner1, Location gaCorner2) {
         return this.gameAreaManager.addNewGameArea(
             name,
             gaCorner1,
@@ -108,39 +119,6 @@ public class OverCrafted extends JavaPlugin {
 
     public List<GameArea> getGameAreas() {
         return this.gameAreaManager.getGameAreas();
-    }
-
-    public void setCornerIndex(int index) {
-        this.cornerIndex = index;
-    }
-
-    public int getCornerIndex() { return this.cornerIndex; }
-
-    public boolean setCorner(int index, Location corner) {
-        switch (index) {
-            case 1:
-                this.gaCorner1 = corner;
-                break;
-            case 2:
-                this.gaCorner2 = corner;
-                break;
-            default:
-                return false;
-        }
-        return true;
-    }
-
-    public Location getCorner(int index) {
-        return switch (index) {
-            case 1 -> this.gaCorner1;
-            case 2 -> this.gaCorner2;
-            default -> null;
-        };
-    }
-
-    public void resetCorners() {
-        this.gaCorner1 = null;
-        this.gaCorner2 = null;
     }
 
     // -- Private
