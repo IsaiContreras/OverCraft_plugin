@@ -67,7 +67,7 @@ public class GameAreaManager {
     }
 
     // List managing
-    public ListResult addNewGameArea(String name, Location corner1, Location corner2) {
+    public ListResult addGameArea(String name, Location corner1, Location corner2) {
         if (this.alreadyExists(name)) {
             return ListResult.ALREADY_IN;
         }

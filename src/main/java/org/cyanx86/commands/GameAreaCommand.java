@@ -108,7 +108,7 @@ public class GameAreaCommand implements CommandExecutor {
 
     private void scmCreate(CommandSender sender, String[] args) {
         Player player = (Player)sender;
-        GameAreaCornerAssistant gacAssistant = master.getAssistantByName(player.getName());
+        GameAreaCornerAssistant gacAssistant = master.getGacaManager().getAssistantByName(player.getName());
         if (gacAssistant == null) {
             Messenger.msgToSender(
                 sender,
@@ -135,7 +135,7 @@ public class GameAreaCommand implements CommandExecutor {
 
         String name = args[1].toLowerCase();
 
-        switch (master.addGameArea(name, gacAssistant.getCorner(0), gacAssistant.getCorner(1))) {
+        switch (master.getGameAreaManager().addGameArea(name, gacAssistant.getCorner(0), gacAssistant.getCorner(1))) {
             case ALREADY_IN -> {
                 Messenger.msgToSender(
                     sender,
@@ -162,8 +162,8 @@ public class GameAreaCommand implements CommandExecutor {
     private void scmSetSpawnPoint(CommandSender sender) {
         Location spawnLocation = ((Player)sender).getLocation();
         GameArea gamearea = null;
-        for (int i = 0; i < master.getGameAreas().size(); i++) {
-            GameArea current = master.getGameAreas().get(i);
+        for (int i = 0; i < master.getGameAreaManager().getGameAreas().size(); i++) {
+            GameArea current = master.getGameAreaManager().getGameAreas().get(i);
             if (
                 current.isPointInsideBoundaries(spawnLocation) &&
                 current.getWorld().equals(Objects.requireNonNull(spawnLocation.getWorld()).getName())
@@ -214,7 +214,7 @@ public class GameAreaCommand implements CommandExecutor {
         }
 
         String name = args[1].toLowerCase();
-        Optional<GameArea> query = master.getGameAreas().stream().filter(ga -> ga.getName().equals(name)).findFirst();
+        Optional<GameArea> query = master.getGameAreaManager().getGameAreas().stream().filter(ga -> ga.getName().equals(name)).findFirst();
         if (query.isEmpty()) {
             Messenger.msgToSender(
                 sender,
@@ -236,15 +236,15 @@ public class GameAreaCommand implements CommandExecutor {
         Messenger.msgToSender(sender, "&f&l------ OVERCRAFTED ------\n");
         Messenger.msgToSender(sender, "&f&lÁreas de juego:");  // TODO: Language location.
 
-        if (master.getGameAreas().isEmpty()) {
+        if (master.getGameAreaManager().getGameAreas().isEmpty()) {
             Messenger.msgToSender(
                 sender,
                 "&7&o** Vacío **"
             );
             return;
         }
-        for(int i = 0; i < master.getGameAreas().size(); i++) {
-            Messenger.msgToSender(sender, "&7" + (i + 1) + ".- " + "&o" + master.getGameAreas().get(i).getName());
+        for(int i = 0; i < master.getGameAreaManager().getGameAreas().size(); i++) {
+            Messenger.msgToSender(sender, "&7" + (i + 1) + ".- " + "&o" + master.getGameAreaManager().getGameAreas().get(i).getName());
         }
     }
 
@@ -258,7 +258,7 @@ public class GameAreaCommand implements CommandExecutor {
         }
 
         String name = args[1].toLowerCase();
-        GameArea gamearea = this.master.getGameAreaByName(name);
+        GameArea gamearea = this.master.getGameAreaManager().getByName(name);
 
         if (gamearea == null) {
             Messenger.msgToSender(
@@ -305,7 +305,7 @@ public class GameAreaCommand implements CommandExecutor {
 
         String name = args[1].toLowerCase();
 
-        switch(master.removeGameArea(name)) {
+        switch(master.getGameAreaManager().removeGameArea(name)) {
             case NOT_FOUND -> {
                 Messenger.msgToSender(
                     sender,

@@ -89,36 +89,11 @@ public class OverCrafted extends JavaPlugin {
     }
 
     // GameArea managing
-    public ListResult signPlayerAssistant(Player player) {
-        return this.gacaManager.signInAssistant(player);
+    public GameAreaCornerAssistantManager getGacaManager() {
+        return this.gacaManager;
     }
-
-    public ListResult logoutPlayerAssistant(Player player) {
-        return this.gacaManager.eraseAssistant(player);
-    }
-
-    public GameAreaCornerAssistant getAssistantByName(String name) {
-        return this.gacaManager.getAssistantByName(name);
-    }
-
-    public ListResult addGameArea(String name, Location gaCorner1, Location gaCorner2) {
-        return this.gameAreaManager.addNewGameArea(
-            name,
-            gaCorner1,
-            gaCorner2
-        );
-    }
-
-    public ListResult removeGameArea(String name) {
-        return this.gameAreaManager.removeGameArea(name);
-    }
-
-    public GameArea getGameAreaByName(String name) {
-        return this.gameAreaManager.getByName(name);
-    }
-
-    public List<GameArea> getGameAreas() {
-        return this.gameAreaManager.getGameAreas();
+    public GameAreaManager getGameAreaManager() {
+        return this.gameAreaManager;
     }
 
     // -- Private
