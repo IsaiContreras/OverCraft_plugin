@@ -13,15 +13,16 @@ public class GameArea {
     // -- Public
 
     // -- Private
+
     private final String name;
 
     private final String world;
 
     private final Location[] corners = new Location[2];
 
-    private final Cube cubeArea;
+    private final Cube cubearea;
 
-    private List<Location> spawnPoints = new ArrayList<>();
+    private List<SpawnPoint> spawnpoints = new ArrayList<>();
 
     // -- [[ METHODS ]] --
 
@@ -31,56 +32,61 @@ public class GameArea {
         this.world = Objects.requireNonNull(corner1.getWorld()).getName();
         this.corners[0] = corner1;
         this.corners[1] = corner2;
-        this.cubeArea = new Cube(corner1, corner2);
+        this.cubearea = new Cube(corner1, corner2);
     }
-    public GameArea(String name, String world, Location corner1, Location corner2, List<Location> spawn_points) {
+    public GameArea(String name, String world, Location corner1, Location corner2, List<SpawnPoint> spawn_points) {
         this.name = name;
         this.world = world;
         this.corners[0] = corner1;
         this.corners[1] = corner2;
-        this.cubeArea = new Cube(corner1, corner2);
-        this.spawnPoints = spawn_points;
+        this.cubearea = new Cube(corner1, corner2);
+        this.spawnpoints = spawn_points;
     }
 
     public String getName() {
         return this.name;
     }
-    public String getWorld() { return this.world; }
+    public String getWorld() {
+        return this.world;
+    }
     public Location getCorner(int index) {
         if (index < 0 || index > 1)
             return null;
         return this.corners[index];
     }
 
-    public ListResult addSpawnPoint(Location location) {
-        if (location == null)
+    public ListResult addSpawnPoint(SpawnPoint spawnpoint) {
+        if (spawnpoint == null)
             return ListResult.NULL;
-        if (!Objects.requireNonNull(location.getWorld()).getName().equals(this.world))
-            return ListResult.ERROR;
-        if (!this.isPointInsideBoundaries(location))
+        if (!this.isPointInsideBoundaries(spawnpoint.getSpawnLocation()))
             return ListResult.INVALID_ITEM;
+        if (this.spawnpoints.size() == 4)
+            return ListResult.FULL_LIST;
 
-        this.spawnPoints.add(location);
+        int playerIndex = spawnpoints.size() + 1;
+        spawnpoint.setPlayerIndex(playerIndex);
+
+        this.spawnpoints.add(spawnpoint);
         return ListResult.SUCCESS;
     }
 
-    public List<Location> getSpawnPoints() {
-        return this.spawnPoints;
+    public List<SpawnPoint> getSpawnPoints() {
+        return this.spawnpoints;
     }
 
     public int getSpawnPointsCount() {
-        return this.spawnPoints.size();
+        return this.spawnpoints.size();
     }
 
     public void clearSpawnPointList() {
-        this.spawnPoints.clear();
+        this.spawnpoints.clear();
     }
 
     public boolean isPointInsideBoundaries(Location point) {
         return (
-            !(point.getBlockX() < cubeArea.left || point.getBlockX() > cubeArea.right) &&
-            !(point.getBlockY() < cubeArea.bottom || point.getBlockY() > cubeArea.top) &&
-            !(point.getBlockZ() < cubeArea.back || point.getBlockZ() > cubeArea.front)
+            !(point.getBlockX() < cubearea.left || point.getBlockX() > cubearea.right) &&
+            !(point.getBlockY() < cubearea.bottom || point.getBlockY() > cubearea.top) &&
+            !(point.getBlockZ() < cubearea.back || point.getBlockZ() > cubearea.front)
         );
     }
 
@@ -89,17 +95,21 @@ public class GameArea {
             return false;
 
         return (
-            (this.cubeArea.left <= other.cubeArea.right && this.cubeArea.right >= other.cubeArea.left) &&
-            (this.cubeArea.bottom <= other.cubeArea.top && this.cubeArea.top >= other.cubeArea.bottom) &&
-            (this.cubeArea.back <= other.cubeArea.front && this.cubeArea.front >= other.cubeArea.back)
+            (this.cubearea.left <= other.cubearea.right && this.cubearea.right >= other.cubearea.left) &&
+            (this.cubearea.bottom <= other.cubearea.top && this.cubearea.top >= other.cubearea.bottom) &&
+            (this.cubearea.back <= other.cubearea.front && this.cubearea.front >= other.cubearea.back)
         );
+    }
+
+    public boolean isValidSetUp() {
+        return (spawnpoints.size() == 4);
     }
 
     public Map<String, Object> serialize() {
         Map<String, Object> data = new HashMap<>();
         List<Map<String, Object>> sppListMap = new ArrayList<>();
 
-        for (Location spawnpoint : this.spawnPoints) {
+        for (SpawnPoint spawnpoint : this.spawnpoints) {
             sppListMap.add(spawnpoint.serialize());
         }
 
@@ -113,11 +123,11 @@ public class GameArea {
     }
 
     public static GameArea deserialize(Map<String, Object> args) {
-        List<Location> spawnpointsList = new ArrayList<>();
-        List<Map<String, Object>> sppMapList = (List<Map<String, Object>>) args.get("spawnpoints");
+        List<SpawnPoint> spawnpointsList = new ArrayList<>();
+        List<Map<String, Object>> sppMapList = (List<Map<String, Object>>)args.get("spawnpoints");
 
         for (Map<String, Object> sppMap : sppMapList) {
-            spawnpointsList.add(Location.deserialize(sppMap));
+            spawnpointsList.add(SpawnPoint.deserialize(sppMap));
         }
 
         return new GameArea(

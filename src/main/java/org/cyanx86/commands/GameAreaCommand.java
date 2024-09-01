@@ -8,6 +8,7 @@ import org.bukkit.entity.Player;
 import org.cyanx86.OverCrafted;
 import org.cyanx86.classes.GameArea;
 import org.cyanx86.classes.GameAreaCornerAssistant;
+import org.cyanx86.classes.SpawnPoint;
 import org.cyanx86.utils.Messenger;
 
 import java.util.Objects;
@@ -74,6 +75,9 @@ public class GameAreaCommand implements CommandExecutor {
             case "list":        // subCommand List
                 this.scmList(sender);
                 break;
+            case "select":      // subCommand Select
+                this.scmSelect(sender, args);
+                break;
             case "info":        // subCommand Info
                 this.scmInfo(sender, args);
                 break;
@@ -102,6 +106,7 @@ public class GameAreaCommand implements CommandExecutor {
         Messenger.msgToSender(sender, "&7- /gamearea setspawn");
         Messenger.msgToSender(sender, "&7- /gamearea resetspawns <nombre>");
         Messenger.msgToSender(sender, "&7- /gamearea list");
+        Messenger.msgToSender(sender, "&7- /gamearea select <nombre>");
         Messenger.msgToSender(sender, "&7- /gamearea info <nombre>");
         Messenger.msgToSender(sender, "&7- /gamearea delete <nombre>");
     }
@@ -181,7 +186,11 @@ public class GameAreaCommand implements CommandExecutor {
             return;
         }
 
-        switch (gamearea.addSpawnPoint(spawnLocation)) {
+        switch (
+            gamearea.addSpawnPoint(new SpawnPoint(
+                spawnLocation
+            ))
+        ) {
             case NULL -> {
                 Messenger.msgToSender(
                     sender,
@@ -196,11 +205,18 @@ public class GameAreaCommand implements CommandExecutor {
                 );
                 return;
             }
+            case FULL_LIST -> {
+                Messenger.msgToSender(
+                    sender,
+                    OverCrafted.prefix + "&cEste GameArea ya tiene suficientes SpawnPoints."
+                );
+                return;
+            }
         }
 
         Messenger.msgToSender(
             sender,
-            OverCrafted.prefix + "&aSpawnpoint añadido al GameArea &r&o" + gamearea.getName() + "&r&a."
+            OverCrafted.prefix + "&aSpawnPoint añadido al GameArea &r&o" + gamearea.getName() + "&r&a."
         );
     }
 
@@ -248,6 +264,40 @@ public class GameAreaCommand implements CommandExecutor {
         }
     }
 
+    private void scmSelect(CommandSender sender, String[] args) {
+        if (args.length != 2) {
+            Messenger.msgToSender(
+                sender,
+                OverCrafted.prefix + "&cArgumentos incompletos."    // TODO: Invalid arguments message.
+            );
+            return;
+        }
+
+        String name = args[1].toLowerCase();
+        GameArea gamearea = master.getGameAreaManager().getByName(name);
+        if (gamearea == null) {
+            Messenger.msgToSender(
+                sender,
+                OverCrafted.prefix + "&cNo se encontró el elemento con este nombre."    // TODO: Not found GameArea message.
+            );
+            return;
+        }
+        if (!gamearea.isValidSetUp()) {
+            Messenger.msgToSender(
+                    sender,
+                    OverCrafted.prefix + "&cFaltan definir SpawnPoints para este GameArea."    // TODO: Not found GameArea message.
+            );
+            return;
+        }
+
+        master.getGameRoundManager().setGameArea(gamearea);
+
+        Messenger.msgToSender(
+            sender,
+            OverCrafted.prefix + "&aEl GameArea " + gamearea.getName() + " fue seleccionado para el siguiente juego."
+        );
+    }
+
     private void scmInfo(CommandSender sender, String[] args) {
         if (args.length != 2) {
             Messenger.msgToSender(
@@ -283,13 +333,14 @@ public class GameAreaCommand implements CommandExecutor {
         );
         Messenger.msgToSender(sender, "&6&o  spawnpoints (&e" + gamearea.getSpawnPointsCount() + "&6):");
         for (int i = 0; i < gamearea.getSpawnPointsCount(); i++) {
-            Location spawn = gamearea.getSpawnPoints().get(i);
+            SpawnPoint spawn = gamearea.getSpawnPoints().get(i);
             Messenger.msgToSender(sender,
-                    "&6&o    [" + (i + 1) + "]: &r&e(" + "&c" + String.format("%.2f", spawn.getX()) +
-                            "&e, &a" + String.format("%.2f", spawn.getY()) +
-                            "&e, &9" + String.format("%.2f", spawn.getZ()) +
-                            "&e, &b" + String.format("%.2f", spawn.getYaw()) +
-                            "&e, &d" + String.format("%.2f", spawn.getPitch()) + "&e)"
+                    "&6&o    [" + (i + 1) + "]: &r&6pi: &e"+ spawn.getPlayerIndex() +
+                            "&6 loc: &e(" + "&c" + String.format("%.2f", spawn.getSpawnLocation().getX()) +
+                            "&e, &a" + String.format("%.2f", spawn.getSpawnLocation().getY()) +
+                            "&e, &9" + String.format("%.2f", spawn.getSpawnLocation().getZ()) +
+                            "&e, &b" + String.format("%.2f", spawn.getSpawnLocation().getYaw()) +
+                            "&e, &d" + String.format("%.2f", spawn.getSpawnLocation().getPitch()) + "&e)"
             );
         }
     }

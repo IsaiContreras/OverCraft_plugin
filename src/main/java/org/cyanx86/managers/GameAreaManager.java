@@ -44,7 +44,7 @@ public class GameAreaManager {
         List<Map<?, ?>> gmaMapList = config.getMapList("gameareas");
 
         for (Map<?, ?> gmaMap : gmaMapList) {
-            gameAreas.add(GameArea.deserialize((Map<String, Object>) gmaMap));
+            gameAreas.add(GameArea.deserialize((Map<String, Object>)gmaMap));
         }
     }
 
@@ -78,8 +78,8 @@ public class GameAreaManager {
             corner2
         );
 
-        for (GameArea gameareaItem : this.gameAreas) {
-            if (gameareaItem.isRegionOverlapping(gamearea))
+        for (GameArea gmaItem : this.gameAreas) {
+            if (gmaItem.isRegionOverlapping(gamearea))
                 return ListResult.INVALID_ITEM;
         }
 

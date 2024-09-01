@@ -56,7 +56,9 @@ public class MainCommand implements CommandExecutor {
 
     // Subcommands
     private void scmHelp(CommandSender sender) {
-
+        Messenger.msgToSender(sender, "&f&l------ OVERCRAFTED ------");
+        Messenger.msgToSender(sender, "&7 [[ Comando /overcrafted ]]");
+        Messenger.msgToSender(sender, "&7- /overcrafted help");
     }
 
 }

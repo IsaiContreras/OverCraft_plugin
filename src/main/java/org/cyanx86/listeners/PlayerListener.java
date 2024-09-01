@@ -41,7 +41,7 @@ public class PlayerListener implements Listener {
             return;
 
         // Register GameAreaCornerAssistant
-        master.signPlayerAssistant(player);
+        master.getGacaManager().signInAssistant(player);
 
         Messenger.msgToConsole(OverCrafted.prefix + player.getName() + " registro su asistente.");
     }
@@ -50,7 +50,7 @@ public class PlayerListener implements Listener {
     public void onOverCraftedManagerLeaves(PlayerQuitEvent event) {
         Player player = event.getPlayer();
 
-        master.logoutPlayerAssistant(player);
+        master.getGacaManager().eraseAssistant(player);
 
         Messenger.msgToConsole(OverCrafted.prefix + player.getName() + " dispuso su asistente.");
     }
@@ -60,7 +60,7 @@ public class PlayerListener implements Listener {
         Player player = event.getPlayer();
         if (!player.hasPermission("overcrafted.manager"))
             return;
-        GameAreaCornerAssistant gacAssistant = master.getAssistantByName(player.getName());
+        GameAreaCornerAssistant gacAssistant = master.getGacaManager().getAssistantByName(player.getName());
         if (gacAssistant == null)
             return;
 

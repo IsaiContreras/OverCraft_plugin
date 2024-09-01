@@ -17,7 +17,7 @@ public class GameRound {
     private final OverCrafted master;
 
     private final GameArea gamearea;
-    private final Map<String, Player> players = new HashMap<>();
+    private final Map<String, Player> players = new HashMap<>();        // TODO: Manejarlo con una clase que se llame GamePlayerManager
 
     // -- [[ METHODS ]] --
 

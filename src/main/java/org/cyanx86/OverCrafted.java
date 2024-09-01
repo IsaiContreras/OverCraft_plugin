@@ -1,17 +1,16 @@
 package org.cyanx86;
 
-import org.bukkit.Location;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.java.JavaPlugin;
 
-import org.cyanx86.classes.GameArea;
-import org.cyanx86.classes.GameAreaCornerAssistant;
+import org.cyanx86.classes.GameRound;
 import org.cyanx86.commands.GameAreaCommand;
 import org.cyanx86.commands.MainCommand;
 import org.cyanx86.commands.PlayerListCommand;
 import org.cyanx86.listeners.PlayerListener;
 import org.cyanx86.managers.GameAreaCornerAssistantManager;
 import org.cyanx86.managers.GameAreaManager;
+import org.cyanx86.managers.GameRoundManager;
 import org.cyanx86.utils.Messenger;
 import org.cyanx86.utils.Enums.ListResult;
 
@@ -31,8 +30,7 @@ public class OverCrafted extends JavaPlugin {
 
     private GameAreaManager gameAreaManager;
     private GameAreaCornerAssistantManager gacaManager;
-
-    private final List<Player> gamePlayers = new ArrayList<>();
+    private GameRoundManager gameRoundManager;
 
     // -- [[ METHODS ]] --
 
@@ -44,6 +42,7 @@ public class OverCrafted extends JavaPlugin {
         this.setupEvents();
         gameAreaManager = new GameAreaManager(this);
         gacaManager = new GameAreaCornerAssistantManager(this);
+        gameRoundManager = new GameRoundManager(this);
 
         Messenger.msgToConsole(
                 prefix + "&ePlugin activo. &fVersion: " + version
@@ -57,43 +56,17 @@ public class OverCrafted extends JavaPlugin {
         );
     }
 
-    // Player managing
-    public ListResult addPlayer(Player player) {
-        if (this.gamePlayers.size() == 4)
-            return ListResult.FULL_LIST;
-        if (this.gamePlayers.contains(player))
-            return ListResult.ALREADY_IN;
-        this.gamePlayers.add(player);
-        return ListResult.SUCCESS;
-    }
-
-    public ListResult removePlayer(Player player) {
-        if (this.gamePlayers.isEmpty())
-            return ListResult.EMPTY_LIST;
-        if (!this.gamePlayers.remove(player))
-            return ListResult.NOT_FOUND;
-        else
-            return ListResult.SUCCESS;
-    }
-
-    public ListResult clearPlayerList() {
-        if (gamePlayers.isEmpty()) {
-            return ListResult.EMPTY_LIST;
-        }
-        this.gamePlayers.clear();
-        return ListResult.SUCCESS;
-    }
-
-    public List<Player> getGamePlayers() {
-        return this.gamePlayers;
-    }
-
     // GameArea managing
     public GameAreaCornerAssistantManager getGacaManager() {
         return this.gacaManager;
     }
+
     public GameAreaManager getGameAreaManager() {
         return this.gameAreaManager;
+    }
+
+    public GameRoundManager getGameRoundManager() {
+        return this.gameRoundManager;
     }
 
     // -- Private

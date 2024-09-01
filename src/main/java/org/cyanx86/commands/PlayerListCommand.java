@@ -92,7 +92,7 @@ public class PlayerListCommand implements CommandExecutor {
             return;
         }
 
-        switch (master.addPlayer(player)) {
+        switch (master.getGameRoundManager().addPlayer(player)) {
             case FULL_LIST -> {
                 Messenger.msgToSender(
                         sender,
@@ -138,7 +138,7 @@ public class PlayerListCommand implements CommandExecutor {
             return;
         }
 
-        switch (master.removePlayer(player)) {
+        switch (master.getGameRoundManager().removePlayer(player)) {
             case EMPTY_LIST -> {
                 Messenger.msgToSender(
                         sender,
@@ -174,7 +174,7 @@ public class PlayerListCommand implements CommandExecutor {
             Player current = null;
 
             try {
-                current = master.getGamePlayers().get(i);
+                current = master.getGameRoundManager().getGamePlayers().get(i);
             } catch (Exception ignored) {
             }
 
@@ -187,9 +187,9 @@ public class PlayerListCommand implements CommandExecutor {
     }
 
     private void scmClear(CommandSender sender) {
-        List<Player> gamePlayers = master.getGamePlayers();
+        List<Player> gamePlayers = master.getGameRoundManager().getGamePlayers();
 
-        switch(master.clearPlayerList()) {
+        switch(master.getGameRoundManager().clearPlayerList()) {
             case EMPTY_LIST -> {
                 Messenger.msgToSender(
                         sender,
