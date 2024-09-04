@@ -7,16 +7,23 @@ api-version: 1.20
 commands:
 
   overcrafted:
-    description: Comando principal
+    description: "Comando principal."
     aliases:
       - ocf
 
   playerlist:
-    description: Administra los jugadores.
+    description: "Administra los jugadores."
     aliases:
       - pyl
 
   gamearea:
-    description: Administra GameAreas.
+    description: "Administra GameAreas."
     aliases:
       - gma
+
+permissions:
+  overcrafted.*:
+    description: "Permiso general."
+    default: op
+  manager:
+    description: "Permiso de administrador"

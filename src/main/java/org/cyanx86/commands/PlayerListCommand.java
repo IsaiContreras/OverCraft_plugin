@@ -5,6 +5,7 @@ import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
+
 import org.cyanx86.OverCrafted;
 import org.cyanx86.utils.Messenger;
 
@@ -93,6 +94,13 @@ public class PlayerListCommand implements CommandExecutor {
         }
 
         switch (master.getGameRoundManager().addPlayer(player)) {
+            case ERROR -> {
+                Messenger.msgToSender(
+                        sender,
+                        OverCrafted.prefix + "&cSelecione un GameArea primero."
+                );
+                return;
+            }
             case FULL_LIST -> {
                 Messenger.msgToSender(
                         sender,

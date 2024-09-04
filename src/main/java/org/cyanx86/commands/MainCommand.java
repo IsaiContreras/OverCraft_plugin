@@ -3,6 +3,7 @@ package org.cyanx86.commands;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
+
 import org.cyanx86.OverCrafted;
 import org.cyanx86.utils.Messenger;
 
@@ -48,6 +49,9 @@ public class MainCommand implements CommandExecutor {
             case "help":            // subcommand Help
                 this.scmHelp(sender);
                 break;
+            case "startround":
+                this.scmStartRound(sender);
+                break;
             default:
                 this.scmHelp(sender);
                 break;
@@ -59,6 +63,11 @@ public class MainCommand implements CommandExecutor {
         Messenger.msgToSender(sender, "&f&l------ OVERCRAFTED ------");
         Messenger.msgToSender(sender, "&7 [[ Comando /overcrafted ]]");
         Messenger.msgToSender(sender, "&7- /overcrafted help");
+        Messenger.msgToSender(sender, "&7- /overcrafted startround");
+    }
+
+    private void scmStartRound(CommandSender sender) {
+        master.getGameRoundManager().startRound();
     }
 
 }

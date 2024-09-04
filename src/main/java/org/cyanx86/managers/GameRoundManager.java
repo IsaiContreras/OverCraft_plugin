@@ -1,10 +1,11 @@
 package org.cyanx86.managers;
 
 import org.bukkit.entity.Player;
+
 import org.cyanx86.OverCrafted;
 import org.cyanx86.classes.GameArea;
 import org.cyanx86.classes.GameRound;
-import org.cyanx86.utils.Enums;
+import org.cyanx86.utils.Enums.ListResult;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -30,6 +31,19 @@ public class GameRoundManager {
         this.master = master;
     }
 
+    // Round
+    public void startRound() {
+        this.gameround = new GameRound(
+            this.master,
+            this.gamearea,
+            this.gamePlayers
+        );
+    }
+
+    public GameRound getGameRound() {
+        return gameround;
+    }
+
     // GameArea managing
     public void setGameArea(GameArea gamearea) {
         this.gamearea = gamearea;
@@ -40,30 +54,33 @@ public class GameRoundManager {
     }
 
     // Player managing
-    public Enums.ListResult addPlayer(Player player) {
-        if (this.gamePlayers.size() == 4)
-            return Enums.ListResult.FULL_LIST;
+    public ListResult addPlayer(Player player) {
+        if (gamearea == null)
+            return ListResult.ERROR;
+        if (this.gamePlayers.size() == gamearea.getMaxPlayers())
+            return ListResult.FULL_LIST;
         if (this.gamePlayers.contains(player))
-            return Enums.ListResult.ALREADY_IN;
+            return ListResult.ALREADY_IN;
+
         this.gamePlayers.add(player);
-        return Enums.ListResult.SUCCESS;
+        return ListResult.SUCCESS;
     }
 
-    public Enums.ListResult removePlayer(Player player) {
+    public ListResult removePlayer(Player player) {
         if (this.gamePlayers.isEmpty())
-            return Enums.ListResult.EMPTY_LIST;
+            return ListResult.EMPTY_LIST;
         if (!this.gamePlayers.remove(player))
-            return Enums.ListResult.NOT_FOUND;
+            return ListResult.NOT_FOUND;
         else
-            return Enums.ListResult.SUCCESS;
+            return ListResult.SUCCESS;
     }
 
-    public Enums.ListResult clearPlayerList() {
+    public ListResult clearPlayerList() {
         if (gamePlayers.isEmpty()) {
-            return Enums.ListResult.EMPTY_LIST;
+            return ListResult.EMPTY_LIST;
         }
         this.gamePlayers.clear();
-        return Enums.ListResult.SUCCESS;
+        return ListResult.SUCCESS;
     }
 
     public List<Player> getGamePlayers() {

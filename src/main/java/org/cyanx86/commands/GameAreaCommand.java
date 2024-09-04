@@ -5,6 +5,7 @@ import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
+
 import org.cyanx86.OverCrafted;
 import org.cyanx86.classes.GameArea;
 import org.cyanx86.classes.GameAreaCornerAssistant;
@@ -122,7 +123,7 @@ public class GameAreaCommand implements CommandExecutor {
             return;
         }
 
-        if (args.length != 2) {
+        if (args.length != 3) {
             Messenger.msgToSender(
                 sender,
                 OverCrafted.prefix + "&cArgumentos incompletos."    // TODO: Invalid arguments message.
@@ -139,8 +140,18 @@ public class GameAreaCommand implements CommandExecutor {
         }
 
         String name = args[1].toLowerCase();
+        int maxPlayers = 0;
+        try {
+            maxPlayers = Integer.parseInt(args[2]);
+        } catch(NumberFormatException e) {
+            Messenger.msgToSender(
+                sender,
+                OverCrafted.prefix + "&cEste argumento solo acepta valores numéricos."
+            );
+            return;
+        }
 
-        switch (master.getGameAreaManager().addGameArea(name, gacAssistant.getCorner(0), gacAssistant.getCorner(1))) {
+        switch (master.getGameAreaManager().addGameArea(name, gacAssistant.getCorner(0), gacAssistant.getCorner(1), maxPlayers)) {
             case ALREADY_IN -> {
                 Messenger.msgToSender(
                     sender,
@@ -230,7 +241,7 @@ public class GameAreaCommand implements CommandExecutor {
         }
 
         String name = args[1].toLowerCase();
-        Optional<GameArea> query = master.getGameAreaManager().getGameAreas().stream().filter(ga -> ga.getName().equals(name)).findFirst();
+        Optional<GameArea> query = master.getGameAreaManager().getGameAreas().stream().filter(item -> item.getName().equals(name)).findFirst();
         if (query.isEmpty()) {
             Messenger.msgToSender(
                 sender,
@@ -335,12 +346,12 @@ public class GameAreaCommand implements CommandExecutor {
         for (int i = 0; i < gamearea.getSpawnPointsCount(); i++) {
             SpawnPoint spawn = gamearea.getSpawnPoints().get(i);
             Messenger.msgToSender(sender,
-                    "&6&o    [" + (i + 1) + "]: &r&6pi: &e"+ spawn.getPlayerIndex() +
-                            "&6 loc: &e(" + "&c" + String.format("%.2f", spawn.getSpawnLocation().getX()) +
-                            "&e, &a" + String.format("%.2f", spawn.getSpawnLocation().getY()) +
-                            "&e, &9" + String.format("%.2f", spawn.getSpawnLocation().getZ()) +
-                            "&e, &b" + String.format("%.2f", spawn.getSpawnLocation().getYaw()) +
-                            "&e, &d" + String.format("%.2f", spawn.getSpawnLocation().getPitch()) + "&e)"
+                "&6&o    [" + (i + 1) + "]: &r&6pi: &e"+ spawn.getPlayerIndex() +
+                        "&6 loc: &e(" + "&c" + String.format("%.2f", spawn.getSpawnLocation().getX()) +
+                        "&e, &a" + String.format("%.2f", spawn.getSpawnLocation().getY()) +
+                        "&e, &9" + String.format("%.2f", spawn.getSpawnLocation().getZ()) +
+                        "&e, &b" + String.format("%.2f", spawn.getSpawnLocation().getYaw()) +
+                        "&e, &d" + String.format("%.2f", spawn.getSpawnLocation().getPitch()) + "&e)"
             );
         }
     }

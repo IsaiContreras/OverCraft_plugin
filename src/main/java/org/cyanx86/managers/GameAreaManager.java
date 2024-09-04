@@ -2,6 +2,7 @@ package org.cyanx86.managers;
 
 import org.bukkit.Location;
 import org.bukkit.configuration.file.FileConfiguration;
+
 import org.cyanx86.OverCrafted;
 import org.cyanx86.classes.GameArea;
 import org.cyanx86.utils.Enums.ListResult;
@@ -67,7 +68,7 @@ public class GameAreaManager {
     }
 
     // List managing
-    public ListResult addGameArea(String name, Location corner1, Location corner2) {
+    public ListResult addGameArea(String name, Location corner1, Location corner2, int maxPlayers) {
         if (this.alreadyExists(name)) {
             return ListResult.ALREADY_IN;
         }
@@ -75,7 +76,8 @@ public class GameAreaManager {
         GameArea gamearea = new GameArea(
             name,
             corner1,
-            corner2
+            corner2,
+            maxPlayers
         );
 
         for (GameArea gmaItem : this.gameAreas) {

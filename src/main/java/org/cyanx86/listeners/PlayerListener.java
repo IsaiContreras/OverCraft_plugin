@@ -8,11 +8,17 @@ import org.bukkit.event.Listener;
 import org.bukkit.event.block.Action;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.event.player.PlayerJoinEvent;
+import org.bukkit.event.player.PlayerMoveEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
 import org.bukkit.inventory.EquipmentSlot;
 import org.bukkit.inventory.ItemStack;
+
 import org.cyanx86.OverCrafted;
 import org.cyanx86.classes.GameAreaCornerAssistant;
+import org.cyanx86.classes.GameRound;
+import org.cyanx86.classes.GameRound.ROUNDSTATE;
+import org.cyanx86.classes.PlayerState;
+import org.cyanx86.classes.PlayerState.PLAYERSTATE;
 import org.cyanx86.utils.Messenger;
 
 import java.util.Objects;
@@ -96,6 +102,38 @@ public class PlayerListener implements Listener {
                     ", z:" + blockCoords.getBlockZ()
             );
         }
+    }
+
+    @EventHandler
+    public void onOverCraftPlayerMoves(PlayerMoveEvent event) {
+        Player player = (Player)event.getPlayer();
+        GameRound round = master.getGameRoundManager().getGameRound();
+
+        // NA si la ronda no ha comenzado o si el jugador no está en el juego.
+        if (
+            round == null ||
+            !round.isPlayerPlaying(player)
+        )
+            return;
+
+        // No permite moverse si la Ronda no ha empezado
+        if (round.getCurrentRoundState() != ROUNDSTATE.RUNNING) {
+            event.setCancelled(true);
+            return;
+        }
+
+        // No permite moverse si el estado del jugador está en INMOBILIZADO
+        PlayerState playerState = round.getPlayersManager().getPlayerState(player);
+        if (playerState.getCurrentState() != PLAYERSTATE.RUNNING) {
+            event.setCancelled(true);
+            return;
+        }
+
+        // Si sale del GameArea regresar
+        if (!round.getGameArea().isPointInsideBoundaries(player.getLocation())) {
+            round.respawnPlayer(player);
+        }
+
     }
 
     // -- Private

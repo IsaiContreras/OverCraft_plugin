@@ -1,6 +1,7 @@
 package org.cyanx86.classes;
 
 import org.bukkit.Location;
+
 import org.cyanx86.utils.Enums.ListResult;
 import org.cyanx86.utils.Primitives.Cube;
 
@@ -18,6 +19,8 @@ public class GameArea {
 
     private final String world;
 
+    private final int maxPlayers;
+
     private final Location[] corners = new Location[2];
 
     private final Cube cubearea;
@@ -27,16 +30,18 @@ public class GameArea {
     // -- [[ METHODS ]] --
 
     // -- Public
-    public GameArea(String name, Location corner1, Location corner2) {
+    public GameArea(String name, Location corner1, Location corner2, int maxPlayers) {
         this.name = name;
         this.world = Objects.requireNonNull(corner1.getWorld()).getName();
+        this.maxPlayers = maxPlayers;
         this.corners[0] = corner1;
         this.corners[1] = corner2;
         this.cubearea = new Cube(corner1, corner2);
     }
-    public GameArea(String name, String world, Location corner1, Location corner2, List<SpawnPoint> spawn_points) {
+    public GameArea(String name, String world, Location corner1, Location corner2, int maxPlayers, List<SpawnPoint> spawn_points) {
         this.name = name;
         this.world = world;
+        this.maxPlayers = maxPlayers;
         this.corners[0] = corner1;
         this.corners[1] = corner2;
         this.cubearea = new Cube(corner1, corner2);
@@ -55,12 +60,16 @@ public class GameArea {
         return this.corners[index];
     }
 
+    public int getMaxPlayers() {
+        return this.maxPlayers;
+    }
+
     public ListResult addSpawnPoint(SpawnPoint spawnpoint) {
         if (spawnpoint == null)
             return ListResult.NULL;
         if (!this.isPointInsideBoundaries(spawnpoint.getSpawnLocation()))
             return ListResult.INVALID_ITEM;
-        if (this.spawnpoints.size() == 4)
+        if (this.spawnpoints.size() == maxPlayers)
             return ListResult.FULL_LIST;
 
         int playerIndex = spawnpoints.size() + 1;
@@ -102,7 +111,7 @@ public class GameArea {
     }
 
     public boolean isValidSetUp() {
-        return (spawnpoints.size() == 4);
+        return (spawnpoints.size() == maxPlayers);
     }
 
     public Map<String, Object> serialize() {
@@ -117,6 +126,7 @@ public class GameArea {
         data.put("world", this.world);
         data.put("corner1", this.corners[0].serialize());
         data.put("corner2", this.corners[1].serialize());
+        data.put("maxplayers", this.maxPlayers);
         data.put("spawnpoints", sppListMap);
 
         return data;
@@ -135,6 +145,7 @@ public class GameArea {
             (String)args.get("world"),
             Location.deserialize((Map<String, Object>) args.get("corner1")),
             Location.deserialize((Map<String, Object>) args.get("corner2")),
+            (int)args.get("maxplayers"),
             spawnpointsList
         );
     }

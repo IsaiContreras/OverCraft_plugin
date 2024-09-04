@@ -1,9 +1,7 @@
 package org.cyanx86;
 
-import org.bukkit.entity.Player;
 import org.bukkit.plugin.java.JavaPlugin;
 
-import org.cyanx86.classes.GameRound;
 import org.cyanx86.commands.GameAreaCommand;
 import org.cyanx86.commands.MainCommand;
 import org.cyanx86.commands.PlayerListCommand;
@@ -12,10 +10,7 @@ import org.cyanx86.managers.GameAreaCornerAssistantManager;
 import org.cyanx86.managers.GameAreaManager;
 import org.cyanx86.managers.GameRoundManager;
 import org.cyanx86.utils.Messenger;
-import org.cyanx86.utils.Enums.ListResult;
 
-import java.util.ArrayList;
-import java.util.List;
 import java.util.Objects;
 
 public class OverCrafted extends JavaPlugin {
@@ -23,7 +18,7 @@ public class OverCrafted extends JavaPlugin {
     // -- [[ ATTRIBUTES ]] --
 
     // -- Public
-    public static String prefix = "&8[&c&lOverCrafted&8] ";
+    public static String prefix = "&6[&l&eOverCrafted&6] ";
 
     // -- Private
     private final String version = getDescription().getVersion();

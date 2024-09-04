@@ -1,60 +1,75 @@
 package org.cyanx86.classes;
 
+import org.bukkit.Location;
 import org.bukkit.entity.Player;
-import org.cyanx86.OverCrafted;
-import org.cyanx86.utils.Enums.ListResult;
 
-import java.util.HashMap;
-import java.util.Map;
+import org.cyanx86.OverCrafted;
+import org.cyanx86.managers.GamePlayersManager;
+
+import java.util.List;
+import java.util.Optional;
 
 public class GameRound {
 
     // -- [[ ATRIBUTES ]] --
 
     // -- Public
+    public static enum ROUNDSTATE {
+        COUNTDOWN,
+        RUNNING,
+        ENDED
+    }
 
     // -- Private
     private final OverCrafted master;
 
     private final GameArea gamearea;
-    private final Map<String, Player> players = new HashMap<>();        // TODO: Manejarlo con una clase que se llame GamePlayerManager
+    private final GamePlayersManager playersManager;
+
+    private ROUNDSTATE currentState = ROUNDSTATE.RUNNING;
 
     // -- [[ METHODS ]] --
 
     // -- Public
-    public GameRound(OverCrafted master, GameArea gamearea) {
+    public GameRound(OverCrafted master, GameArea gamearea, List<Player> players) {
         this.master = master;
         this.gamearea = gamearea;
+        this.playersManager = new GamePlayersManager(players);
+
+        this.movePlayersToGameArea();
     }
 
-    // Player Map managing
-    public ListResult addPlayer(Player player) {
-        if (this.players.size() == 4)
-            return ListResult.FULL_LIST;
-        if (this.players.containsKey(player.getName()))
-            return ListResult.ALREADY_IN;
-        this.players.put(player.getName(), player);
-        return ListResult.SUCCESS;
+    public ROUNDSTATE getCurrentRoundState() {
+        return this.currentState;
     }
 
-    public ListResult removePlayer(String name) {
-        if (this.players.isEmpty())
-            return ListResult.EMPTY_LIST;
-        if (!this.players.containsKey(name))
-            return ListResult.NOT_FOUND;
-        this.players.remove(name);
-        return ListResult.SUCCESS;
+    public boolean isPlayerPlaying(Player player) {
+        return this.playersManager.isPlayerInGame(player);
     }
 
-    public ListResult clearPlayers() {
-        if (this.players.isEmpty())
-            return ListResult.EMPTY_LIST;
-        this.players.clear();;
-        return ListResult.SUCCESS;
+    public GamePlayersManager getPlayersManager() {
+        return this.playersManager;
     }
 
-    public Map<String, Player> getPlayers() { return this.players; }
+    public GameArea getGameArea() {
+        return this.gamearea;
+    }
+
+    public void respawnPlayer(Player player) {
+        Optional<SpawnPoint> query = gamearea.getSpawnPoints().stream().filter(item -> item.getPlayerIndex() == playersManager.getPlayerIndex(player)).findFirst();
+        if (query.isEmpty())
+            return;
+        Location spawnLocation = query.get().getSpawnLocation();
+
+        player.teleport(spawnLocation);
+    }
 
     // -- Private
+
+    private void movePlayersToGameArea() {
+        for (Player player : playersManager.getPlayers()) {
+            this.respawnPlayer(player);
+        }
+    }
 
 }
