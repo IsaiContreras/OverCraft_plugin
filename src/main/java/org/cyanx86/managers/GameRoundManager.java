@@ -23,6 +23,7 @@ public class GameRoundManager {
 
     private GameArea gamearea;
     private final List<Player> gamePlayers = new ArrayList<>();
+    private int roundTime = 30;
 
     // -- [[ METHODS ]] --
 
@@ -36,12 +37,23 @@ public class GameRoundManager {
         this.gameround = new GameRound(
             this.master,
             this.gamearea,
-            this.gamePlayers
+            this.gamePlayers,
+            this.roundTime
         );
+        this.gamearea = null;
+        this.gamePlayers.clear();
+    }
+
+    public void terminateRound() {
+
     }
 
     public GameRound getGameRound() {
         return gameround;
+    }
+
+    public void setRoundTime(int time) {
+        this.roundTime = Math.max(time, 30);
     }
 
     // GameArea managing

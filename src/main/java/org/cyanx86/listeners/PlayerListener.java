@@ -106,14 +106,11 @@ public class PlayerListener implements Listener {
 
     @EventHandler
     public void onOverCraftPlayerMoves(PlayerMoveEvent event) {
-        Player player = (Player)event.getPlayer();
+        Player player = event.getPlayer();
         GameRound round = master.getGameRoundManager().getGameRound();
 
-        // NA si la ronda no ha comenzado o si el jugador no está en el juego.
-        if (
-            round == null ||
-            !round.isPlayerPlaying(player)
-        )
+        // NA si la ronda no ha comenzado o si el jugador no está en el juego o si la ronda ha terminado.
+        if (round == null || !round.isPlayerPlaying(player) || round.getCurrentRoundState() == ROUNDSTATE.ENDED)
             return;
 
         // No permite moverse si la Ronda no ha empezado
@@ -129,9 +126,9 @@ public class PlayerListener implements Listener {
             return;
         }
 
-        // Si sale del GameArea regresar
+        // Si sale del GameArea regresar jugador a su SpawnPoint
         if (!round.getGameArea().isPointInsideBoundaries(player.getLocation())) {
-            round.respawnPlayer(player);
+            round.movePlayerToSpawn(player, true);
         }
 
     }

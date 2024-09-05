@@ -46,10 +46,13 @@ public class MainCommand implements CommandExecutor {
         String mainArg = args[0].toLowerCase();
 
         switch (mainArg) {
-            case "help":            // subcommand Help
+            case "help":            // subCommand Help
                 this.scmHelp(sender);
                 break;
-            case "startround":
+            case "roundtime":       // subCommand SetRoundTime
+                this.scmSetRoundTime(sender, args);
+                break;
+            case "startround":      // subCommand StartRound
                 this.scmStartRound(sender);
                 break;
             default:
@@ -63,7 +66,23 @@ public class MainCommand implements CommandExecutor {
         Messenger.msgToSender(sender, "&f&l------ OVERCRAFTED ------");
         Messenger.msgToSender(sender, "&7 [[ Comando /overcrafted ]]");
         Messenger.msgToSender(sender, "&7- /overcrafted help");
+        Messenger.msgToSender(sender, "&7- /overcrafted roundtime <tiempo>");
         Messenger.msgToSender(sender, "&7- /overcrafted startround");
+    }
+
+    private void scmSetRoundTime(CommandSender sender, String[] args) {
+        if (args.length != 2) {
+            return;
+        }
+
+        int time;
+        try {
+            time = Integer.parseInt(args[1]);
+        } catch (NumberFormatException e) {
+            return;
+        }
+
+        master.getGameRoundManager().setRoundTime(time);
     }
 
     private void scmStartRound(CommandSender sender) {

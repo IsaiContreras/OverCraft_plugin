@@ -27,7 +27,10 @@ public class GamePlayersManager {
         for (Player player : this.players) {
             playerStates.put(
                 player.getUniqueId(),
-                new PlayerState(player.getUniqueId())
+                new PlayerState(
+                    player.getUniqueId(),
+                    player.getLocation()
+                )
             );
         }
     }
