@@ -70,13 +70,13 @@ public class GameRound {
         return this.gamearea;
     }
 
-    public void movePlayerToSpawn(Player player, boolean inmobilize) {
+    public void movePlayerToSpawn(Player player, boolean immobilize) {
         Optional<SpawnPoint> query = gamearea.getSpawnPoints().stream().filter(item -> item.getPlayerIndex() == playersManager.getPlayerIndex(player)).findFirst();
         if (query.isEmpty())
             return;
         player.teleport(query.get().getSpawnLocation());
-        if (inmobilize) {
-
+        if (immobilize) {
+            this.playersManager.immobilizePlayer(player, 3);
         }
     }
 

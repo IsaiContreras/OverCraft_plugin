@@ -53,6 +53,10 @@ public class GamePlayersManager {
         return this.players.contains(player);
     }
 
+    public void immobilizePlayer(Player player, int timeseconds) {
+        this.playerStates.get(player.getUniqueId()).immobilize(timeseconds);
+    }
+
     // -- Private
 
 }
