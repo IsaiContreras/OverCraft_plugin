@@ -2,6 +2,7 @@ package org.cyanx86.managers;
 
 import org.bukkit.entity.Player;
 
+import org.cyanx86.OverCrafted;
 import org.cyanx86.classes.PlayerState;
 
 import java.util.*;
@@ -13,16 +14,17 @@ public class GamePlayersManager {
     // -- Public
 
     // -- Private
-    private List<Player> players;
-    private Map<UUID, PlayerState> playerStates;
+    private final OverCrafted master = OverCrafted.getInstance();
+
+    private final List<Player> players = new ArrayList<>();
+    private final Map<UUID, PlayerState> playerStates = new HashMap<>();
 
     // -- [[ METHODS ]] --
 
     // -- Public
     public GamePlayersManager(List<Player> players) {
-        this.players = players;
+        this.players.addAll(players);
         Collections.shuffle(this.players);
-        playerStates = new HashMap<>();
 
         for (Player player : this.players) {
             playerStates.put(

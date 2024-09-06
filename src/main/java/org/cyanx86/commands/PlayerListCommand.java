@@ -18,14 +18,11 @@ public class PlayerListCommand implements CommandExecutor {
     // -- Public
 
     // -- Private
-    private final OverCrafted master;
+    private final OverCrafted master = OverCrafted.getInstance();
 
     // -- [[ METHODS ]] --
 
     // -- Public
-    public PlayerListCommand(OverCrafted master) {
-        this.master = master;
-    }
 
     @Override
     public boolean onCommand(CommandSender sender, Command command, String s, String[] args) {

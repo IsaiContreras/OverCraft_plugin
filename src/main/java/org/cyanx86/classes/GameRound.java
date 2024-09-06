@@ -7,6 +7,7 @@ import org.bukkit.entity.Player;
 import org.bukkit.scheduler.BukkitTask;
 import org.cyanx86.OverCrafted;
 import org.cyanx86.managers.GamePlayersManager;
+import org.cyanx86.utils.Messenger;
 
 import java.util.List;
 import java.util.Optional;
@@ -24,8 +25,6 @@ public class GameRound {
     }
 
     // -- Private
-    private final OverCrafted master;
-
     private final GameArea gamearea;
     private final GamePlayersManager playersManager;
 
@@ -41,8 +40,7 @@ public class GameRound {
     // -- [[ METHODS ]] --
 
     // -- Public
-    public GameRound(OverCrafted master, GameArea gamearea, List<Player> players, int time) {
-        this.master = master;
+    public GameRound(GameArea gamearea, List<Player> players, int time) {
         this.gamearea = gamearea;
         this.playersManager = new GamePlayersManager(players);
         this.roundTime = Math.max(time, 30);
@@ -85,6 +83,10 @@ public class GameRound {
     // -- Private
 
     private void endRound() {
+        Messenger.msgToMultPlayers(
+            this.playersManager.getPlayers(),
+            OverCrafted.prefix + "&a¡Buen juego! La ronda ha terminado."
+        );
         this.currentState = ROUNDSTATE.ENDED;
         this.quitPlayersFromGameArea();
     }
@@ -102,8 +104,17 @@ public class GameRound {
     }
 
     private void startCountdown() {
+        Messenger.msgToMultPlayers(
+            this.playersManager.getPlayers(),
+            OverCrafted.prefix + "&aLa ronda ha comenzado."
+        );
         this.count = this.startCountdownTime;
-        this.task = Bukkit.getScheduler().runTaskTimer(master, () -> {
+
+        this.task = Bukkit.getScheduler().runTaskTimer(OverCrafted.getInstance(), () -> {
+            Messenger.msgToMultPlayers(
+                this.playersManager.getPlayers(),
+                OverCrafted.prefix + "&a" + this.count
+            );
             if (this.count == 0) {
                 this.task.cancel();
                 this.startRoundTimer();
@@ -113,9 +124,13 @@ public class GameRound {
     }
 
     private void startRoundTimer() {
+        Messenger.msgToMultPlayers(
+            this.playersManager.getPlayers(),
+            OverCrafted.prefix + "&a¡A CRAFTEAR!"
+        );
         this.currentState = ROUNDSTATE.RUNNING;
         this.count = this.roundTime;
-        this.task = Bukkit.getScheduler().runTaskTimer(master, () -> {
+        this.task = Bukkit.getScheduler().runTaskTimer(OverCrafted.getInstance(), () -> {
             if (this.count == 0) {
                 this.task.cancel();
                 this.intermissionTime();
@@ -125,9 +140,13 @@ public class GameRound {
     }
 
     private void intermissionTime() {
+        Messenger.msgToMultPlayers(
+            this.playersManager.getPlayers(),
+            OverCrafted.prefix + "&a¡TIEMPO!"
+        );
         this.currentState = ROUNDSTATE.FINISHED;
         this.count = this.endIntermissionTime;
-        this.task = Bukkit.getScheduler().runTaskTimer(master, () -> {
+        this.task = Bukkit.getScheduler().runTaskTimer(OverCrafted.getInstance(), () -> {
             if (this.count == 0) {
                 this.task.cancel();
                 this.endRound();

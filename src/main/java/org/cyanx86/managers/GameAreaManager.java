@@ -16,7 +16,7 @@ public class GameAreaManager {
     // -- Public
 
     // -- Private
-    private final OverCrafted master;
+    private final OverCrafted master = OverCrafted.getInstance();
     private final CustomConfigFile configFile;
 
     private final String filename = "gameareas.yml";
@@ -27,12 +27,10 @@ public class GameAreaManager {
     // -- [[ METHODS ]]
 
     // -- Public
-    public GameAreaManager(OverCrafted master) {
-        this.master = master;
+    public GameAreaManager() {
         this.configFile = new CustomConfigFile(
             filename,
             folder,
-            master,
             true
         );
         this.configFile.registerConfig();

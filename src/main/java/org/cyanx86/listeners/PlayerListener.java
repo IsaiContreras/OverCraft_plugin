@@ -28,16 +28,13 @@ public class PlayerListener implements Listener {
     // -- [[ ATTRIBUTES ]] --
 
     // -- Public
-    private final OverCrafted master;
+    private final OverCrafted master = OverCrafted.getInstance();
 
     // -- Private
 
     // -- [[ METHODS ]] --
 
     // -- Public
-    public PlayerListener (OverCrafted master) {
-        this.master = master;
-    }
 
     @EventHandler
     public void onOverCraftedManagerJoin(PlayerJoinEvent event) {
@@ -67,8 +64,13 @@ public class PlayerListener implements Listener {
         if (!player.hasPermission("overcrafted.manager"))
             return;
         GameAreaCornerAssistant gacAssistant = master.getGacaManager().getAssistantByName(player.getName());
-        if (gacAssistant == null)
+        if (gacAssistant == null) {
+            Messenger.msgToSender(
+                player,
+                    OverCrafted.prefix + "&cNo hay instancia de Asistente iniciada."
+            );
             return;
+        }
 
         Action action = event.getAction();
         ItemStack item = event.getItem();

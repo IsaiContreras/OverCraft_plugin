@@ -17,7 +17,7 @@ public class GameRoundManager {
     // -- Public
 
     // -- Private
-    private final OverCrafted master;
+    private final OverCrafted master = OverCrafted.getInstance();
 
     private GameRound gameround;
 
@@ -28,14 +28,10 @@ public class GameRoundManager {
     // -- [[ METHODS ]] --
 
     // -- Public
-    public GameRoundManager(OverCrafted master) {
-        this.master = master;
-    }
 
     // Round
     public void startRound() {
         this.gameround = new GameRound(
-            this.master,
             this.gamearea,
             this.gamePlayers,
             this.roundTime

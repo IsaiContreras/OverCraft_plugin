@@ -16,7 +16,7 @@ public class CustomConfigFile {
     // -- Public
 
     // -- Private
-    private final OverCrafted master;
+    private final OverCrafted master = OverCrafted.getInstance();
     private final String filename;
     private final String foldername;
 
@@ -28,10 +28,9 @@ public class CustomConfigFile {
     // -- [[ METHODS ]] --
 
     // -- Public
-    public CustomConfigFile(String filename, String foldername, OverCrafted master, boolean must_create) {
+    public CustomConfigFile(String filename, String foldername, boolean must_create) {
         this.filename = filename;
         this.foldername = foldername;
-        this.master = master;
         this.mustCreate = must_create;
     }
     public String getPath() { return this.filename; }

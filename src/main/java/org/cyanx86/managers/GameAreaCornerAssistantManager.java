@@ -17,7 +17,7 @@ public class GameAreaCornerAssistantManager {
     // -- Public
 
     // -- Private
-    private final OverCrafted master;
+    private final OverCrafted master = OverCrafted.getInstance();
 
     private final Map<UUID, GameAreaCornerAssistant> assistants = new HashMap<>();
     private final Map<String, UUID> playerUUIDs = new HashMap<>();
@@ -25,9 +25,6 @@ public class GameAreaCornerAssistantManager {
     // -- [[ METHODS ]] --
 
     // -- Public
-    public GameAreaCornerAssistantManager(OverCrafted master) {
-        this.master = master;
-    }
 
     public ListResult signInAssistant(Player player) {
         if (assistants.containsKey(player.getUniqueId()))
