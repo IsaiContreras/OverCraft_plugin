@@ -52,6 +52,9 @@ public class MainCommand implements CommandExecutor {
             case "startround":      // subCommand StartRound
                 this.scmStartRound(sender);
                 break;
+            case "endround":        // subcommand EndRound
+                this.scmEndRound(sender);
+                break;
             default:
                 this.scmHelp(sender);
                 break;
@@ -65,6 +68,7 @@ public class MainCommand implements CommandExecutor {
         Messenger.msgToSender(sender, "&7- /overcrafted help");
         Messenger.msgToSender(sender, "&7- /overcrafted roundtime <tiempo>");
         Messenger.msgToSender(sender, "&7- /overcrafted startround");
+        Messenger.msgToSender(sender, "&7- /overcrafted endround");
     }
 
     private void scmSetRoundTime(CommandSender sender, String[] args) {
@@ -84,6 +88,21 @@ public class MainCommand implements CommandExecutor {
 
     private void scmStartRound(CommandSender sender) {
         master.getGameRoundManager().startRound();
+    }
+
+    private void scmEndRound(CommandSender sender) {
+        if (!master.getGameRoundManager().terminateRound()) {
+            Messenger.msgToSender(
+                sender,
+                OverCrafted.prefix + "&cNo se pudo cancelar la ronda. Aun no ha iniciado o ya ha acabado."
+            );
+            return;
+        }
+
+        Messenger.msgToSender(
+            sender,
+            OverCrafted.prefix + "&aRonda cancelada."
+        );
     }
 
 }

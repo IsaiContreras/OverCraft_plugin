@@ -40,8 +40,8 @@ public class GameRoundManager {
         this.gamePlayers.clear();
     }
 
-    public void terminateRound() {
-
+    public boolean terminateRound() {
+        return this.gameround.terminateRound();
     }
 
     public GameRound getGameRound() {

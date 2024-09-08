@@ -1,7 +1,6 @@
 package org.cyanx86.classes;
 
 import org.bukkit.Bukkit;
-import org.bukkit.Location;
 import org.bukkit.entity.Player;
 
 import org.bukkit.scheduler.BukkitTask;
@@ -35,7 +34,7 @@ public class GameRound {
     private final int endIntermissionTime = 3;
 
     private BukkitTask task;
-    private int count;
+    private int time;
 
     // -- [[ METHODS ]] --
 
@@ -50,8 +49,10 @@ public class GameRound {
         this.startCountdown();
     }
 
-    public void terminateRound() {
-
+    public boolean terminateRound() {
+        if (currentState != ROUNDSTATE.RUNNING) return false;
+        this.currentState = ROUNDSTATE.ENDED;
+        return true;
     }
 
     public ROUNDSTATE getCurrentRoundState() {
@@ -81,16 +82,6 @@ public class GameRound {
     }
 
     // -- Private
-
-    private void endRound() {
-        Messenger.msgToMultPlayers(
-            this.playersManager.getPlayers(),
-            OverCrafted.prefix + "&a¡Buen juego! La ronda ha terminado."
-        );
-        this.currentState = ROUNDSTATE.ENDED;
-        this.quitPlayersFromGameArea();
-    }
-
     private void movePlayersToGameArea() {
         for (Player player : playersManager.getPlayers()) {
             this.movePlayerToSpawn(player, false);
@@ -108,18 +99,21 @@ public class GameRound {
             this.playersManager.getPlayers(),
             OverCrafted.prefix + "&aLa ronda ha comenzado."
         );
-        this.count = this.startCountdownTime;
+        this.time = this.startCountdownTime;
 
         this.task = Bukkit.getScheduler().runTaskTimer(OverCrafted.getInstance(), () -> {
-            Messenger.msgToMultPlayers(
-                this.playersManager.getPlayers(),
-                OverCrafted.prefix + "&a" + this.count
-            );
-            if (this.count == 0) {
+            if (this.time == 0) {
                 this.task.cancel();
                 this.startRoundTimer();
+                return;
             }
-            this.count--;
+
+            Messenger.msgToMultPlayers(
+                    this.playersManager.getPlayers(),
+                    OverCrafted.prefix + "&a" + this.time
+            );
+
+            this.time--;
         }, 20, 20);
     }
 
@@ -129,13 +123,21 @@ public class GameRound {
             OverCrafted.prefix + "&a¡A CRAFTEAR!"
         );
         this.currentState = ROUNDSTATE.RUNNING;
-        this.count = this.roundTime;
+
+        this.time = this.roundTime;
         this.task = Bukkit.getScheduler().runTaskTimer(OverCrafted.getInstance(), () -> {
-            if (this.count == 0) {
+            if (this.currentState == ROUNDSTATE.ENDED) {
+                this.task.cancel();
+                this.endRound(true);
+                return;
+            }
+            if (this.time == 0) {
                 this.task.cancel();
                 this.intermissionTime();
+                return;
             }
-            this.count--;
+            this.time--;
+            // Display timer
         }, 20, 20);
     }
 
@@ -145,14 +147,29 @@ public class GameRound {
             OverCrafted.prefix + "&a¡TIEMPO!"
         );
         this.currentState = ROUNDSTATE.FINISHED;
-        this.count = this.endIntermissionTime;
+
+        this.time = this.endIntermissionTime;
         this.task = Bukkit.getScheduler().runTaskTimer(OverCrafted.getInstance(), () -> {
-            if (this.count == 0) {
+            if (this.time == 0) {
                 this.task.cancel();
-                this.endRound();
+                this.endRound(false);
+                return;
             }
-            this.count--;
+            this.time--;
         }, 20, 20);
+    }
+
+    private void endRound(boolean terminated) {
+        String message;
+        if (terminated) message = "&aEl juego ha sido cancelado.";
+        else message = "&a¡Buen juego! La ronda ha terminado.";
+
+        Messenger.msgToMultPlayers(
+            this.playersManager.getPlayers(),
+            OverCrafted.prefix + message
+        );
+        this.currentState = ROUNDSTATE.ENDED;
+        this.quitPlayersFromGameArea();
     }
 
 }
