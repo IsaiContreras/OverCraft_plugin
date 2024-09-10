@@ -87,7 +87,12 @@ public class MainCommand implements CommandExecutor {
     }
 
     private void scmStartRound(CommandSender sender) {
-        master.getGameRoundManager().startRound();
+        if(!master.getGameRoundManager().startRound()) {
+            Messenger.msgToSender(
+                sender,
+                OverCrafted.prefix + "&cDebe seleccionar un GameArea y los jugadores para la ronda."
+            );
+        }
     }
 
     private void scmEndRound(CommandSender sender) {

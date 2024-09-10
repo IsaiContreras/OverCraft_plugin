@@ -6,6 +6,7 @@ import org.cyanx86.OverCrafted;
 import org.cyanx86.classes.PlayerState;
 
 import java.util.*;
+import org.jetbrains.annotations.NotNull;
 
 public class GamePlayersManager {
 
@@ -16,45 +17,36 @@ public class GamePlayersManager {
     // -- Private
     private final OverCrafted master = OverCrafted.getInstance();
 
-    private final List<Player> players = new ArrayList<>();
-    private final Map<UUID, PlayerState> playerStates = new HashMap<>();
+    private final List<PlayerState> players = new ArrayList<>();
 
     // -- [[ METHODS ]] --
 
     // -- Public
-    public GamePlayersManager(List<Player> players) {
-        this.players.addAll(players);
-        Collections.shuffle(this.players);
+    public GamePlayersManager(@NotNull List<Player> players) {
+        Collections.shuffle(players);
 
-        for (Player player : this.players) {
-            playerStates.put(
-                player.getUniqueId(),
-                new PlayerState(
-                    player.getUniqueId(),
-                    player.getLocation()
-                )
-            );
-        }
+        for (Player player : players)
+            this.players.add(new PlayerState(player));
     }
 
-    public List<Player> getPlayers() {
-        return this.players;
+    public List<PlayerState> getPlayerStates() { return this.players; }
+
+    public PlayerState getPlayerState(@NotNull Player player) {
+        Optional<PlayerState> query = this.players.stream().filter(item -> item.equal(player)).findFirst();
+        return query.orElse(null);
     }
 
-    public PlayerState getPlayerState(Player player) {
-        return playerStates.get(player.getUniqueId());
+    public int getPlayerIndex(@NotNull PlayerState player) {
+        return this.players.indexOf(player) + 1;
     }
 
-    public int getPlayerIndex(Player player) {
-        return (players.indexOf(player) + 1);
+    public boolean anyPlayer(@NotNull Player player) {
+        return this.players.stream().anyMatch(item -> item.equal(player));
     }
 
-    public boolean isPlayerInGame(Player player) {
-        return this.players.contains(player);
-    }
-
-    public void immobilizePlayer(Player player, int timeseconds) {
-        this.playerStates.get(player.getUniqueId()).immobilize(timeseconds);
+    public void sendMessageToPlayers(@NotNull String message) {
+        for (PlayerState playerstate : this.players)
+            playerstate.sendMessageToPlayer(OverCrafted.prefix + message);
     }
 
     // -- Private

@@ -1,6 +1,7 @@
 package org.cyanx86.classes;
 
 import org.bukkit.Location;
+import org.jetbrains.annotations.NotNull;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -19,11 +20,11 @@ public class SpawnPoint {
     // -- [[ METHODS ]] --
 
     // -- Public
-    public SpawnPoint(Location location) {
+    public SpawnPoint(@NotNull Location location) {
         this.location = location;
     }
 
-    public SpawnPoint(Location location, int playerIndex) {
+    public SpawnPoint(@NotNull Location location, int playerIndex) {
         this.location = location;
         this.playerIndex = playerIndex;
     }
@@ -49,7 +50,7 @@ public class SpawnPoint {
         return data;
     }
 
-    public static SpawnPoint deserialize(Map<String, Object> args) {
+    public static SpawnPoint deserialize(@NotNull Map<String, Object> args) {
         Location location = Location.deserialize((Map<String, Object>)args.get("location"));
 
         return new SpawnPoint(

@@ -8,6 +8,7 @@ import org.cyanx86.classes.GameArea;
 import org.cyanx86.utils.Enums.ListResult;
 
 import java.util.*;
+import org.jetbrains.annotations.NotNull;
 
 public class GameAreaManager {
 
@@ -66,10 +67,9 @@ public class GameAreaManager {
     }
 
     // List managing
-    public ListResult addGameArea(String name, Location corner1, Location corner2, int maxPlayers) {
-        if (this.alreadyExists(name)) {
+    public ListResult addGameArea(@NotNull String name, @NotNull Location corner1, @NotNull Location corner2, int maxPlayers) {
+        if (this.alreadyExists(name))
             return ListResult.ALREADY_IN;
-        }
 
         GameArea gamearea = new GameArea(
             name,
@@ -78,16 +78,15 @@ public class GameAreaManager {
             maxPlayers
         );
 
-        for (GameArea gmaItem : this.gameAreas) {
+        for (GameArea gmaItem : this.gameAreas)
             if (gmaItem.isRegionOverlapping(gamearea))
                 return ListResult.INVALID_ITEM;
-        }
 
         this.gameAreas.add(gamearea);
         return ListResult.SUCCESS;
     }
 
-    public ListResult removeGameArea(String name) {
+    public ListResult removeGameArea(@NotNull String name) {
         if (this.isEmpty())
             return ListResult.EMPTY_LIST;
 
@@ -100,12 +99,12 @@ public class GameAreaManager {
         return ListResult.SUCCESS;
     }
 
-    public GameArea getByName(String name) {
+    public GameArea getByName(@NotNull String name) {
         Optional<GameArea> queryGameArea = gameAreas.stream().filter(item -> item.getName().equals(name)).findFirst();
         return queryGameArea.orElse(null);
     }
 
-    public boolean alreadyExists(String name) {
+    public boolean alreadyExists(@NotNull String name) {
         return this.gameAreas.stream().anyMatch(item -> item.getName().equals(name));
     }
 

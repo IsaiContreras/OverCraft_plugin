@@ -17,7 +17,6 @@ import org.cyanx86.OverCrafted;
 import org.cyanx86.classes.GameAreaCornerAssistant;
 import org.cyanx86.classes.GameRound;
 import org.cyanx86.classes.GameRound.ROUNDSTATE;
-import org.cyanx86.classes.PlayerState;
 import org.cyanx86.classes.PlayerState.PLAYERSTATE;
 import org.cyanx86.utils.Messenger;
 
@@ -89,12 +88,7 @@ public class PlayerListener implements Listener {
                  blockCoords = Objects.requireNonNull(event.getClickedBlock()).getLocation();
             } catch (Exception ignored) {return;}
 
-            if (!gacAssistant.setCorner(blockCoords)) {
-                Messenger.msgToSender(
-                    player,
-                    OverCrafted.prefix + "&cNo se pudo asignar coordenadas."
-                );
-            }
+            gacAssistant.setCorner(blockCoords);
 
             Messenger.msgToSender(
                 player,
@@ -112,7 +106,7 @@ public class PlayerListener implements Listener {
         GameRound round = master.getGameRoundManager().getGameRound();
 
         // NA si la ronda no ha comenzado o si el jugador no está en el juego o si la ronda ha terminado.
-        if (round == null || !round.isPlayerPlaying(player) || round.getCurrentRoundState() == ROUNDSTATE.ENDED)
+        if (round == null || !round.isPlayerInGame(player) || round.getCurrentRoundState() == ROUNDSTATE.ENDED)
             return;
 
         // No permite moverse si la Ronda no ha empezado
@@ -121,18 +115,16 @@ public class PlayerListener implements Listener {
             return;
         }
 
-        // No permite moverse si el estado del jugador está en INMOBILIZADO
-        PlayerState playerState = round.getPlayersManager().getPlayerState(player);
-        if (playerState.getCurrentState() != PLAYERSTATE.RUNNING) {
+        /* No permite moverse si el estado del jugador está en INMOBILIZADO
+        if (round.getStateOfPlayer(player) != null && round.getStateOfPlayer(player) != PLAYERSTATE.RUNNING) {
             event.setCancelled(true);
             return;
-        }
+        } */
 
         // Si sale del GameArea regresar jugador a su SpawnPoint
         if (!round.getGameArea().isPointInsideBoundaries(player.getLocation())) {
-            round.movePlayerToSpawn(player, true);
+            round.spawnPlayer(player, true);
         }
-
     }
 
     // -- Private

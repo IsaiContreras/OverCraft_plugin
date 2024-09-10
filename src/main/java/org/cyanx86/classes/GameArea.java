@@ -6,6 +6,7 @@ import org.cyanx86.utils.Enums.ListResult;
 import org.cyanx86.utils.Primitives.Cube;
 
 import java.util.*;
+import org.jetbrains.annotations.NotNull;
 
 public class GameArea {
 
@@ -16,21 +17,17 @@ public class GameArea {
     // -- Private
 
     private final String name;
-
     private final String world;
-
     private final int maxPlayers;
 
     private final Location[] corners = new Location[2];
-
     private final Cube cubearea;
-
     private List<SpawnPoint> spawnpoints = new ArrayList<>();
 
     // -- [[ METHODS ]] --
 
     // -- Public
-    public GameArea(String name, Location corner1, Location corner2, int maxPlayers) {
+    public GameArea(@NotNull String name, @NotNull Location corner1, @NotNull Location corner2, int maxPlayers) {
         this.name = name;
         this.world = Objects.requireNonNull(corner1.getWorld()).getName();
         this.maxPlayers = maxPlayers;
@@ -38,7 +35,14 @@ public class GameArea {
         this.corners[1] = corner2;
         this.cubearea = new Cube(corner1, corner2);
     }
-    public GameArea(String name, String world, Location corner1, Location corner2, int maxPlayers, List<SpawnPoint> spawn_points) {
+    public GameArea(
+            @NotNull String name,
+            @NotNull String world,
+            @NotNull Location corner1,
+            @NotNull Location corner2,
+            int maxPlayers,
+            @NotNull List<SpawnPoint> spawn_points
+    ) {
         this.name = name;
         this.world = world;
         this.maxPlayers = maxPlayers;
@@ -64,9 +68,7 @@ public class GameArea {
         return this.maxPlayers;
     }
 
-    public ListResult addSpawnPoint(SpawnPoint spawnpoint) {
-        if (spawnpoint == null)
-            return ListResult.NULL;
+    public ListResult addSpawnPoint(@NotNull SpawnPoint spawnpoint) {
         if (!this.isPointInsideBoundaries(spawnpoint.getSpawnLocation()))
             return ListResult.INVALID_ITEM;
         if (this.spawnpoints.size() == maxPlayers)
@@ -91,7 +93,7 @@ public class GameArea {
         this.spawnpoints.clear();
     }
 
-    public boolean isPointInsideBoundaries(Location point) {
+    public boolean isPointInsideBoundaries(@NotNull Location point) {
         return (
             !(point.getBlockX() < cubearea.left || point.getBlockX() > cubearea.right) &&
             !(point.getBlockY() < cubearea.bottom || point.getBlockY() > cubearea.top) &&
@@ -99,7 +101,7 @@ public class GameArea {
         );
     }
 
-    public boolean isRegionOverlapping(GameArea other) {
+    public boolean isRegionOverlapping(@NotNull GameArea other) {
         if (!this.world.equals(other.getWorld()))
             return false;
 
@@ -132,7 +134,7 @@ public class GameArea {
         return data;
     }
 
-    public static GameArea deserialize(Map<String, Object> args) {
+    public static GameArea deserialize(@NotNull Map<String, Object> args) {
         List<SpawnPoint> spawnpointsList = new ArrayList<>();
         List<Map<String, Object>> sppMapList = (List<Map<String, Object>>)args.get("spawnpoints");
 

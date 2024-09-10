@@ -8,6 +8,7 @@ import org.cyanx86.OverCrafted;
 
 import java.io.File;
 import java.io.IOException;
+import org.jetbrains.annotations.NotNull;
 
 public class CustomConfigFile {
 
@@ -28,7 +29,7 @@ public class CustomConfigFile {
     // -- [[ METHODS ]] --
 
     // -- Public
-    public CustomConfigFile(String filename, String foldername, boolean must_create) {
+    public CustomConfigFile(@NotNull String filename, String foldername, boolean must_create) {
         this.filename = filename;
         this.foldername = foldername;
         this.mustCreate = must_create;

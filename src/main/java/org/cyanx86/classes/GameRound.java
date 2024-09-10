@@ -2,14 +2,15 @@ package org.cyanx86.classes;
 
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
-
 import org.bukkit.scheduler.BukkitTask;
+
 import org.cyanx86.OverCrafted;
+import org.cyanx86.classes.PlayerState.*;
 import org.cyanx86.managers.GamePlayersManager;
-import org.cyanx86.utils.Messenger;
 
 import java.util.List;
 import java.util.Optional;
+import org.jetbrains.annotations.NotNull;
 
 public class GameRound {
 
@@ -39,7 +40,7 @@ public class GameRound {
     // -- [[ METHODS ]] --
 
     // -- Public
-    public GameRound(GameArea gamearea, List<Player> players, int time) {
+    public GameRound(@NotNull GameArea gamearea, @NotNull List<Player> players, int time) {
         this.gamearea = gamearea;
         this.playersManager = new GamePlayersManager(players);
         this.roundTime = Math.max(time, 30);
@@ -59,46 +60,66 @@ public class GameRound {
         return this.currentState;
     }
 
-    public boolean isPlayerPlaying(Player player) {
-        return this.playersManager.isPlayerInGame(player);
+    public PLAYERSTATE getStateOfPlayer(@NotNull Player player) {
+        PlayerState state = this.playersManager.getPlayerState(player);
+        return (state == null) ? null : state.getCurrentState();
     }
 
-    public GamePlayersManager getPlayersManager() {
-        return this.playersManager;
+    public boolean isPlayerInGame(@NotNull Player player) {
+        return this.playersManager.anyPlayer(player);
     }
 
     public GameArea getGameArea() {
         return this.gamearea;
     }
 
-    public void movePlayerToSpawn(Player player, boolean immobilize) {
-        Optional<SpawnPoint> query = gamearea.getSpawnPoints().stream().filter(item -> item.getPlayerIndex() == playersManager.getPlayerIndex(player)).findFirst();
-        if (query.isEmpty())
-            return;
-        player.teleport(query.get().getSpawnLocation());
+    public void spawnPlayer(@NotNull Player player, boolean immobilize) {
+        PlayerState playerstate = this.playersManager.getPlayerState(player);
+        if (playerstate == null) return;
+
+        SpawnPoint spawnpoint = this.getPlayerSpawn(playerstate);
+
+        playerstate.moveToLocation(spawnpoint.getSpawnLocation());
         if (immobilize) {
-            this.playersManager.immobilizePlayer(player, 3);
+            playerstate.immobilize(3);
         }
     }
 
     // -- Private
+
+    private void endRound(boolean terminated) {
+        String message = terminated ? "&aEl juego ha sido cancelado." : "&a¡Buen juego! La ronda ha terminado.";
+
+        this.playersManager.sendMessageToPlayers(message);
+
+        this.currentState = ROUNDSTATE.ENDED;
+        this.quitPlayersFromGameArea();
+    }
+
+    private SpawnPoint getPlayerSpawn(@NotNull PlayerState playerstate) {
+        Optional<SpawnPoint> query = gamearea.getSpawnPoints().stream()
+                .filter(item -> item.getPlayerIndex() == this.playersManager.getPlayerIndex(playerstate))
+                .findFirst();
+        return query.orElse(null);
+    }
+
+    private void spawnPlayer(@NotNull PlayerState playerstate) {
+        SpawnPoint spawnpoint = this.getPlayerSpawn(playerstate);
+        playerstate.moveToLocation(spawnpoint.getSpawnLocation());
+    }
+
     private void movePlayersToGameArea() {
-        for (Player player : playersManager.getPlayers()) {
-            this.movePlayerToSpawn(player, false);
-        }
+        for (PlayerState playerstate : this.playersManager.getPlayerStates())
+            this.spawnPlayer(playerstate);
     }
 
     private void quitPlayersFromGameArea() {
-        for (Player player : playersManager.getPlayers()) {
-            player.teleport(playersManager.getPlayerState(player).getPrevLocation());
-        }
+        for (PlayerState playerstate : playersManager.getPlayerStates())
+            playerstate.moveToPreviousLocation();
     }
 
     private void startCountdown() {
-        Messenger.msgToMultPlayers(
-            this.playersManager.getPlayers(),
-            OverCrafted.prefix + "&aLa ronda ha comenzado."
-        );
+        this.playersManager.sendMessageToPlayers("&aLa ronda ha comenzado.");
         this.time = this.startCountdownTime;
 
         this.task = Bukkit.getScheduler().runTaskTimer(OverCrafted.getInstance(), () -> {
@@ -108,20 +129,14 @@ public class GameRound {
                 return;
             }
 
-            Messenger.msgToMultPlayers(
-                    this.playersManager.getPlayers(),
-                    OverCrafted.prefix + "&a" + this.time
-            );
+            this.playersManager.sendMessageToPlayers("&a" + this.time);
 
             this.time--;
         }, 20, 20);
     }
 
     private void startRoundTimer() {
-        Messenger.msgToMultPlayers(
-            this.playersManager.getPlayers(),
-            OverCrafted.prefix + "&a¡A CRAFTEAR!"
-        );
+        this.playersManager.sendMessageToPlayers("&a¡A CRAFTEAR!");
         this.currentState = ROUNDSTATE.RUNNING;
 
         this.time = this.roundTime;
@@ -142,10 +157,7 @@ public class GameRound {
     }
 
     private void intermissionTime() {
-        Messenger.msgToMultPlayers(
-            this.playersManager.getPlayers(),
-            OverCrafted.prefix + "&a¡TIEMPO!"
-        );
+        this.playersManager.sendMessageToPlayers("&a¡TIEMPO!");
         this.currentState = ROUNDSTATE.FINISHED;
 
         this.time = this.endIntermissionTime;
@@ -157,19 +169,6 @@ public class GameRound {
             }
             this.time--;
         }, 20, 20);
-    }
-
-    private void endRound(boolean terminated) {
-        String message;
-        if (terminated) message = "&aEl juego ha sido cancelado.";
-        else message = "&a¡Buen juego! La ronda ha terminado.";
-
-        Messenger.msgToMultPlayers(
-            this.playersManager.getPlayers(),
-            OverCrafted.prefix + message
-        );
-        this.currentState = ROUNDSTATE.ENDED;
-        this.quitPlayersFromGameArea();
     }
 
 }

@@ -2,10 +2,13 @@ package org.cyanx86.classes;
 
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
+import org.bukkit.entity.Player;
 import org.bukkit.scheduler.BukkitTask;
-import org.cyanx86.OverCrafted;
 
-import java.util.UUID;
+import org.cyanx86.OverCrafted;
+import org.cyanx86.utils.Messenger;
+
+import org.jetbrains.annotations.NotNull;
 
 public class PlayerState {
 
@@ -18,7 +21,7 @@ public class PlayerState {
     }
 
     // -- Private
-    private final UUID playerUUID;
+    private final Player player;
     private PLAYERSTATE currentState = PLAYERSTATE.RUNNING;
 
     private final Location previousLocation;
@@ -29,21 +32,37 @@ public class PlayerState {
     // -- [[ METHODS ]] --
 
     // -- Public
-    public PlayerState(UUID playerUUID, Location prevLocation) {
-        this.playerUUID = playerUUID;
-        this.previousLocation = prevLocation;
+    public PlayerState(@NotNull Player player) {
+        this.player = player;
+        this.previousLocation = player.getLocation();
     }
 
     public PLAYERSTATE getCurrentState() {
         return this.currentState;
     }
 
-    public Location getPrevLocation() {
-        return this.previousLocation;
+    public boolean equal(@NotNull Player player) {
+        return this.player.equals(player);
+    }
+
+    public void moveToLocation(@NotNull Location location) {
+        this.player.teleport(location);
+    }
+
+    public void moveToPreviousLocation() {
+        this.player.teleport(this.previousLocation);
+    }
+
+    public void sendMessageToPlayer(@NotNull String message) {
+        Messenger.msgToSender(
+            this.player,
+            message
+        );
     }
 
     public void immobilize(int timeseconds) {
         this.currentState = PLAYERSTATE.IMMOBILIZED;
+        this.player.setWalkSpeed(0.0f);
         this.setImmobileTimer(timeseconds);
     }
 
@@ -54,6 +73,7 @@ public class PlayerState {
             if (this.time == 0) {
                 this.task.cancel();
                 this.currentState = PLAYERSTATE.RUNNING;
+                this.player.setWalkSpeed(0.2f);
             }
             this.time--;
         }, 20, 20);

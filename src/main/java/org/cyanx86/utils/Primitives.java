@@ -2,6 +2,8 @@ package org.cyanx86.utils;
 
 import org.bukkit.Location;
 
+import org.jetbrains.annotations.NotNull;
+
 public class Primitives {
 
     public static class Cube {
@@ -13,7 +15,7 @@ public class Primitives {
         public double front;
         public double back;
 
-        public Cube (Location corner1, Location corner2) {
+        public Cube (@NotNull Location corner1, @NotNull Location corner2) {
             left = Math.min(corner1.getBlockX(), corner2.getBlockX());
             right = Math.max(corner1.getBlockX(), corner2.getBlockX());
             bottom = Math.min(corner1.getBlockY(), corner1.getBlockY());
