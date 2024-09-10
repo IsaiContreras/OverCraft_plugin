@@ -6,6 +6,8 @@ import org.cyanx86.OverCrafted;
 import org.cyanx86.classes.PlayerState;
 
 import java.util.*;
+
+import org.cyanx86.utils.Enums.ListResult;
 import org.jetbrains.annotations.NotNull;
 
 public class GamePlayersManager {
@@ -38,6 +40,16 @@ public class GamePlayersManager {
 
     public int getPlayerIndex(@NotNull PlayerState player) {
         return this.players.indexOf(player) + 1;
+    }
+
+    public ListResult removePlayer(@NotNull Player player) {
+        PlayerState playerstate = this.getPlayerState(player);
+        if (playerstate == null)
+            return ListResult.NOT_FOUND;
+
+        if (!this.players.remove(playerstate))
+            return ListResult.ERROR;
+        else return ListResult.SUCCESS;
     }
 
     public boolean anyPlayer(@NotNull Player player) {

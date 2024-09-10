@@ -2,7 +2,9 @@ package org.cyanx86.classes;
 
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
+import org.bukkit.Material;
 import org.bukkit.entity.Player;
+import org.bukkit.inventory.ItemStack;
 import org.bukkit.scheduler.BukkitTask;
 
 import org.cyanx86.OverCrafted;
@@ -25,6 +27,7 @@ public class PlayerState {
     private PLAYERSTATE currentState = PLAYERSTATE.RUNNING;
 
     private final Location previousLocation;
+    private final ItemStack[] prevInventory;
 
     private int time;
     private BukkitTask task;
@@ -35,6 +38,12 @@ public class PlayerState {
     public PlayerState(@NotNull Player player) {
         this.player = player;
         this.previousLocation = player.getLocation();
+
+        prevInventory = player.getInventory().getContents();
+        player.getInventory().clear();
+        player.getInventory().addItem(
+            new ItemStack(Material.STONE_PICKAXE)
+        );
     }
 
     public PLAYERSTATE getCurrentState() {
@@ -58,6 +67,11 @@ public class PlayerState {
             this.player,
             message
         );
+    }
+
+    public void clearInventory() {
+        this.player.getInventory().clear();
+        this.player.getInventory().setContents(prevInventory);
     }
 
     public void immobilize(int timeseconds) {

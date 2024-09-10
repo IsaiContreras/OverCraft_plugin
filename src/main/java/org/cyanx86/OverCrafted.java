@@ -9,6 +9,7 @@ import org.cyanx86.listeners.PlayerListener;
 import org.cyanx86.managers.GameAreaCornerAssistantManager;
 import org.cyanx86.managers.GameAreaManager;
 import org.cyanx86.managers.GameRoundManager;
+import org.cyanx86.managers.OreBlocksManager;
 import org.cyanx86.utils.Messenger;
 
 import java.util.Objects;
@@ -28,6 +29,8 @@ public class OverCrafted extends JavaPlugin {
     private GameAreaCornerAssistantManager gacaManager;
     private GameRoundManager gameRoundManager;
 
+    private OreBlocksManager oreblocks;
+
     // -- [[ METHODS ]] --
 
     // -- Public
@@ -40,6 +43,8 @@ public class OverCrafted extends JavaPlugin {
         gameAreaManager = new GameAreaManager();
         gacaManager = new GameAreaCornerAssistantManager();
         gameRoundManager = new GameRoundManager();
+
+        oreblocks = new OreBlocksManager();
 
         Messenger.msgToConsole(
                 prefix + "&ePlugin activo. &fVersion: " + version
@@ -64,6 +69,10 @@ public class OverCrafted extends JavaPlugin {
 
     public GameRoundManager getGameRoundManager() {
         return this.gameRoundManager;
+    }
+
+    public OreBlocksManager getOreBlocks() {
+        return this.oreblocks;
     }
 
     public static OverCrafted getInstance() {

@@ -96,7 +96,7 @@ public class MainCommand implements CommandExecutor {
     }
 
     private void scmEndRound(CommandSender sender) {
-        if (!master.getGameRoundManager().terminateRound()) {
+        if (!master.getGameRoundManager().terminateRound(null)) {
             Messenger.msgToSender(
                 sender,
                 OverCrafted.prefix + "&cNo se pudo cancelar la ronda. Aun no ha iniciado o ya ha acabado."

@@ -5,6 +5,7 @@ import org.bukkit.configuration.file.FileConfiguration;
 
 import org.cyanx86.OverCrafted;
 import org.cyanx86.classes.GameArea;
+import org.cyanx86.utils.CustomConfigFile;
 import org.cyanx86.utils.Enums.ListResult;
 
 import java.util.*;

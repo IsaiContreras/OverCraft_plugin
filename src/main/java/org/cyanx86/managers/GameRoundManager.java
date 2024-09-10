@@ -48,8 +48,8 @@ public class GameRoundManager {
         return true;
     }
 
-    public boolean terminateRound() {
-        return this.gameround.terminateRound();
+    public boolean terminateRound(String reason) {
+        return this.gameround.terminateRound(reason);
     }
 
     public GameRound getGameRound() {

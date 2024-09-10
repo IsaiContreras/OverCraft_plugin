@@ -7,9 +7,12 @@ import org.bukkit.scheduler.BukkitTask;
 import org.cyanx86.OverCrafted;
 import org.cyanx86.classes.PlayerState.*;
 import org.cyanx86.managers.GamePlayersManager;
+import org.cyanx86.utils.Enums.ListResult;
 
 import java.util.List;
 import java.util.Optional;
+
+import org.cyanx86.utils.Messenger;
 import org.jetbrains.annotations.NotNull;
 
 public class GameRound {
@@ -50,9 +53,18 @@ public class GameRound {
         this.startCountdown();
     }
 
-    public boolean terminateRound() {
-        if (currentState != ROUNDSTATE.RUNNING) return false;
-        this.currentState = ROUNDSTATE.ENDED;
+    public boolean terminateRound(String reason) {
+        if (this.currentState == ROUNDSTATE.ENDED) return false;
+
+        String message = reason != null ? reason : "&cLa ronda fue cancelada.";
+
+        this.task.cancel();
+        this.endRound(message);
+
+        Messenger.msgToConsole(
+            OverCrafted.prefix + "Ronda terminada por: " + message
+        );
+
         return true;
     }
 
@@ -67,6 +79,15 @@ public class GameRound {
 
     public boolean isPlayerInGame(@NotNull Player player) {
         return this.playersManager.anyPlayer(player);
+    }
+
+    public ListResult removePlayer(@NotNull Player player) {
+        ListResult result = this.playersManager.removePlayer(player);
+
+        if (this.playersManager.getPlayerStates().isEmpty())
+            this.terminateRound("&cTodos los jugadores se eliminaron o desconectaron.");
+
+        return result;
     }
 
     public GameArea getGameArea() {
@@ -87,13 +108,14 @@ public class GameRound {
 
     // -- Private
 
-    private void endRound(boolean terminated) {
-        String message = terminated ? "&aEl juego ha sido cancelado." : "&a¡Buen juego! La ronda ha terminado.";
+    private void endRound(String reason) {
+        String message = reason != null ? reason : "&a¡Buen juego! La ronda ha terminado.";
 
         this.playersManager.sendMessageToPlayers(message);
 
         this.currentState = ROUNDSTATE.ENDED;
         this.quitPlayersFromGameArea();
+        this.clearPlayersInventory();
     }
 
     private SpawnPoint getPlayerSpawn(@NotNull PlayerState playerstate) {
@@ -114,8 +136,13 @@ public class GameRound {
     }
 
     private void quitPlayersFromGameArea() {
-        for (PlayerState playerstate : playersManager.getPlayerStates())
+        for (PlayerState playerstate : this.playersManager.getPlayerStates())
             playerstate.moveToPreviousLocation();
+    }
+
+    private void clearPlayersInventory() {
+        for (PlayerState playerstate : this.playersManager.getPlayerStates())
+            playerstate.clearInventory();
     }
 
     private void startCountdown() {
@@ -141,11 +168,6 @@ public class GameRound {
 
         this.time = this.roundTime;
         this.task = Bukkit.getScheduler().runTaskTimer(OverCrafted.getInstance(), () -> {
-            if (this.currentState == ROUNDSTATE.ENDED) {
-                this.task.cancel();
-                this.endRound(true);
-                return;
-            }
             if (this.time == 0) {
                 this.task.cancel();
                 this.intermissionTime();
@@ -164,7 +186,7 @@ public class GameRound {
         this.task = Bukkit.getScheduler().runTaskTimer(OverCrafted.getInstance(), () -> {
             if (this.time == 0) {
                 this.task.cancel();
-                this.endRound(false);
+                this.endRound(null);
                 return;
             }
             this.time--;

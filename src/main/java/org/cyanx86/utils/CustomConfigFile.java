@@ -1,4 +1,4 @@
-package org.cyanx86.managers;
+package org.cyanx86.utils;
 
 import org.bukkit.configuration.InvalidConfigurationException;
 import org.bukkit.configuration.file.FileConfiguration;
