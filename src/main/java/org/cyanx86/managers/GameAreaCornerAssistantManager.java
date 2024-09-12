@@ -48,7 +48,7 @@ public class GameAreaCornerAssistantManager {
         return ListResult.SUCCESS;
     }
 
-    public GameAreaCornerAssistant getAssistantByName(@NotNull String name){
+    public GameAreaCornerAssistant getAssistantByName(@NotNull String name) {
         UUID playerUUID = playerUUIDs.get(name);
         if (playerUUID == null)
             return null;

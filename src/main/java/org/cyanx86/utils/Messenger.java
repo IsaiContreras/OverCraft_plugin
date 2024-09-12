@@ -27,9 +27,8 @@ public class Messenger {
     }
 
     public static void msgToMultPlayers(@NotNull List<Player> players, @NotNull String message) {
-        for (Player player : players) {
+        for (Player player : players)
             msgToSender(player, message);
-        }
     }
 
 }

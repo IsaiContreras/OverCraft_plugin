@@ -43,7 +43,8 @@ public class GameAreaCornerAssistant {
     }
 
     public boolean isDefinedCorners() {
-        for (Location corner : corners) if (corner == null) return false;
+        for (Location corner : corners)
+            if (corner == null) return false;
         return true;
     }
 

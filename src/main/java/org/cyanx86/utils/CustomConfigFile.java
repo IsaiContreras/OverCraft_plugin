@@ -38,11 +38,10 @@ public class CustomConfigFile {
 
     // -- Private
     public void registerConfig() {
-        if (foldername != null) {
+        if (foldername != null)
             file = new File(master.getDataFolder() + File.separator + foldername, filename);
-        } else {
+        else
             file = new File(master.getDataFolder(), filename);
-        }
 
         if (!file.exists()) {
             if (mustCreate) {
@@ -52,11 +51,10 @@ public class CustomConfigFile {
                     e.printStackTrace();
                 }
             } else {
-                if (foldername != null) {
+                if (foldername != null)
                     master.saveResource(foldername + File.separator + filename, false);
-                } else {
+                else
                     master.saveResource(filename, false);
-                }
             }
         }
 
@@ -77,19 +75,17 @@ public class CustomConfigFile {
     }
 
     public FileConfiguration getConfig() {
-        if (fileConfig == null) {
+        if (fileConfig == null)
             reloadConfig();
-        }
         return fileConfig;
     }
 
     public void reloadConfig() {
         if (fileConfig == null) {
-            if (foldername != null) {
+            if (foldername != null)
                 file = new File(master.getDataFolder() + File.separator + foldername, filename);
-            } else {
+            else
                 file = new File(master.getDataFolder(), filename);
-            }
         }
 
         fileConfig = YamlConfiguration.loadConfiguration(file);

@@ -3,15 +3,15 @@ package org.cyanx86.listeners;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.block.Block;
-import org.bukkit.entity.Player;
+import org.bukkit.entity.*;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.block.Action;
 import org.bukkit.event.block.BlockBreakEvent;
-import org.bukkit.event.player.PlayerInteractEvent;
-import org.bukkit.event.player.PlayerJoinEvent;
-import org.bukkit.event.player.PlayerMoveEvent;
-import org.bukkit.event.player.PlayerQuitEvent;
+import org.bukkit.event.block.BlockPlaceEvent;
+import org.bukkit.event.entity.EntityDamageByEntityEvent;
+import org.bukkit.event.hanging.HangingBreakByEntityEvent;
+import org.bukkit.event.player.*;
 import org.bukkit.inventory.EquipmentSlot;
 import org.bukkit.inventory.ItemStack;
 
@@ -21,6 +21,7 @@ import org.cyanx86.classes.GameAreaCornerAssistant;
 import org.cyanx86.classes.GameRound;
 import org.cyanx86.classes.GameRound.ROUNDSTATE;
 import org.cyanx86.utils.Enums.ListResult;
+import org.cyanx86.utils.Functions;
 import org.cyanx86.utils.Messenger;
 
 import java.util.Map;
@@ -39,6 +40,7 @@ public class PlayerListener implements Listener {
 
     // -- Public
 
+    // ** MANAGER **
     @EventHandler
     public void onOverCraftedManagerJoin(PlayerJoinEvent event) {
         Player player = event.getPlayer();
@@ -67,31 +69,31 @@ public class PlayerListener implements Listener {
         Player player = event.getPlayer();
         if (!player.hasPermission("overcrafted.manager"))
             return;
-        GameAreaCornerAssistant gacAssistant = master.getGacaManager().getAssistantByName(player.getName());
-        if (gacAssistant == null) {
-            Messenger.msgToSender(
-                player,
-                    OverCrafted.prefix + "&cNo hay instancia de Asistente iniciada."
-            );
-            return;
-        }
 
-        Action action = event.getAction();
         ItemStack item = event.getItem();
-
-        if (item == null) return;
+        if (item == null)
+            return;
 
         if (
-            action.equals(Action.RIGHT_CLICK_BLOCK) &&
+            event.getAction().equals(Action.RIGHT_CLICK_BLOCK) &&
             Objects.equals(event.getHand(), EquipmentSlot.HAND) &&
             item.getType() == Material.IRON_SHOVEL
         ) {
+            GameAreaCornerAssistant gacAssistant = master.getGacaManager().getAssistantByName(player.getName());
+            if (gacAssistant == null) {
+                Messenger.msgToSender(
+                        player,
+                        OverCrafted.prefix + "&cNo hay instancia de Asistente iniciada."
+                );
+                return;
+            }
+
             Location blockCoords;
             int cornerIndex = gacAssistant.getCornerIndex();
 
             try {
                  blockCoords = Objects.requireNonNull(event.getClickedBlock()).getLocation();
-            } catch (Exception ignored) {return;}
+            } catch (Exception ignored) { return; }
 
             gacAssistant.setCorner(blockCoords);
 
@@ -111,7 +113,8 @@ public class PlayerListener implements Listener {
         GameRound round = master.getGameRoundManager().getGameRound();
 
         // NA si la ronda no ha comenzado.
-        if (round == null) return;
+        if (round == null)
+            return;
 
         if (!round.isPlayerInGame(player))
             return;
@@ -119,6 +122,123 @@ public class PlayerListener implements Listener {
         round.removePlayer(player);
     }
 
+    // ** PLAYERS **
+    @EventHandler
+    public void onOverCraftedPlayerMoves(PlayerMoveEvent event) {
+        Player player = event.getPlayer();
+        GameRound round = master.getGameRoundManager().getGameRound();
+
+        // NA si la ronda no ha comenzado o si el jugador no está en el juego o si la ronda ha terminado.
+        if (round == null || !round.isPlayerInGame(player) || round.getCurrentRoundState() == ROUNDSTATE.ENDED)
+            return;
+
+        // No permite moverse si la Ronda no ha empezado
+        if (round.getCurrentRoundState() != ROUNDSTATE.RUNNING) {
+            event.setCancelled(true);
+            return;
+        }
+
+        /* No permite moverse si el estado del jugador está en INMOBILIZADO
+        if (round.getStateOfPlayer(player) != null && round.getStateOfPlayer(player) != PLAYERSTATE.RUNNING) {
+            event.setCancelled(true);
+            return;
+        } */
+
+        // Si sale del GameArea regresar jugador a su SpawnPoint
+        if (!round.getGameArea().isPointInsideBoundaries(player.getLocation()))
+            round.spawnPlayer(player, true);
+    }
+
+    @EventHandler
+    public void onOverCraftedPlayerPlacesBlock(BlockPlaceEvent event) {
+        Player player = event.getPlayer();
+        GameRound round = master.getGameRoundManager().getGameRound();
+
+        // NA si la ronda no ha comenzado, si la ronda ha terminado o si el jugador no está jugando.
+        if (round == null || round.getCurrentRoundState() == ROUNDSTATE.ENDED || !round.isPlayerInGame(player))
+            return;
+
+        event.setCancelled(true);
+    }
+
+    @EventHandler
+    public void onOverCraftedPlayerBreaksBlock(BlockBreakEvent event) {
+        Player player = event.getPlayer();
+        GameRound round = master.getGameRoundManager().getGameRound();
+
+        // NA si la ronda no ha comenzado, si la ronda ha terminado o si el jugador no está jugando.
+        if (round == null || round.getCurrentRoundState() == ROUNDSTATE.ENDED || !round.isPlayerInGame(player))
+            return;
+
+        Block block = event.getBlock();
+        Map<Material, Material> materialMap = master.getOreBlocks().getOreMap();
+
+        if (
+            round.getGameArea().isPointInsideBoundaries(block.getLocation()) &&
+            materialMap.containsKey(block.getType())
+        ) {
+            ItemStack deliver = new ItemStack(
+                materialMap.get(block.getType())
+            );
+            player.getInventory().addItem(deliver);
+        }
+
+        event.setCancelled(true);
+    }
+
+    @EventHandler
+    public void onOverCraftedPlayerDamageFrameOrPainting(HangingBreakByEntityEvent event) {
+        Entity remover = event.getRemover();
+        GameRound round = master.getGameRoundManager().getGameRound();
+
+        // NA si la ronda no ha comenzado, si la ronda ha terminado o si el jugador no está jugando.
+        if (
+            remover instanceof Player &&
+            (
+                round == null ||
+                round.getCurrentRoundState() == ROUNDSTATE.ENDED ||
+                !round.isPlayerInGame((Player)remover)
+            )
+        )
+            return;
+
+        event.setCancelled(true);
+    }
+
+    @EventHandler
+    public void onOverCraftedPlayerInteractItemFrame(PlayerInteractEntityEvent event) {
+        Player player = event.getPlayer();
+        GameRound round = master.getGameRoundManager().getGameRound();
+
+        if (round == null || round.getCurrentRoundState() == ROUNDSTATE.ENDED || !round.isPlayerInGame(player))
+            return;
+
+        if (!(event.getRightClicked() instanceof ItemFrame))
+            return;
+
+        event.setCancelled(true);
+    }
+
+    @EventHandler
+    public void onOverCraftedPlayerRemoveItemFrameContent(EntityDamageByEntityEvent event) {
+        Entity damager = event.getDamager();
+        GameRound round = master.getGameRoundManager().getGameRound();
+
+        // NA si la ronda no ha comenzado, si la ronda ha terminado o si el jugador no está jugando.
+        if (
+            damager instanceof Player &&
+            (
+                round == null ||
+                round.getCurrentRoundState() == ROUNDSTATE.ENDED ||
+                !round.isPlayerInGame((Player)damager)
+            )
+        )
+            return;
+
+        event.setCancelled(true);
+    }
+
+    // ** NON-PLAYERS **
     /*
     @EventHandler
     public void onOverCraftedNonPlayerMoves(PlayerMoveEvent event) {
@@ -145,35 +265,7 @@ public class PlayerListener implements Listener {
     */
 
     @EventHandler
-    public void onOverCraftedPlayerMoves(PlayerMoveEvent event) {
-        Player player = event.getPlayer();
-        GameRound round = master.getGameRoundManager().getGameRound();
-
-        // NA si la ronda no ha comenzado o si el jugador no está en el juego o si la ronda ha terminado.
-        if (round == null || !round.isPlayerInGame(player) || round.getCurrentRoundState() == ROUNDSTATE.ENDED)
-            return;
-
-        // No permite moverse si la Ronda no ha empezado
-        if (round.getCurrentRoundState() != ROUNDSTATE.RUNNING) {
-            event.setCancelled(true);
-            return;
-        }
-
-        /* No permite moverse si el estado del jugador está en INMOBILIZADO
-        if (round.getStateOfPlayer(player) != null && round.getStateOfPlayer(player) != PLAYERSTATE.RUNNING) {
-            event.setCancelled(true);
-            return;
-        } */
-
-        // Si sale del GameArea regresar jugador a su SpawnPoint
-        if (!round.getGameArea().isPointInsideBoundaries(player.getLocation())) {
-            round.spawnPlayer(player, true);
-        }
-    }
-
-    @EventHandler
-    public void onOverCraftedNonPlayerBreaksBlock(BlockBreakEvent event) {
-        Block block = event.getBlock();
+    public void onOverCraftedNonPlayerPlacesBlock(BlockPlaceEvent event) {
         GameRound round = master.getGameRoundManager().getGameRound();
 
         if (event.getPlayer().hasPermission("overcrafted.manager"))
@@ -183,16 +275,30 @@ public class PlayerListener implements Listener {
         if (round != null && round.isPlayerInGame(event.getPlayer()))
             return;
 
-        boolean isGameAreaBlock = false;
-        for (GameArea gmaItem : master.getGameAreaManager().getGameAreas()) {
-            if (!Objects.equals(gmaItem.getWorld(), block.getWorld().getName())) continue;
-            if (gmaItem.isPointInsideBoundaries(block.getLocation())) {
-                isGameAreaBlock = true;
-                break;
-            }
-        }
+        if (!Functions.blockBelongsGameArea(event.getBlock()))
+            return;
 
-        if (!isGameAreaBlock) return;
+        event.setCancelled(true);
+
+        Messenger.msgToSender(
+                event.getPlayer(),
+                OverCrafted.prefix + "&cNo puedes poner bloques en un GameArea"
+        );
+    }
+
+    @EventHandler
+    public void onOverCraftedNonPlayerBreaksBlock(BlockBreakEvent event) {
+        Player player = event.getPlayer();
+        GameRound round = master.getGameRoundManager().getGameRound();
+
+        if (player.hasPermission("overcrafted.manager"))
+            return;
+        // NA para jugadores en ronda de juego.
+        if (round != null && round.isPlayerInGame(player))
+            return;
+
+        if (!Functions.blockBelongsGameArea(event.getBlock()))
+            return;
 
         event.setCancelled(true);
 
@@ -203,25 +309,101 @@ public class PlayerListener implements Listener {
     }
 
     @EventHandler
-    public void onOverCraftedPlayerBreaksBlock(BlockBreakEvent event) {
-        Player player = event.getPlayer();
-        Block block = event.getBlock();
+    public void onOverCraftedNonPlayerDamageFrameOrPainting(HangingBreakByEntityEvent event) {
+        Entity remover = event.getRemover();
         GameRound round = master.getGameRoundManager().getGameRound();
-        Map<Material, Material> materialMap = master.getOreBlocks().getOreMap();
+        if (remover == null)
+            return;
 
-        if (round == null || round.getCurrentRoundState() == ROUNDSTATE.ENDED || !round.isPlayerInGame(player)) return;
-        if (!round.getGameArea().isPointInsideBoundaries(block.getLocation())) return;
+        if (remover instanceof Player && remover.hasPermission("overcrafted.manager"))
+            return;
+        // NA para jugadores en ronda de juego.
+        if (remover instanceof Player && (round != null && round.isPlayerInGame((Player)remover)))
+            return;
 
-        if (!materialMap.containsKey(block.getType())) return;
+        if (!Functions.entityBelongsGameArea(event.getEntity()))
+            return;
 
-        ItemStack deliver = new ItemStack(
-            materialMap.get(block.getType())
+        event.setCancelled(true);
+
+        Messenger.msgToSender(
+            remover,
+            OverCrafted.prefix + "&cNo puedes romper bloques de un GameArea"
         );
-        player.getInventory().addItem(deliver);
+    }
+
+    @EventHandler
+    public void onOverCraftedNonPlayerInteractItemFrame(PlayerInteractEntityEvent event) {
+        Player player = event.getPlayer();
+        GameRound round = master.getGameRoundManager().getGameRound();
+
+        if (player.hasPermission("overcrafted.manager"))
+            return;
+        if (round != null && round.isPlayerInGame(player))
+            return;
+
+        if (!Functions.entityBelongsGameArea(event.getRightClicked()))
+            return;
+
+        event.setCancelled(true);
+
+        Messenger.msgToSender(
+            player,
+            OverCrafted.prefix + "&cNo puedes manipular bloques de un GameArea"
+        );
+    }
+
+    @EventHandler
+    public void onOverCraftedNonPlayerRemoveItemFrameContent(EntityDamageByEntityEvent event) {
+        Entity damager = event.getDamager();
+        GameRound round = master.getGameRoundManager().getGameRound();
+
+        if (damager instanceof Player && damager.hasPermission("overcrafted.manager"))
+            return;
+        // NA para jugadores en ronda de juego.
+        if (damager instanceof Player && (round != null && round.isPlayerInGame((Player)damager)))
+            return;
+
+        if (!Functions.entityBelongsGameArea(event.getEntity()))
+            return;
+
+        event.setCancelled(true);
+
+        Messenger.msgToSender(
+            damager,
+            OverCrafted.prefix + "&cNo puedes romper bloques de un GameArea"
+        );
+    }
+
+    // ** OTHER-ENTITIES **
+    @EventHandler
+    public void onEntityBreakGameAreaItemFrameOrPainting(HangingBreakByEntityEvent event) {
+        Entity entity = event.getEntity();
+        if (!(entity instanceof ItemFrame || entity instanceof Painting))
+            return;
+
+        if (event.getRemover() instanceof Player)
+            return;
+
+        if (!Functions.entityBelongsGameArea(entity))
+            return;
 
         event.setCancelled(true);
     }
 
-    // -- Private
+    @EventHandler
+    public void onEntityDamageGameAreaItemFrameOrPainting(EntityDamageByEntityEvent event) {
+        Entity entity = event.getEntity();
+        if (!(entity instanceof ItemFrame || entity instanceof Painting))
+            return;
+
+        if (event.getDamager() instanceof Player)
+            return;
+
+        if (!Functions.entityBelongsGameArea(entity))
+            return;
+
+        event.setCancelled(true);
+    }
 
 }

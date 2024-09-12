@@ -5,6 +5,7 @@ import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
 
 import org.cyanx86.OverCrafted;
+import org.cyanx86.utils.DataFormatting;
 import org.cyanx86.utils.Messenger;
 
 public class MainCommand implements CommandExecutor {
@@ -40,9 +41,7 @@ public class MainCommand implements CommandExecutor {
             return;
         }
 
-        String mainArg = args[0].toLowerCase();
-
-        switch (mainArg) {
+        switch (args[0].toLowerCase()) {
             case "help":            // subCommand Help
                 this.scmHelp(sender);
                 break;
@@ -80,10 +79,19 @@ public class MainCommand implements CommandExecutor {
         try {
             time = Integer.parseInt(args[1]);
         } catch (NumberFormatException e) {
+            Messenger.msgToSender(
+                sender,
+                OverCrafted.prefix + "&cEste argumento solo acepta valores numéricos."
+            );
             return;
         }
 
         master.getGameRoundManager().setRoundTime(time);
+
+        Messenger.msgToSender(
+            sender,
+            OverCrafted.prefix + "&aLa ronda durará " + DataFormatting.formatSecondsToTime(time) + " minutos."
+        );
     }
 
     private void scmStartRound(CommandSender sender) {

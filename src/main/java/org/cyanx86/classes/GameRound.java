@@ -82,6 +82,12 @@ public class GameRound {
     }
 
     public ListResult removePlayer(@NotNull Player player) {
+        PlayerState playerstate = this.playersManager.getPlayerState(player);
+        if (playerstate == null)
+            return ListResult.NOT_FOUND;
+
+        playerstate.moveToPreviousLocation();
+        playerstate.clearInventory();
         ListResult result = this.playersManager.removePlayer(player);
 
         if (this.playersManager.getPlayerStates().isEmpty())
@@ -99,19 +105,18 @@ public class GameRound {
         if (playerstate == null) return;
 
         SpawnPoint spawnpoint = this.getPlayerSpawn(playerstate);
-
         playerstate.moveToLocation(spawnpoint.getSpawnLocation());
-        if (immobilize) {
+
+        if (immobilize)
             playerstate.immobilize(3);
-        }
     }
 
     // -- Private
 
     private void endRound(String reason) {
-        String message = reason != null ? reason : "&a¡Buen juego! La ronda ha terminado.";
-
-        this.playersManager.sendMessageToPlayers(message);
+        this.playersManager.sendMessageToPlayers(
+            reason != null ? reason : "&a¡Buen juego! La ronda ha terminado."
+        );
 
         this.currentState = ROUNDSTATE.ENDED;
         this.quitPlayersFromGameArea();

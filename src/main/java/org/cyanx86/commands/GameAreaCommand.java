@@ -31,7 +31,7 @@ public class GameAreaCommand implements CommandExecutor {
     @Override
     public boolean onCommand(CommandSender sender, Command command, String s, String[] args) {
         this.handleSubcommands(sender, args);
-        return false;
+        return true;
     }
 
     // -- Private
@@ -55,9 +55,7 @@ public class GameAreaCommand implements CommandExecutor {
             return;
         }
 
-        String mainArg = args[0].toLowerCase();
-
-        switch (mainArg) {
+        switch (args[0].toLowerCase()) {
             case "help":        // subcommand Help
                 this.scmHelp(sender);
                 break;
@@ -90,12 +88,6 @@ public class GameAreaCommand implements CommandExecutor {
 
     // Subcommands
     private void scmHelp(CommandSender sender) {
-        if (!sender.hasPermission("overcrafted.manager")) {
-            Messenger.msgToSender(
-                sender,
-                OverCrafted.prefix + "&cNo tienes permiso para usar este comando."      // TODO: No permissions message.
-            );
-        }
         // TODO: Language location of Help Page
         Messenger.msgToSender(sender, "&f&l------ OVERCRAFTED ------");
         Messenger.msgToSender(sender, "&7 [[ Comando /gamearea ]]");
@@ -110,8 +102,7 @@ public class GameAreaCommand implements CommandExecutor {
     }
 
     private void scmCreate(CommandSender sender, String[] args) {
-        Player player = (Player)sender;
-        GameAreaCornerAssistant gacAssistant = master.getGacaManager().getAssistantByName(player.getName());
+        GameAreaCornerAssistant gacAssistant = master.getGacaManager().getAssistantByName(sender.getName());
         if (gacAssistant == null) {
             Messenger.msgToSender(
                 sender,
@@ -137,7 +128,7 @@ public class GameAreaCommand implements CommandExecutor {
         }
 
         String name = args[1].toLowerCase();
-        int maxPlayers = 0;
+        int maxPlayers;
         try {
             maxPlayers = Integer.parseInt(args[2]);
         } catch(NumberFormatException e) {
@@ -148,7 +139,14 @@ public class GameAreaCommand implements CommandExecutor {
             return;
         }
 
-        switch (master.getGameAreaManager().addGameArea(name, gacAssistant.getCorner(0), gacAssistant.getCorner(1), maxPlayers)) {
+        switch (
+            master.getGameAreaManager().addGameArea(
+                name,
+                gacAssistant.getCorner(0),
+                gacAssistant.getCorner(1),
+                maxPlayers
+            )
+        ) {
             case ALREADY_IN -> {
                 Messenger.msgToSender(
                     sender,
@@ -237,8 +235,11 @@ public class GameAreaCommand implements CommandExecutor {
             return;
         }
 
-        String name = args[1].toLowerCase();
-        Optional<GameArea> query = master.getGameAreaManager().getGameAreas().stream().filter(item -> item.getName().equals(name)).findFirst();
+        Optional<GameArea> query = master.getGameAreaManager()
+                .getGameAreas()
+                .stream()
+                .filter(item -> item.getName().equals(args[1].toLowerCase()))
+                .findFirst();
         if (query.isEmpty()) {
             Messenger.msgToSender(
                 sender,
@@ -247,7 +248,6 @@ public class GameAreaCommand implements CommandExecutor {
             return;
         }
         GameArea gamearea = query.get();
-
         gamearea.clearSpawnPointList();
 
         Messenger.msgToSender(
@@ -268,7 +268,10 @@ public class GameAreaCommand implements CommandExecutor {
             return;
         }
         for(int i = 0; i < master.getGameAreaManager().getGameAreas().size(); i++) {
-            Messenger.msgToSender(sender, "&7" + (i + 1) + ".- " + "&o" + master.getGameAreaManager().getGameAreas().get(i).getName());
+            Messenger.msgToSender(
+                sender,
+                "&7" + (i + 1) + ".- " + "&o" + master.getGameAreaManager().getGameAreas().get(i).getName()
+            );
         }
     }
 
@@ -281,8 +284,7 @@ public class GameAreaCommand implements CommandExecutor {
             return;
         }
 
-        String name = args[1].toLowerCase();
-        GameArea gamearea = master.getGameAreaManager().getByName(name);
+        GameArea gamearea = master.getGameAreaManager().getByName(args[1].toLowerCase());
         if (gamearea == null) {
             Messenger.msgToSender(
                 sender,
@@ -292,8 +294,8 @@ public class GameAreaCommand implements CommandExecutor {
         }
         if (!gamearea.isValidSetUp()) {
             Messenger.msgToSender(
-                    sender,
-                    OverCrafted.prefix + "&cFaltan definir SpawnPoints para este GameArea."    // TODO: Not found GameArea message.
+                sender,
+                OverCrafted.prefix + "&cFaltan definir SpawnPoints para este GameArea."    // TODO: Not found GameArea message.
             );
             return;
         }
@@ -302,7 +304,8 @@ public class GameAreaCommand implements CommandExecutor {
 
         Messenger.msgToSender(
             sender,
-            OverCrafted.prefix + "&aEl GameArea " + gamearea.getName() + " fue seleccionado para el siguiente juego."
+            OverCrafted.prefix +
+            "&aEl GameArea " + gamearea.getName() + " fue seleccionado para el siguiente juego."
         );
     }
 
@@ -315,9 +318,7 @@ public class GameAreaCommand implements CommandExecutor {
             return;
         }
 
-        String name = args[1].toLowerCase();
-        GameArea gamearea = this.master.getGameAreaManager().getByName(name);
-
+        GameArea gamearea = this.master.getGameAreaManager().getByName(args[1].toLowerCase());
         if (gamearea == null) {
             Messenger.msgToSender(
                 sender,
@@ -356,8 +357,8 @@ public class GameAreaCommand implements CommandExecutor {
     private void scmDelete(CommandSender sender, String[] args) {
         if (args.length != 2) {
             Messenger.msgToSender(
-                    sender,
-                    OverCrafted.prefix + "&cArgumentos incompletos."    // TODO: Invalid arguments message.
+                sender,
+                OverCrafted.prefix + "&cArgumentos incompletos."    // TODO: Invalid arguments message.
             );
             return;
         }

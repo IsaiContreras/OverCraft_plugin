@@ -74,8 +74,7 @@ public class GameArea {
         if (this.spawnpoints.size() == maxPlayers)
             return ListResult.FULL_LIST;
 
-        int playerIndex = spawnpoints.size() + 1;
-        spawnpoint.setPlayerIndex(playerIndex);
+        spawnpoint.setPlayerIndex(spawnpoints.size() + 1);
 
         this.spawnpoints.add(spawnpoint);
         return ListResult.SUCCESS;

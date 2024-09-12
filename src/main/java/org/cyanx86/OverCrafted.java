@@ -47,14 +47,14 @@ public class OverCrafted extends JavaPlugin {
         oreblocks = new OreBlocksManager();
 
         Messenger.msgToConsole(
-                prefix + "&ePlugin activo. &fVersion: " + version
+            prefix + "&ePlugin activo. &fVersion: " + version
         );
     }
 
     public void onDisable() {
         gameAreaManager.saveConfig();
         Messenger.msgToConsole(
-                prefix + "ePlugin desactivado."
+            prefix + "ePlugin desactivado."
         );
     }
 

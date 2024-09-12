@@ -44,9 +44,8 @@ public class GameAreaManager {
         FileConfiguration config = this.configFile.getConfig();
         List<Map<?, ?>> gmaMapList = config.getMapList("gameareas");
 
-        for (Map<?, ?> gmaMap : gmaMapList) {
+        for (Map<?, ?> gmaMap : gmaMapList)
             gameAreas.add(GameArea.deserialize((Map<String, Object>)gmaMap));
-        }
     }
 
     public void reloadConfig() {
@@ -59,9 +58,8 @@ public class GameAreaManager {
 
         List<Map<String, Object>> gmaMapList = new ArrayList<>();
 
-        for (GameArea gma : this.gameAreas) {
+        for (GameArea gma : this.gameAreas)
             gmaMapList.add(gma.serialize());
-        }
 
         config.set("gameareas", gmaMapList);
         this.configFile.saveConfig();
