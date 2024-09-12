@@ -5,6 +5,7 @@ import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
 
 import org.cyanx86.OverCrafted;
+import org.cyanx86.utils.DataFormatting;
 import org.cyanx86.utils.Messenger;
 
 public class MainCommand implements CommandExecutor {
@@ -14,14 +15,11 @@ public class MainCommand implements CommandExecutor {
     // -- Public
 
     // -- Private
-    private final OverCrafted master;
+    private final OverCrafted master = OverCrafted.getInstance();
 
     // -- [[ METHODS ]] --
 
     // -- Public
-    public MainCommand(OverCrafted master) {
-        this.master = master;
-    }
 
     @Override
     public boolean onCommand(CommandSender sender, Command command, String s, String[] args) {
@@ -43,9 +41,7 @@ public class MainCommand implements CommandExecutor {
             return;
         }
 
-        String mainArg = args[0].toLowerCase();
-
-        switch (mainArg) {
+        switch (args[0].toLowerCase()) {
             case "help":            // subCommand Help
                 this.scmHelp(sender);
                 break;
@@ -54,6 +50,9 @@ public class MainCommand implements CommandExecutor {
                 break;
             case "startround":      // subCommand StartRound
                 this.scmStartRound(sender);
+                break;
+            case "endround":        // subcommand EndRound
+                this.scmEndRound(sender);
                 break;
             default:
                 this.scmHelp(sender);
@@ -68,6 +67,7 @@ public class MainCommand implements CommandExecutor {
         Messenger.msgToSender(sender, "&7- /overcrafted help");
         Messenger.msgToSender(sender, "&7- /overcrafted roundtime <tiempo>");
         Messenger.msgToSender(sender, "&7- /overcrafted startround");
+        Messenger.msgToSender(sender, "&7- /overcrafted endround");
     }
 
     private void scmSetRoundTime(CommandSender sender, String[] args) {
@@ -79,14 +79,43 @@ public class MainCommand implements CommandExecutor {
         try {
             time = Integer.parseInt(args[1]);
         } catch (NumberFormatException e) {
+            Messenger.msgToSender(
+                sender,
+                OverCrafted.prefix + "&cEste argumento solo acepta valores numéricos."
+            );
             return;
         }
 
         master.getGameRoundManager().setRoundTime(time);
+
+        Messenger.msgToSender(
+            sender,
+            OverCrafted.prefix + "&aLa ronda durará " + DataFormatting.formatSecondsToTime(time) + " minutos."
+        );
     }
 
     private void scmStartRound(CommandSender sender) {
-        master.getGameRoundManager().startRound();
+        if(!master.getGameRoundManager().startRound()) {
+            Messenger.msgToSender(
+                sender,
+                OverCrafted.prefix + "&cDebe seleccionar un GameArea y los jugadores para la ronda."
+            );
+        }
+    }
+
+    private void scmEndRound(CommandSender sender) {
+        if (!master.getGameRoundManager().terminateRound(null)) {
+            Messenger.msgToSender(
+                sender,
+                OverCrafted.prefix + "&cNo se pudo cancelar la ronda. Aun no ha iniciado o ya ha acabado."
+            );
+            return;
+        }
+
+        Messenger.msgToSender(
+            sender,
+            OverCrafted.prefix + "&aRonda cancelada."
+        );
     }
 
 }

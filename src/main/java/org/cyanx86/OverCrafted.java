@@ -9,6 +9,7 @@ import org.cyanx86.listeners.PlayerListener;
 import org.cyanx86.managers.GameAreaCornerAssistantManager;
 import org.cyanx86.managers.GameAreaManager;
 import org.cyanx86.managers.GameRoundManager;
+import org.cyanx86.managers.OreBlocksManager;
 import org.cyanx86.utils.Messenger;
 
 import java.util.Objects;
@@ -21,11 +22,14 @@ public class OverCrafted extends JavaPlugin {
     public static String prefix = "&6[&l&eOverCrafted&6] ";
 
     // -- Private
+    private static OverCrafted instance;
     private final String version = getDescription().getVersion();
 
     private GameAreaManager gameAreaManager;
     private GameAreaCornerAssistantManager gacaManager;
     private GameRoundManager gameRoundManager;
+
+    private OreBlocksManager oreblocks;
 
     // -- [[ METHODS ]] --
 
@@ -33,21 +37,24 @@ public class OverCrafted extends JavaPlugin {
 
     // Events
     public void onEnable() {
+        instance = this;
         this.setupCommands();
         this.setupEvents();
-        gameAreaManager = new GameAreaManager(this);
-        gacaManager = new GameAreaCornerAssistantManager(this);
-        gameRoundManager = new GameRoundManager(this);
+        gameAreaManager = new GameAreaManager();
+        gacaManager = new GameAreaCornerAssistantManager();
+        gameRoundManager = new GameRoundManager();
+
+        oreblocks = new OreBlocksManager();
 
         Messenger.msgToConsole(
-                prefix + "&ePlugin activo. &fVersion: " + version
+            prefix + "&ePlugin activo. &fVersion: " + version
         );
     }
 
     public void onDisable() {
         gameAreaManager.saveConfig();
         Messenger.msgToConsole(
-                prefix + "ePlugin desactivado."
+            prefix + "ePlugin desactivado."
         );
     }
 
@@ -64,15 +71,23 @@ public class OverCrafted extends JavaPlugin {
         return this.gameRoundManager;
     }
 
+    public OreBlocksManager getOreBlocks() {
+        return this.oreblocks;
+    }
+
+    public static OverCrafted getInstance() {
+        return instance;
+    }
+
     // -- Private
     private void setupCommands() {
-        Objects.requireNonNull(this.getCommand("overcrafted")).setExecutor(new MainCommand(this));
-        Objects.requireNonNull(this.getCommand("playerlist")).setExecutor(new PlayerListCommand(this));
-        Objects.requireNonNull(this.getCommand("gamearea")).setExecutor(new GameAreaCommand(this));
+        Objects.requireNonNull(this.getCommand("overcrafted")).setExecutor(new MainCommand());
+        Objects.requireNonNull(this.getCommand("playerlist")).setExecutor(new PlayerListCommand());
+        Objects.requireNonNull(this.getCommand("gamearea")).setExecutor(new GameAreaCommand());
     }
 
     private void setupEvents() {
-        getServer().getPluginManager().registerEvents(new PlayerListener(this), this);
+        getServer().getPluginManager().registerEvents(new PlayerListener(), OverCrafted.getInstance());
     }
 
 }

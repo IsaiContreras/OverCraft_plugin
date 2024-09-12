@@ -18,24 +18,25 @@ public class PlayerListCommand implements CommandExecutor {
     // -- Public
 
     // -- Private
-    private final OverCrafted master;
+    private final OverCrafted master = OverCrafted.getInstance();
 
     // -- [[ METHODS ]] --
 
     // -- Public
-    public PlayerListCommand(OverCrafted master) {
-        this.master = master;
-    }
 
     @Override
     public boolean onCommand(CommandSender sender, Command command, String s, String[] args) {
         this.handleSubcommand(sender, args);
-        return false;
+        return true;
     }
 
     // -- Private
     private void handleSubcommand(CommandSender sender, String[] args) {
         if(!sender.hasPermission("overcrafted.manager")) {
+            Messenger.msgToSender(
+                sender,
+                OverCrafted.prefix + "&cNo tienes permiso para usar este comando."
+            );
             return;
         }
         if (args.length == 0) {
@@ -43,8 +44,7 @@ public class PlayerListCommand implements CommandExecutor {
             return;
         }
 
-        String mainArg = args[0].toLowerCase();
-        switch (mainArg) {
+        switch (args[0].toLowerCase()) {
             case "help":        // subcommand Help.
                 this.scmHelp(sender);
                 break;
@@ -78,8 +78,8 @@ public class PlayerListCommand implements CommandExecutor {
     private void scmAdd(CommandSender sender, String[] args) {
         if (args.length != 2) {
             Messenger.msgToSender(
-                    sender,
-                    OverCrafted.prefix + "&cArgumentos incompletos."    // TODO: Invalid arguments message.
+                sender,
+                OverCrafted.prefix + "&cArgumentos incompletos."    // TODO: Invalid arguments message.
             );
             return;
         }
@@ -87,8 +87,8 @@ public class PlayerListCommand implements CommandExecutor {
         Player player = Bukkit.getPlayer(args[1]);
         if (player == null) {
             Messenger.msgToSender(
-                    sender,
-                    OverCrafted.prefix + "&cEl jugador &r&o" + args[1] + "&r&c no se encontró."     // TODO: Player not found message.
+                sender,
+                OverCrafted.prefix + "&cEl jugador &r&o" + args[1] + "&r&c no se encontró."     // TODO: Player not found message.
             );
             return;
         }
@@ -96,43 +96,43 @@ public class PlayerListCommand implements CommandExecutor {
         switch (master.getGameRoundManager().addPlayer(player)) {
             case ERROR -> {
                 Messenger.msgToSender(
-                        sender,
-                        OverCrafted.prefix + "&cSelecione un GameArea primero."
+                    sender,
+                    OverCrafted.prefix + "&cSelecione un GameArea primero."
                 );
                 return;
             }
             case FULL_LIST -> {
                 Messenger.msgToSender(
-                        sender,
-                        OverCrafted.prefix + "&cLa lista está llena."   // TODO: Full list message.
+                    sender,
+                    OverCrafted.prefix + "&cLa lista está llena."   // TODO: Full list message.
                 );
                 return;
             }
             case ALREADY_IN -> {
                 Messenger.msgToSender(
-                        sender,
-                        OverCrafted.prefix + "&cEl jugador ya está en la lista."    // TODO: Already in message.
+                    sender,
+                    OverCrafted.prefix + "&cEl jugador ya está en la lista."    // TODO: Already in message.
                 );
                 return;
             }
         }
 
         Messenger.msgToSender(
-                sender,
-                OverCrafted.prefix + "&aSe añadió al jugador &r&o" + player.getName() + "&r&a."     // TODO: Player successfully added message.
+            sender,
+            OverCrafted.prefix + "&aSe añadió al jugador &r&o" + player.getName() + "&r&a."     // TODO: Player successfully added message.
         );
         if (sender != player)
             Messenger.msgToSender(
-                    player,
-                    OverCrafted.prefix + "&aFuiste añadido a una lista de jugadores."   // TODO: Player added to list advice message.
+                player,
+                OverCrafted.prefix + "&aFuiste añadido a una lista de jugadores."   // TODO: Player added to list advice message.
             );
     }
 
     private void scmRemove(CommandSender sender, String[] args) {
         if (args.length != 2) {
             Messenger.msgToSender(
-                    sender,
-                    OverCrafted.prefix + "&cArgumentos incompletos."    // TODO: Invalid arguments message.
+                sender,
+                OverCrafted.prefix + "&cArgumentos incompletos."    // TODO: Invalid arguments message.
             );
             return;
         }
@@ -140,8 +140,8 @@ public class PlayerListCommand implements CommandExecutor {
         Player player = Bukkit.getPlayer(args[1]);
         if (player == null) {
             Messenger.msgToSender(
-                    sender,
-                    OverCrafted.prefix + "&cEl jugador &r&o" + args[1] + "&r&c no se encontró."     // TODO: Player not found message.
+                sender,
+                OverCrafted.prefix + "&cEl jugador &r&o" + args[1] + "&r&c no se encontró."     // TODO: Player not found message.
             );
             return;
         }
@@ -149,28 +149,28 @@ public class PlayerListCommand implements CommandExecutor {
         switch (master.getGameRoundManager().removePlayer(player)) {
             case EMPTY_LIST -> {
                 Messenger.msgToSender(
-                        sender,
-                        OverCrafted.prefix + "&cLa lista está vacía."   // TODO: Empty list message;
+                    sender,
+                    OverCrafted.prefix + "&cLa lista está vacía."   // TODO: Empty list message;
                 );
                 return;
             }
             case NOT_FOUND -> {
                 Messenger.msgToSender(
-                        sender,
-                        OverCrafted.prefix + "&cNo encontró al jugador &r&o" + player.getName() + "&r&a."
+                    sender,
+                    OverCrafted.prefix + "&cNo encontró al jugador &r&o" + player.getName() + "&r&a."
                 );
                 return;
             }
         }
 
         Messenger.msgToSender(
-                sender,
-                OverCrafted.prefix + "&aSe removió al jugador &r&o" + player.getName() + "&r&a."    // TODO: Player successfully removed message.
+            sender,
+            OverCrafted.prefix + "&aSe removió al jugador &r&o" + player.getName() + "&r&a."    // TODO: Player successfully removed message.
         );
         if (sender != player)
             Messenger.msgToSender(
-                    player,
-                    OverCrafted.prefix + "&cFuiste retirado de la lista de jugadores."  // TODO: Player removed from list advide message.
+                player,
+                OverCrafted.prefix + "&cFuiste retirado de la lista de jugadores."  // TODO: Player removed from list advide message.
             );
     }
 
@@ -195,26 +195,24 @@ public class PlayerListCommand implements CommandExecutor {
     }
 
     private void scmClear(CommandSender sender) {
-        List<Player> gamePlayers = master.getGameRoundManager().getGamePlayers();
-
         switch(master.getGameRoundManager().clearPlayerList()) {
             case EMPTY_LIST -> {
                 Messenger.msgToSender(
-                        sender,
-                        OverCrafted.prefix + "&cLa lista está vacía."   // TODO: Empty list message.
+                    sender,
+                    OverCrafted.prefix + "&cLa lista está vacía."   // TODO: Empty list message.
                 );
                 return;
             }
             case SUCCESS -> {
                 Messenger.msgToSender(
-                        sender,
-                        OverCrafted.prefix + "&aLa lista fue vaciada."  // TODO: PlayerList successfully cleared message.
+                    sender,
+                    OverCrafted.prefix + "&aLa lista fue vaciada."  // TODO: PlayerList successfully cleared message.
                 );
                 return;
             }
         }
 
-        for (Player gamePlayer : gamePlayers) {
+        for (Player gamePlayer : master.getGameRoundManager().getGamePlayers()) {
             Player current;
             try {
                 current = gamePlayer;
@@ -224,8 +222,8 @@ public class PlayerListCommand implements CommandExecutor {
 
             if (sender != current) {
                 Messenger.msgToSender(
-                        current,
-                        OverCrafted.prefix + "&cFuiste retirado de la lista de jugadores."  // TODO: Player removed from list advide message.
+                    current,
+                    OverCrafted.prefix + "&cFuiste retirado de la lista de jugadores."  // TODO: Player removed from list advide message.
                 );
             }
         }

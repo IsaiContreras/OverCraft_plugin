@@ -9,6 +9,7 @@ import org.cyanx86.utils.Enums.ListResult;
 
 import java.util.ArrayList;
 import java.util.List;
+import org.jetbrains.annotations.NotNull;
 
 public class GameRoundManager {
 
@@ -17,7 +18,7 @@ public class GameRoundManager {
     // -- Public
 
     // -- Private
-    private final OverCrafted master;
+    private final OverCrafted master = OverCrafted.getInstance();
 
     private GameRound gameround;
 
@@ -28,24 +29,27 @@ public class GameRoundManager {
     // -- [[ METHODS ]] --
 
     // -- Public
-    public GameRoundManager(OverCrafted master) {
-        this.master = master;
-    }
 
     // Round
-    public void startRound() {
+    public boolean startRound() {
+        if (gamearea == null)
+            return false;
+        if (gamePlayers.isEmpty())
+            return false;
+
         this.gameround = new GameRound(
-            this.master,
             this.gamearea,
             this.gamePlayers,
             this.roundTime
         );
         this.gamearea = null;
         this.gamePlayers.clear();
+
+        return true;
     }
 
-    public void terminateRound() {
-
+    public boolean terminateRound(String reason) {
+        return this.gameround.terminateRound(reason);
     }
 
     public GameRound getGameRound() {
@@ -57,7 +61,7 @@ public class GameRoundManager {
     }
 
     // GameArea managing
-    public void setGameArea(GameArea gamearea) {
+    public void setGameArea(@NotNull GameArea gamearea) {
         this.gamearea = gamearea;
     }
 
@@ -66,7 +70,7 @@ public class GameRoundManager {
     }
 
     // Player managing
-    public ListResult addPlayer(Player player) {
+    public ListResult addPlayer(@NotNull Player player) {
         if (gamearea == null)
             return ListResult.ERROR;
         if (this.gamePlayers.size() == gamearea.getMaxPlayers())
@@ -78,7 +82,7 @@ public class GameRoundManager {
         return ListResult.SUCCESS;
     }
 
-    public ListResult removePlayer(Player player) {
+    public ListResult removePlayer(@NotNull Player player) {
         if (this.gamePlayers.isEmpty())
             return ListResult.EMPTY_LIST;
         if (!this.gamePlayers.remove(player))
@@ -88,9 +92,9 @@ public class GameRoundManager {
     }
 
     public ListResult clearPlayerList() {
-        if (gamePlayers.isEmpty()) {
+        if (gamePlayers.isEmpty())
             return ListResult.EMPTY_LIST;
-        }
+
         this.gamePlayers.clear();
         return ListResult.SUCCESS;
     }

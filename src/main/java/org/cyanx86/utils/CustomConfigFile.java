@@ -1,4 +1,4 @@
-package org.cyanx86.managers;
+package org.cyanx86.utils;
 
 import org.bukkit.configuration.InvalidConfigurationException;
 import org.bukkit.configuration.file.FileConfiguration;
@@ -8,6 +8,7 @@ import org.cyanx86.OverCrafted;
 
 import java.io.File;
 import java.io.IOException;
+import org.jetbrains.annotations.NotNull;
 
 public class CustomConfigFile {
 
@@ -16,7 +17,7 @@ public class CustomConfigFile {
     // -- Public
 
     // -- Private
-    private final OverCrafted master;
+    private final OverCrafted master = OverCrafted.getInstance();
     private final String filename;
     private final String foldername;
 
@@ -28,21 +29,19 @@ public class CustomConfigFile {
     // -- [[ METHODS ]] --
 
     // -- Public
-    public CustomConfigFile(String filename, String foldername, OverCrafted master, boolean must_create) {
+    public CustomConfigFile(@NotNull String filename, String foldername, boolean must_create) {
         this.filename = filename;
         this.foldername = foldername;
-        this.master = master;
         this.mustCreate = must_create;
     }
     public String getPath() { return this.filename; }
 
     // -- Private
     public void registerConfig() {
-        if (foldername != null) {
+        if (foldername != null)
             file = new File(master.getDataFolder() + File.separator + foldername, filename);
-        } else {
+        else
             file = new File(master.getDataFolder(), filename);
-        }
 
         if (!file.exists()) {
             if (mustCreate) {
@@ -52,11 +51,10 @@ public class CustomConfigFile {
                     e.printStackTrace();
                 }
             } else {
-                if (foldername != null) {
+                if (foldername != null)
                     master.saveResource(foldername + File.separator + filename, false);
-                } else {
+                else
                     master.saveResource(filename, false);
-                }
             }
         }
 
@@ -77,19 +75,17 @@ public class CustomConfigFile {
     }
 
     public FileConfiguration getConfig() {
-        if (fileConfig == null) {
+        if (fileConfig == null)
             reloadConfig();
-        }
         return fileConfig;
     }
 
     public void reloadConfig() {
         if (fileConfig == null) {
-            if (foldername != null) {
+            if (foldername != null)
                 file = new File(master.getDataFolder() + File.separator + foldername, filename);
-            } else {
+            else
                 file = new File(master.getDataFolder(), filename);
-            }
         }
 
         fileConfig = YamlConfiguration.loadConfiguration(file);

@@ -9,6 +9,7 @@ import org.cyanx86.utils.Enums.ListResult;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.UUID;
+import org.jetbrains.annotations.NotNull;
 
 public class GameAreaCornerAssistantManager {
 
@@ -17,7 +18,7 @@ public class GameAreaCornerAssistantManager {
     // -- Public
 
     // -- Private
-    private final OverCrafted master;
+    private final OverCrafted master = OverCrafted.getInstance();
 
     private final Map<UUID, GameAreaCornerAssistant> assistants = new HashMap<>();
     private final Map<String, UUID> playerUUIDs = new HashMap<>();
@@ -25,35 +26,36 @@ public class GameAreaCornerAssistantManager {
     // -- [[ METHODS ]] --
 
     // -- Public
-    public GameAreaCornerAssistantManager(OverCrafted master) {
-        this.master = master;
-    }
 
-    public ListResult signInAssistant(Player player) {
+    public ListResult signInAssistant(@NotNull Player player) {
         if (assistants.containsKey(player.getUniqueId()))
             return ListResult.ALREADY_IN;
+
         assistants.put(player.getUniqueId(), new GameAreaCornerAssistant());
         playerUUIDs.put(player.getName(), player.getUniqueId());
+
         return ListResult.SUCCESS;
     }
 
-    public ListResult eraseAssistant(Player player) {
+    public ListResult eraseAssistant(@NotNull Player player) {
         if (!playerUUIDs.containsKey(player.getName()))
             return ListResult.NOT_FOUND;
+
         UUID playerUUID = playerUUIDs.get(player.getName());
         assistants.remove(playerUUID);
         playerUUIDs.remove(player.getName());
+
         return ListResult.SUCCESS;
     }
 
-    public GameAreaCornerAssistant getAssistantByName(String name){
+    public GameAreaCornerAssistant getAssistantByName(@NotNull String name) {
         UUID playerUUID = playerUUIDs.get(name);
         if (playerUUID == null)
             return null;
         return assistants.get(playerUUID);
     }
 
-    public GameAreaCornerAssistant getAssistantByUUID(UUID uuid) {
+    public GameAreaCornerAssistant getAssistantByUUID(@NotNull UUID uuid) {
         return assistants.get(uuid);
     }
 

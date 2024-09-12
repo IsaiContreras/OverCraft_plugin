@@ -5,9 +5,11 @@ import org.bukkit.configuration.file.FileConfiguration;
 
 import org.cyanx86.OverCrafted;
 import org.cyanx86.classes.GameArea;
+import org.cyanx86.utils.CustomConfigFile;
 import org.cyanx86.utils.Enums.ListResult;
 
 import java.util.*;
+import org.jetbrains.annotations.NotNull;
 
 public class GameAreaManager {
 
@@ -16,7 +18,7 @@ public class GameAreaManager {
     // -- Public
 
     // -- Private
-    private final OverCrafted master;
+    private final OverCrafted master = OverCrafted.getInstance();
     private final CustomConfigFile configFile;
 
     private final String filename = "gameareas.yml";
@@ -27,12 +29,10 @@ public class GameAreaManager {
     // -- [[ METHODS ]]
 
     // -- Public
-    public GameAreaManager(OverCrafted master) {
-        this.master = master;
+    public GameAreaManager() {
         this.configFile = new CustomConfigFile(
             filename,
             folder,
-            master,
             true
         );
         this.configFile.registerConfig();
@@ -44,9 +44,8 @@ public class GameAreaManager {
         FileConfiguration config = this.configFile.getConfig();
         List<Map<?, ?>> gmaMapList = config.getMapList("gameareas");
 
-        for (Map<?, ?> gmaMap : gmaMapList) {
+        for (Map<?, ?> gmaMap : gmaMapList)
             gameAreas.add(GameArea.deserialize((Map<String, Object>)gmaMap));
-        }
     }
 
     public void reloadConfig() {
@@ -59,19 +58,17 @@ public class GameAreaManager {
 
         List<Map<String, Object>> gmaMapList = new ArrayList<>();
 
-        for (GameArea gma : this.gameAreas) {
+        for (GameArea gma : this.gameAreas)
             gmaMapList.add(gma.serialize());
-        }
 
         config.set("gameareas", gmaMapList);
         this.configFile.saveConfig();
     }
 
     // List managing
-    public ListResult addGameArea(String name, Location corner1, Location corner2, int maxPlayers) {
-        if (this.alreadyExists(name)) {
+    public ListResult addGameArea(@NotNull String name, @NotNull Location corner1, @NotNull Location corner2, int maxPlayers) {
+        if (this.alreadyExists(name))
             return ListResult.ALREADY_IN;
-        }
 
         GameArea gamearea = new GameArea(
             name,
@@ -80,16 +77,15 @@ public class GameAreaManager {
             maxPlayers
         );
 
-        for (GameArea gmaItem : this.gameAreas) {
+        for (GameArea gmaItem : this.gameAreas)
             if (gmaItem.isRegionOverlapping(gamearea))
                 return ListResult.INVALID_ITEM;
-        }
 
         this.gameAreas.add(gamearea);
         return ListResult.SUCCESS;
     }
 
-    public ListResult removeGameArea(String name) {
+    public ListResult removeGameArea(@NotNull String name) {
         if (this.isEmpty())
             return ListResult.EMPTY_LIST;
 
@@ -102,12 +98,12 @@ public class GameAreaManager {
         return ListResult.SUCCESS;
     }
 
-    public GameArea getByName(String name) {
+    public GameArea getByName(@NotNull String name) {
         Optional<GameArea> queryGameArea = gameAreas.stream().filter(item -> item.getName().equals(name)).findFirst();
         return queryGameArea.orElse(null);
     }
 
-    public boolean alreadyExists(String name) {
+    public boolean alreadyExists(@NotNull String name) {
         return this.gameAreas.stream().anyMatch(item -> item.getName().equals(name));
     }
 
