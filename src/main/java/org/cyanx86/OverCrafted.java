@@ -5,6 +5,7 @@ import org.bukkit.plugin.java.JavaPlugin;
 import org.cyanx86.commands.GameAreaCommand;
 import org.cyanx86.commands.MainCommand;
 import org.cyanx86.commands.PlayerListCommand;
+import org.cyanx86.listeners.MiscellaneousListener;
 import org.cyanx86.listeners.PlayerListener;
 import org.cyanx86.managers.GameAreaCornerAssistantManager;
 import org.cyanx86.managers.GameAreaManager;
@@ -88,6 +89,7 @@ public class OverCrafted extends JavaPlugin {
 
     private void setupEvents() {
         getServer().getPluginManager().registerEvents(new PlayerListener(), OverCrafted.getInstance());
+        getServer().getPluginManager().registerEvents(new MiscellaneousListener(), OverCrafted.getInstance());
     }
 
 }

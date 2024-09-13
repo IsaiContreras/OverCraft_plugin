@@ -87,7 +87,8 @@ public class GameRound {
             return ListResult.NOT_FOUND;
 
         playerstate.moveToPreviousLocation();
-        playerstate.clearInventory();
+        playerstate.restoreGameMode();
+        playerstate.restoreInventory();
         ListResult result = this.playersManager.removePlayer(player);
 
         if (this.playersManager.getPlayerStates().isEmpty())
@@ -119,8 +120,7 @@ public class GameRound {
         );
 
         this.currentState = ROUNDSTATE.ENDED;
-        this.quitPlayersFromGameArea();
-        this.clearPlayersInventory();
+        this.restorePlayerProperties();
     }
 
     private SpawnPoint getPlayerSpawn(@NotNull PlayerState playerstate) {
@@ -140,14 +140,12 @@ public class GameRound {
             this.spawnPlayer(playerstate);
     }
 
-    private void quitPlayersFromGameArea() {
-        for (PlayerState playerstate : this.playersManager.getPlayerStates())
+    private void restorePlayerProperties() {
+        for (PlayerState playerstate : this.playersManager.getPlayerStates()) {
             playerstate.moveToPreviousLocation();
-    }
-
-    private void clearPlayersInventory() {
-        for (PlayerState playerstate : this.playersManager.getPlayerStates())
-            playerstate.clearInventory();
+            playerstate.restoreGameMode();
+            playerstate.restoreInventory();
+        }
     }
 
     private void startCountdown() {
