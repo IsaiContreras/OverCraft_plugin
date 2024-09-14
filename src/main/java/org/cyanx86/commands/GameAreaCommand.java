@@ -107,7 +107,7 @@ public class GameAreaCommand implements CommandExecutor {
     }
 
     private void scmCreate(CommandSender sender, String[] args) {
-        GameAreaPropertiesAssistant gacAssistant = master.getGacaManager().getAssistantByName(sender.getName());
+        GameAreaPropertiesAssistant gacAssistant = master.getGapaManager().getAssistantByName(sender.getName());
         if (gacAssistant == null) {
             Messenger.msgToSender(
                 sender,

@@ -46,7 +46,7 @@ public class PlayerEventsHandler {
             return;
 
         // Register GameAreaCornerAssistant
-        master.getGacaManager().signInAssistant(player);
+        master.getGapaManager().signInAssistant(player);
 
         Messenger.msgToConsole(OverCrafted.prefix + player.getName() + " registro su asistente.");
     }
@@ -54,7 +54,7 @@ public class PlayerEventsHandler {
     public void onOverCraftedManagerDisconnects(PlayerQuitEvent event) {
         Player player = event.getPlayer();
 
-        if (master.getGacaManager().eraseAssistant(player) == Enums.ListResult.NOT_FOUND)
+        if (master.getGapaManager().eraseAssistant(player) == Enums.ListResult.NOT_FOUND)
             return;
 
         Messenger.msgToConsole(OverCrafted.prefix + player.getName() + " dispuso su asistente.");
@@ -65,8 +65,8 @@ public class PlayerEventsHandler {
         if (!player.hasPermission("overcrafted.manager"))
             return;
 
-        this.overCraftedManagerCreatesGameAreaCorner(event);
-        this.overCraftedManagerCreatesIngredientDispenser(event);
+        this.onOverCraftedManagerCreatesGameAreaCorner(event);
+        this.onOverCraftedManagerCreatesIngredientDispenser(event);
     }
 
     public void onOverCraftedPlayerDisconnects(PlayerQuitEvent event) {
@@ -132,7 +132,7 @@ public class PlayerEventsHandler {
         Map<Material, Material> materialMap = master.getOreBlocks().getOreMap();
 
         if (
-            materialMap.containsKey(block.getType()) ||
+            materialMap.containsKey(block.getType()) &&
             round.getGameArea().isPointInsideBoundaries(block.getLocation())
         ) {
             ItemStack deliver = new ItemStack(
@@ -201,17 +201,17 @@ public class PlayerEventsHandler {
         if (round == null || round.getCurrentRoundState() == GameRound.ROUNDSTATE.ENDED || !round.isPlayerInGame(player))
             return;
 
-        event.setCancelled(true);
-
         Block block = event.getClickedBlock();
         if (block == null)
             return;
 
         if (!(
-            event.getAction().equals(Action.RIGHT_CLICK_BLOCK) &&
-            block.getType().equals(Material.CHEST)
+            block.getType().equals(Material.CHEST) &&
+            event.getAction().equals(Action.RIGHT_CLICK_BLOCK)
         ))
             return;
+
+        event.setCancelled(true);
 
         ItemStack drop = round.getGameArea()
                 .getIngredientDispenserByLocation(block.getLocation())
@@ -353,7 +353,7 @@ public class PlayerEventsHandler {
     }
 
     // -- Private
-    private void overCraftedManagerCreatesGameAreaCorner(PlayerInteractEvent event) {
+    private void onOverCraftedManagerCreatesGameAreaCorner(PlayerInteractEvent event) {
         Player player = event.getPlayer();
         ItemStack item = event.getItem();
         if (item == null)
@@ -366,7 +366,7 @@ public class PlayerEventsHandler {
         ))
             return;
 
-        GameAreaPropertiesAssistant gapAssistant = master.getGacaManager().getAssistantByName(player.getName());
+        GameAreaPropertiesAssistant gapAssistant = master.getGapaManager().getAssistantByName(player.getName());
         if (gapAssistant == null) {
             Messenger.msgToSender(
                 player,
@@ -393,7 +393,7 @@ public class PlayerEventsHandler {
         );
     }
 
-    private void overCraftedManagerCreatesIngredientDispenser(PlayerInteractEvent event) {
+    private void onOverCraftedManagerCreatesIngredientDispenser(PlayerInteractEvent event) {
         Player player = event.getPlayer();
         ItemStack item = event.getItem();
         if (item == null)
@@ -406,7 +406,7 @@ public class PlayerEventsHandler {
         ))
             return;
 
-        GameAreaPropertiesAssistant gapAssistant = master.getGacaManager().getAssistantByName(player.getName());
+        GameAreaPropertiesAssistant gapAssistant = master.getGapaManager().getAssistantByName(player.getName());
         if (gapAssistant == null) {
             Messenger.msgToSender(
                 player,
@@ -479,7 +479,7 @@ public class PlayerEventsHandler {
         }
 
         Messenger.msgToSender(
-            player,
+                player,
             OverCrafted.prefix + "&aSe ha creado un Dispensador de Ingredientes en el GameArea &r&o" +
                     gamearea.getName() + "&r&a."
         );

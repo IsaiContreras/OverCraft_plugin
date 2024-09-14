@@ -27,10 +27,10 @@ public class OverCrafted extends JavaPlugin {
     private final String version = getDescription().getVersion();
 
     private GameAreaManager gameAreaManager;
-    private GameAreaPropertiesAssistantManager gacaManager;
+    private GameAreaPropertiesAssistantManager gapaManager;
     private GameRoundManager gameRoundManager;
 
-    private OreBlocksManager oreblocks;
+    private OreBlocksManager oreBlocks;
 
     // -- [[ METHODS ]] --
 
@@ -39,13 +39,15 @@ public class OverCrafted extends JavaPlugin {
     // Events
     public void onEnable() {
         instance = this;
-        this.setupCommands();
-        this.setupEvents();
+
         gameAreaManager = new GameAreaManager();
-        gacaManager = new GameAreaPropertiesAssistantManager();
+        gapaManager = new GameAreaPropertiesAssistantManager();
         gameRoundManager = new GameRoundManager();
 
-        oreblocks = new OreBlocksManager();
+        oreBlocks = new OreBlocksManager();
+
+        this.setupCommands();
+        this.setupEvents();
 
         Messenger.msgToConsole(
             prefix + "&ePlugin activo. &fVersion: " + version
@@ -60,8 +62,8 @@ public class OverCrafted extends JavaPlugin {
     }
 
     // GameArea managing
-    public GameAreaPropertiesAssistantManager getGacaManager() {
-        return this.gacaManager;
+    public GameAreaPropertiesAssistantManager getGapaManager() {
+        return this.gapaManager;
     }
 
     public GameAreaManager getGameAreaManager() {
@@ -73,7 +75,7 @@ public class OverCrafted extends JavaPlugin {
     }
 
     public OreBlocksManager getOreBlocks() {
-        return this.oreblocks;
+        return this.oreBlocks;
     }
 
     public static OverCrafted getInstance() {
@@ -89,7 +91,7 @@ public class OverCrafted extends JavaPlugin {
 
     private void setupEvents() {
         getServer().getPluginManager().registerEvents(new PlayerListener(), OverCrafted.getInstance());
-        getServer().getPluginManager().registerEvents(new MiscellaneousListener(), OverCrafted.getInstance());
+        //getServer().getPluginManager().registerEvents(new MiscellaneousListener(), OverCrafted.getInstance());
     }
 
 }
