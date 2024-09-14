@@ -8,11 +8,12 @@ import org.bukkit.entity.Player;
 
 import org.cyanx86.OverCrafted;
 import org.cyanx86.classes.GameArea;
-import org.cyanx86.classes.GameAreaCornerAssistant;
+import org.cyanx86.classes.GameAreaPropertiesAssistant;
+import org.cyanx86.classes.IngredientDispenser;
 import org.cyanx86.classes.SpawnPoint;
+import org.cyanx86.utils.Functions;
 import org.cyanx86.utils.Messenger;
 
-import java.util.Objects;
 import java.util.Optional;
 
 public class GameAreaCommand implements CommandExecutor {
@@ -68,6 +69,9 @@ public class GameAreaCommand implements CommandExecutor {
             case "resetspawns": // subCommand ResetSpawns
                 this.scmResetSpawns(sender, args);
                 break;
+            case "resetdisp":   // subCommand ResetDispsnser
+                this.scmResetDispensers(sender, args);
+                break;
             case "list":        // subCommand List
                 this.scmList(sender);
                 break;
@@ -95,6 +99,7 @@ public class GameAreaCommand implements CommandExecutor {
         Messenger.msgToSender(sender, "&7- /gamearea create <nombre>");
         Messenger.msgToSender(sender, "&7- /gamearea setspawn");
         Messenger.msgToSender(sender, "&7- /gamearea resetspawns <nombre>");
+        Messenger.msgToSender(sender, "&7- /gamearea resetdisp <nombre>");
         Messenger.msgToSender(sender, "&7- /gamearea list");
         Messenger.msgToSender(sender, "&7- /gamearea select <nombre>");
         Messenger.msgToSender(sender, "&7- /gamearea info <nombre>");
@@ -102,7 +107,7 @@ public class GameAreaCommand implements CommandExecutor {
     }
 
     private void scmCreate(CommandSender sender, String[] args) {
-        GameAreaCornerAssistant gacAssistant = master.getGacaManager().getAssistantByName(sender.getName());
+        GameAreaPropertiesAssistant gacAssistant = master.getGacaManager().getAssistantByName(sender.getName());
         if (gacAssistant == null) {
             Messenger.msgToSender(
                 sender,
@@ -172,17 +177,7 @@ public class GameAreaCommand implements CommandExecutor {
 
     private void scmSetSpawnPoint(CommandSender sender) {
         Location spawnLocation = ((Player)sender).getLocation();
-        GameArea gamearea = null;
-        for (int i = 0; i < master.getGameAreaManager().getGameAreas().size(); i++) {
-            GameArea current = master.getGameAreaManager().getGameAreas().get(i);
-            if (
-                current.isPointInsideBoundaries(spawnLocation) &&
-                current.getWorld().equals(Objects.requireNonNull(spawnLocation.getWorld()).getName())
-            ) {
-                gamearea = current;
-                break;
-            }
-        }
+        GameArea gamearea = Functions.getGameAreaFromLocation(spawnLocation);
 
         if (gamearea == null) {
             Messenger.msgToSender(
@@ -253,6 +248,36 @@ public class GameAreaCommand implements CommandExecutor {
         Messenger.msgToSender(
             sender,
             OverCrafted.prefix + "&aSe limpiaron los spawnpoints del GameArea &r&o" + gamearea.getName() + "&r&a."
+        );
+    }
+
+    private void scmResetDispensers(CommandSender sender, String[] args) {
+        if (args.length != 2) {
+            Messenger.msgToSender(
+                sender,
+                OverCrafted.prefix + "&cArgumentos incompletos."    // TODO: Invalid arguments message.
+            );
+            return;
+        }
+
+        Optional<GameArea> query = master.getGameAreaManager()
+                .getGameAreas()
+                .stream()
+                .filter(item -> item.getName().equals(args[1].toLowerCase()))
+                .findFirst();
+        if (query.isEmpty()) {
+            Messenger.msgToSender(
+                sender,
+                OverCrafted.prefix + "&cNo se encontró un GameArea con este nombre."
+            );
+            return;
+        }
+        GameArea gamearea = query.get();
+        gamearea.clearIngredientDispensers();
+
+        Messenger.msgToSender(
+            sender,
+            OverCrafted.prefix + "&aSe limpiaron los dispensadores del GameArea &r&o" + gamearea.getName() + "&r&a."
         );
     }
 
@@ -350,6 +375,18 @@ public class GameAreaCommand implements CommandExecutor {
                         "&e, &9" + String.format("%.2f", spawn.getSpawnLocation().getZ()) +
                         "&e, &b" + String.format("%.2f", spawn.getSpawnLocation().getYaw()) +
                         "&e, &d" + String.format("%.2f", spawn.getSpawnLocation().getPitch()) + "&e)"
+            );
+        }
+
+        Messenger.msgToSender(sender, "&6&o  dispensers (&e" + gamearea.getIngredientDispensersCount() + "&6):");
+        for (int i = 0; i < gamearea.getIngredientDispensers().size(); i++) {
+            IngredientDispenser dispenser = gamearea.getIngredientDispensers().get(i);
+            Messenger.msgToSender(sender,
+                    "&6&o    [" + (i + 1) + "]:" +
+                            "&6 loc: &e(" + "&c" + dispenser.getLocation().getBlockX() +
+                            "&e, &a" + dispenser.getLocation().getBlockY() +
+                            "&e, &9" + dispenser.getLocation().getBlockZ() + "&e)" +
+                            "&6 drop: &e(" + dispenser.getDropItemName() + "&e)"
             );
         }
     }

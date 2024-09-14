@@ -23,6 +23,7 @@ public class GameArea {
     private final Location[] corners = new Location[2];
     private final Cube cubearea;
     private List<SpawnPoint> spawnpoints = new ArrayList<>();
+    private List<IngredientDispenser> dispensers = new ArrayList<>();
 
     // -- [[ METHODS ]] --
 
@@ -38,18 +39,20 @@ public class GameArea {
     public GameArea(
             @NotNull String name,
             @NotNull String world,
-            @NotNull Location corner1,
-            @NotNull Location corner2,
-            int maxPlayers,
-            @NotNull List<SpawnPoint> spawn_points
+            @NotNull Location corner_1,
+            @NotNull Location corner_2,
+            int max_players,
+            @NotNull List<SpawnPoint> spawn_points,
+            @NotNull List<IngredientDispenser> ingredient_dispensers
     ) {
         this.name = name;
         this.world = world;
-        this.maxPlayers = maxPlayers;
-        this.corners[0] = corner1;
-        this.corners[1] = corner2;
-        this.cubearea = new Cube(corner1, corner2);
+        this.maxPlayers = max_players;
+        this.corners[0] = corner_1;
+        this.corners[1] = corner_2;
+        this.cubearea = new Cube(corner_1, corner_2);
         this.spawnpoints = spawn_points;
+        this.dispensers = ingredient_dispensers;
     }
 
     public String getName() {
@@ -92,6 +95,36 @@ public class GameArea {
         this.spawnpoints.clear();
     }
 
+    public ListResult addIngredientDispenser(@NotNull IngredientDispenser dispenser) {
+        if (!this.isPointInsideBoundaries(dispenser.getLocation()))
+            return ListResult.INVALID_ITEM;
+        if (this.getIngredientDispenserByLocation(dispenser.getLocation()) != null)
+            return ListResult.ALREADY_IN;
+
+        this.dispensers.add(dispenser);
+        return ListResult.SUCCESS;
+    }
+
+    public List<IngredientDispenser> getIngredientDispensers() {
+        return this.dispensers;
+    }
+
+    public IngredientDispenser getIngredientDispenserByLocation(@NotNull Location location) {
+        Optional<IngredientDispenser> query = this.dispensers.stream()
+                .filter(item -> item.isLocationOfDispenser(location))
+                .findFirst();
+
+        return query.orElse(null);
+    }
+
+    public int getIngredientDispensersCount() {
+        return this.dispensers.size();
+    }
+
+    public void clearIngredientDispensers() {
+        this.dispensers.clear();
+    }
+
     public boolean isPointInsideBoundaries(@NotNull Location point) {
         return (
             !(point.getBlockX() < cubearea.left || point.getBlockX() > cubearea.right) &&
@@ -112,42 +145,49 @@ public class GameArea {
     }
 
     public boolean isValidSetUp() {
-        return (spawnpoints.size() == maxPlayers);
+        return (spawnpoints.size() == maxPlayers && !dispensers.isEmpty());
     }
 
     public Map<String, Object> serialize() {
         Map<String, Object> data = new HashMap<>();
         List<Map<String, Object>> sppListMap = new ArrayList<>();
+        List<Map<String, Object>> idpListMap = new ArrayList<>();
 
-        for (SpawnPoint spawnpoint : this.spawnpoints) {
+        for (SpawnPoint spawnpoint : this.spawnpoints)
             sppListMap.add(spawnpoint.serialize());
-        }
+        for (IngredientDispenser dispenser: this.dispensers)
+            idpListMap.add(dispenser.serialize());
 
         data.put("name", this.name);
         data.put("world", this.world);
-        data.put("corner1", this.corners[0].serialize());
-        data.put("corner2", this.corners[1].serialize());
-        data.put("maxplayers", this.maxPlayers);
-        data.put("spawnpoints", sppListMap);
+        data.put("corner_1", this.corners[0].serialize());
+        data.put("corner_2", this.corners[1].serialize());
+        data.put("max_players", this.maxPlayers);
+        data.put("spawn_points", sppListMap);
+        data.put("ingredient_dispensers", idpListMap);
 
         return data;
     }
 
     public static GameArea deserialize(@NotNull Map<String, Object> args) {
         List<SpawnPoint> spawnpointsList = new ArrayList<>();
-        List<Map<String, Object>> sppMapList = (List<Map<String, Object>>)args.get("spawnpoints");
+        List<IngredientDispenser> dispenserList = new ArrayList<>();
+        List<Map<String, Object>> sppMapList = (List<Map<String, Object>>)args.get("spawn_points");
+        List<Map<String, Object>> idpMapList = (List<Map<String, Object>>)args.get("ingredient_dispensers");
 
-        for (Map<String, Object> sppMap : sppMapList) {
+        for (Map<String, Object> sppMap : sppMapList)
             spawnpointsList.add(SpawnPoint.deserialize(sppMap));
-        }
+        for (Map<String, Object> idpMap : idpMapList)
+            dispenserList.add(IngredientDispenser.deserialize(idpMap));
 
         return new GameArea(
             (String)args.get("name"),
             (String)args.get("world"),
-            Location.deserialize((Map<String, Object>) args.get("corner1")),
-            Location.deserialize((Map<String, Object>) args.get("corner2")),
-            (int)args.get("maxplayers"),
-            spawnpointsList
+            Location.deserialize((Map<String, Object>)args.get("corner_1")),
+            Location.deserialize((Map<String, Object>)args.get("corner_2")),
+            (int)args.get("max_players"),
+            spawnpointsList,
+            dispenserList
         );
     }
 

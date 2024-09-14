@@ -5,7 +5,7 @@ import org.bukkit.Location;
 import java.util.Arrays;
 import org.jetbrains.annotations.NotNull;
 
-public class GameAreaCornerAssistant {
+public class GameAreaPropertiesAssistant {
 
     // -- [[ ATTRIBUTES ]] --
 
@@ -18,8 +18,8 @@ public class GameAreaCornerAssistant {
     // -- [[ METHODS ]] --
 
     // -- Public
-    public GameAreaCornerAssistant() {
-        resetCorners();
+    public GameAreaPropertiesAssistant() {
+        this.resetCorners();
     }
 
     public byte getCornerIndex() { return this.index; }

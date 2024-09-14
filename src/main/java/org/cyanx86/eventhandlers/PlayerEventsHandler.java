@@ -16,8 +16,9 @@ import org.bukkit.inventory.EquipmentSlot;
 import org.bukkit.inventory.ItemStack;
 import org.cyanx86.OverCrafted;
 import org.cyanx86.classes.GameArea;
-import org.cyanx86.classes.GameAreaCornerAssistant;
+import org.cyanx86.classes.GameAreaPropertiesAssistant;
 import org.cyanx86.classes.GameRound;
+import org.cyanx86.classes.IngredientDispenser;
 import org.cyanx86.utils.Enums;
 import org.cyanx86.utils.Functions;
 import org.cyanx86.utils.Messenger;
@@ -59,46 +60,13 @@ public class PlayerEventsHandler {
         Messenger.msgToConsole(OverCrafted.prefix + player.getName() + " dispuso su asistente.");
     }
 
-    public void onOverCraftedManagerClicksBlock(PlayerInteractEvent event) {
+    public void onOverCraftedManagerClicksBlockWithItem(PlayerInteractEvent event) {
         Player player = event.getPlayer();
         if (!player.hasPermission("overcrafted.manager"))
             return;
 
-        ItemStack item = event.getItem();
-        if (item == null)
-            return;
-
-        if (
-            event.getAction().equals(Action.RIGHT_CLICK_BLOCK) &&
-            Objects.equals(event.getHand(), EquipmentSlot.HAND) &&
-            item.getType() == Material.IRON_SHOVEL
-        ) {
-            GameAreaCornerAssistant gacAssistant = master.getGacaManager().getAssistantByName(player.getName());
-            if (gacAssistant == null) {
-                Messenger.msgToSender(
-                    player,
-                    OverCrafted.prefix + "&cNo hay instancia de Asistente iniciada."
-                );
-                return;
-            }
-
-            Location blockCoords;
-            int cornerIndex = gacAssistant.getCornerIndex();
-
-            try {
-                blockCoords = Objects.requireNonNull(event.getClickedBlock()).getLocation();
-            } catch (Exception ignored) { return; }
-
-            gacAssistant.setCorner(blockCoords);
-
-            Messenger.msgToSender(
-                player,
-                OverCrafted.prefix + "&aEsquina " + (cornerIndex + 1) +
-                        " asignada en x:" + blockCoords.getBlockX() +
-                        ", y:" + blockCoords.getBlockY() +
-                        ", z:" + blockCoords.getBlockZ()
-            );
-        }
+        this.overCraftedManagerCreatesGameAreaCorner(event);
+        this.overCraftedManagerCreatesIngredientDispenser(event);
     }
 
     public void onOverCraftedPlayerDisconnects(PlayerQuitEvent event) {
@@ -164,11 +132,11 @@ public class PlayerEventsHandler {
         Map<Material, Material> materialMap = master.getOreBlocks().getOreMap();
 
         if (
-                round.getGameArea().isPointInsideBoundaries(block.getLocation()) &&
-                        materialMap.containsKey(block.getType())
+            materialMap.containsKey(block.getType()) ||
+            round.getGameArea().isPointInsideBoundaries(block.getLocation())
         ) {
             ItemStack deliver = new ItemStack(
-                    materialMap.get(block.getType())
+                materialMap.get(block.getType())
             );
             player.getInventory().addItem(deliver);
         }
@@ -223,6 +191,35 @@ public class PlayerEventsHandler {
             return;
 
         event.setCancelled(true);
+    }
+
+    public void onOverCraftedPlayerInteractWithChest(PlayerInteractEvent event) {
+        Player player = event.getPlayer();
+        GameRound round = master.getGameRoundManager().getGameRound();
+
+        // NA si la ronda no ha comenzado, si la ronda ha terminado o si el jugador no está jugando.
+        if (round == null || round.getCurrentRoundState() == GameRound.ROUNDSTATE.ENDED || !round.isPlayerInGame(player))
+            return;
+
+        event.setCancelled(true);
+
+        Block block = event.getClickedBlock();
+        if (block == null)
+            return;
+
+        if (!(
+            event.getAction().equals(Action.RIGHT_CLICK_BLOCK) &&
+            block.getType().equals(Material.CHEST)
+        ))
+            return;
+
+        ItemStack drop = round.getGameArea()
+                .getIngredientDispenserByLocation(block.getLocation())
+                .dropItem();
+        if (drop == null)
+            return;
+
+        player.getInventory().addItem(drop);
     }
 
     // ** NON-PLAYERS **
@@ -356,5 +353,137 @@ public class PlayerEventsHandler {
     }
 
     // -- Private
+    private void overCraftedManagerCreatesGameAreaCorner(PlayerInteractEvent event) {
+        Player player = event.getPlayer();
+        ItemStack item = event.getItem();
+        if (item == null)
+            return;
+
+        if (!(
+            event.getAction().equals(Action.RIGHT_CLICK_BLOCK) &&
+            Objects.equals(event.getHand(), EquipmentSlot.HAND) &&
+            item.getType() == Material.IRON_SHOVEL
+        ))
+            return;
+
+        GameAreaPropertiesAssistant gapAssistant = master.getGacaManager().getAssistantByName(player.getName());
+        if (gapAssistant == null) {
+            Messenger.msgToSender(
+                player,
+                OverCrafted.prefix + "&cNo hay instancia de Asistente iniciada."
+            );
+            return;
+        }
+
+        Location blockCoords;
+        int cornerIndex = gapAssistant.getCornerIndex();
+
+        try {
+            blockCoords = Objects.requireNonNull(event.getClickedBlock()).getLocation();
+        } catch (Exception ignored) { return; }
+
+        gapAssistant.setCorner(blockCoords);
+
+        Messenger.msgToSender(
+            player,
+            OverCrafted.prefix + "&aEsquina " + (cornerIndex + 1) +
+                    " asignada en x:" + blockCoords.getBlockX() +
+                    ", y:" + blockCoords.getBlockY() +
+                    ", z:" + blockCoords.getBlockZ()
+        );
+    }
+
+    private void overCraftedManagerCreatesIngredientDispenser(PlayerInteractEvent event) {
+        Player player = event.getPlayer();
+        ItemStack item = event.getItem();
+        if (item == null)
+            return;
+
+        if (!(
+            event.getAction().equals(Action.RIGHT_CLICK_BLOCK) &&
+            Objects.equals(event.getHand(), EquipmentSlot.HAND) &&
+            item.getType() == Material.IRON_HOE
+        ))
+            return;
+
+        GameAreaPropertiesAssistant gapAssistant = master.getGacaManager().getAssistantByName(player.getName());
+        if (gapAssistant == null) {
+            Messenger.msgToSender(
+                player,
+                OverCrafted.prefix + "&cNo hay instancia de Asistente iniciada."
+            );
+            return;
+        }
+
+        Block block = event.getClickedBlock();
+        if (block == null)
+            return;
+        if (!Functions.blockBelongsGameArea(block)) {
+            Messenger.msgToSender(
+                player,
+                OverCrafted.prefix + "&cEl cofre debe estar dentro de un GameArea."
+            );
+            return;
+        }
+        if (!block.getType().equals(Material.CHEST)) {
+            Messenger.msgToSender(
+                player,
+                OverCrafted.prefix + "&cEl Dispensador debe ser un cofre."
+            );
+            return;
+        }
+
+        Location blockCoords = block.getLocation();
+        Material dropping = null;
+        for (Entity entity : block.getWorld().getNearbyEntities(blockCoords, 2, 2, 2))
+            if (
+                entity instanceof ItemFrame itemframe &&
+                entity.getLocation().getBlock().getRelative(((ItemFrame)entity).getAttachedFace()).equals(block)
+            ) {
+                dropping = itemframe.getItem().getType();
+                break;
+            }
+
+        if (dropping == null) {
+            Messenger.msgToSender(
+                player,
+                OverCrafted.prefix + "&cColoque un ingrediente en un marco."
+            );
+            return;
+        }
+
+        GameArea gamearea = Functions.getGameAreaFromLocation(blockCoords);
+        if (gamearea == null)
+            return;
+
+        switch (gamearea.addIngredientDispenser(
+            new IngredientDispenser(
+                blockCoords,
+                dropping
+            )
+        )) {
+            case INVALID_ITEM -> {
+                Messenger.msgToSender(
+                    player,
+                    OverCrafted.prefix + "&cEl dispensador debe estar dentro de un GameArea."
+                );
+                return;
+            }
+            case ALREADY_IN -> {
+                Messenger.msgToSender(
+                    player,
+                    OverCrafted.prefix + "&cEste dispensador ya fue definido."
+                );
+                return;
+            }
+        }
+
+        Messenger.msgToSender(
+            player,
+            OverCrafted.prefix + "&aSe ha creado un Dispensador de Ingredientes en el GameArea &r&o" +
+                    gamearea.getName() + "&r&a."
+        );
+        event.setCancelled(true);
+    }
 
 }

@@ -1,5 +1,6 @@
 package org.cyanx86.utils;
 
+import org.bukkit.Location;
 import org.bukkit.block.Block;
 import org.bukkit.entity.Entity;
 
@@ -7,12 +8,13 @@ import org.cyanx86.OverCrafted;
 import org.cyanx86.classes.GameArea;
 
 import java.util.Objects;
+import org.jetbrains.annotations.NotNull;
 
 public class Functions {
 
     static private OverCrafted master = OverCrafted.getInstance();
 
-    static public boolean blockBelongsGameArea(Block block) {
+    static public boolean blockBelongsGameArea(@NotNull Block block) {
         for (GameArea gmaItem: master.getGameAreaManager().getGameAreas()) {
             if (!Objects.equals(gmaItem.getWorld(), block.getWorld().getName()))
                 continue;
@@ -23,7 +25,7 @@ public class Functions {
         return false;
     }
 
-    static public boolean entityBelongsGameArea(Entity entity) {
+    static public boolean entityBelongsGameArea(@NotNull Entity entity) {
         for (GameArea gmaItem: master.getGameAreaManager().getGameAreas()) {
             if (!Objects.equals(gmaItem.getWorld(), entity.getWorld().getName()))
                 continue;
@@ -32,6 +34,16 @@ public class Functions {
             }
         }
         return false;
+    }
+
+    static public GameArea getGameAreaFromLocation(@NotNull Location location) {
+        for (GameArea gmaItem : master.getGameAreaManager().getGameAreas())
+            if (
+                gmaItem.getWorld().equals(Objects.requireNonNull(location.getWorld()).getName()) &&
+                gmaItem.isPointInsideBoundaries(location)
+            )
+                return gmaItem;
+        return null;
     }
 
 }

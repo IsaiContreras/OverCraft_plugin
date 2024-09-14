@@ -3,7 +3,7 @@ package org.cyanx86.managers;
 import org.bukkit.entity.Player;
 
 import org.cyanx86.OverCrafted;
-import org.cyanx86.classes.GameAreaCornerAssistant;
+import org.cyanx86.classes.GameAreaPropertiesAssistant;
 import org.cyanx86.utils.Enums.ListResult;
 
 import java.util.HashMap;
@@ -11,7 +11,7 @@ import java.util.Map;
 import java.util.UUID;
 import org.jetbrains.annotations.NotNull;
 
-public class GameAreaCornerAssistantManager {
+public class GameAreaPropertiesAssistantManager {
 
     // -- [[ ATTRIBUTES ]] --
 
@@ -20,7 +20,7 @@ public class GameAreaCornerAssistantManager {
     // -- Private
     private final OverCrafted master = OverCrafted.getInstance();
 
-    private final Map<UUID, GameAreaCornerAssistant> assistants = new HashMap<>();
+    private final Map<UUID, GameAreaPropertiesAssistant> assistants = new HashMap<>();
     private final Map<String, UUID> playerUUIDs = new HashMap<>();
 
     // -- [[ METHODS ]] --
@@ -31,7 +31,7 @@ public class GameAreaCornerAssistantManager {
         if (assistants.containsKey(player.getUniqueId()))
             return ListResult.ALREADY_IN;
 
-        assistants.put(player.getUniqueId(), new GameAreaCornerAssistant());
+        assistants.put(player.getUniqueId(), new GameAreaPropertiesAssistant());
         playerUUIDs.put(player.getName(), player.getUniqueId());
 
         return ListResult.SUCCESS;
@@ -48,14 +48,14 @@ public class GameAreaCornerAssistantManager {
         return ListResult.SUCCESS;
     }
 
-    public GameAreaCornerAssistant getAssistantByName(@NotNull String name) {
+    public GameAreaPropertiesAssistant getAssistantByName(@NotNull String name) {
         UUID playerUUID = playerUUIDs.get(name);
         if (playerUUID == null)
             return null;
         return assistants.get(playerUUID);
     }
 
-    public GameAreaCornerAssistant getAssistantByUUID(@NotNull UUID uuid) {
+    public GameAreaPropertiesAssistant getAssistantByUUID(@NotNull UUID uuid) {
         return assistants.get(uuid);
     }
 

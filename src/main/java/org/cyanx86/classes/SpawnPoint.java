@@ -24,9 +24,9 @@ public class SpawnPoint {
         this.location = location;
     }
 
-    public SpawnPoint(@NotNull Location location, int playerIndex) {
+    public SpawnPoint(@NotNull Location location, int player_index) {
         this.location = location;
-        this.playerIndex = playerIndex;
+        this.playerIndex = player_index;
     }
 
     public Location getSpawnLocation() {
@@ -45,7 +45,7 @@ public class SpawnPoint {
         Map<String, Object> data = new HashMap<>();
 
         data.put("location", location.serialize());
-        data.put("playerindex", playerIndex);
+        data.put("player_index", playerIndex);
 
         return data;
     }
@@ -55,7 +55,7 @@ public class SpawnPoint {
 
         return new SpawnPoint(
             location,
-            (int)args.get("playerindex")
+            (int)args.get("player_index")
         );
     }
 

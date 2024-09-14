@@ -7,7 +7,7 @@ import org.cyanx86.commands.MainCommand;
 import org.cyanx86.commands.PlayerListCommand;
 import org.cyanx86.listeners.MiscellaneousListener;
 import org.cyanx86.listeners.PlayerListener;
-import org.cyanx86.managers.GameAreaCornerAssistantManager;
+import org.cyanx86.managers.GameAreaPropertiesAssistantManager;
 import org.cyanx86.managers.GameAreaManager;
 import org.cyanx86.managers.GameRoundManager;
 import org.cyanx86.managers.OreBlocksManager;
@@ -27,7 +27,7 @@ public class OverCrafted extends JavaPlugin {
     private final String version = getDescription().getVersion();
 
     private GameAreaManager gameAreaManager;
-    private GameAreaCornerAssistantManager gacaManager;
+    private GameAreaPropertiesAssistantManager gacaManager;
     private GameRoundManager gameRoundManager;
 
     private OreBlocksManager oreblocks;
@@ -42,7 +42,7 @@ public class OverCrafted extends JavaPlugin {
         this.setupCommands();
         this.setupEvents();
         gameAreaManager = new GameAreaManager();
-        gacaManager = new GameAreaCornerAssistantManager();
+        gacaManager = new GameAreaPropertiesAssistantManager();
         gameRoundManager = new GameRoundManager();
 
         oreblocks = new OreBlocksManager();
@@ -60,7 +60,7 @@ public class OverCrafted extends JavaPlugin {
     }
 
     // GameArea managing
-    public GameAreaCornerAssistantManager getGacaManager() {
+    public GameAreaPropertiesAssistantManager getGacaManager() {
         return this.gacaManager;
     }
 

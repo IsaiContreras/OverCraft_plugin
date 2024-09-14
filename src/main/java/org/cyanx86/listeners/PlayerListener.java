@@ -36,7 +36,8 @@ public class PlayerListener implements Listener {
 
     @EventHandler
     public void onPlayerInteracts(PlayerInteractEvent event) {
-        this.playerevents.onOverCraftedManagerClicksBlock(event);
+        this.playerevents.onOverCraftedManagerClicksBlockWithItem(event);
+        this.playerevents.onOverCraftedPlayerInteractWithChest(event);
     }
 
     @EventHandler
@@ -52,8 +53,8 @@ public class PlayerListener implements Listener {
 
     @EventHandler
     public void onBlockBreaks(BlockBreakEvent event) {
-        this.playerevents.onOverCraftedPlayerBreaksBlock(event);
         this.playerevents.onOverCraftedNonPlayerBreaksBlock(event);
+        this.playerevents.onOverCraftedPlayerBreaksBlock(event);
     }
 
     @EventHandler
