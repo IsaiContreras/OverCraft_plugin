@@ -5,10 +5,13 @@ import org.bukkit.event.Listener;
 import org.bukkit.event.block.BlockBreakEvent;
 import org.bukkit.event.block.BlockPlaceEvent;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
+import org.bukkit.event.entity.EntityDamageEvent;
 import org.bukkit.event.hanging.HangingBreakByEntityEvent;
 import org.bukkit.event.player.*;
 
 import org.cyanx86.eventhandlers.PlayerEventsHandler;
+
+import javax.swing.text.html.parser.Entity;
 
 public class PlayerListener implements Listener {
 
@@ -70,9 +73,14 @@ public class PlayerListener implements Listener {
     }
 
     @EventHandler
-    public void onEntityDamageByEntityEvent(EntityDamageByEntityEvent event) {
+    public void onEntityDamageByEntity(EntityDamageByEntityEvent event) {
         this.playerevents.onOverCraftedPlayerRemoveItemFrameContent(event);
         this.playerevents.onOverCraftedNonPlayerRemoveItemFrameContent(event);
+    }
+
+    @EventHandler
+    public void onEntityDamage(EntityDamageEvent event) {
+        this.playerevents.onOverCraftedPlayerGetsDamage(event);
     }
 
     // -- Private

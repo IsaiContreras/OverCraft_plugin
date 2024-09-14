@@ -10,6 +10,7 @@ import org.bukkit.event.block.Action;
 import org.bukkit.event.block.BlockBreakEvent;
 import org.bukkit.event.block.BlockPlaceEvent;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
+import org.bukkit.event.entity.EntityDamageEvent;
 import org.bukkit.event.hanging.HangingBreakByEntityEvent;
 import org.bukkit.event.player.*;
 import org.bukkit.inventory.EquipmentSlot;
@@ -181,12 +182,12 @@ public class PlayerEventsHandler {
 
         // NA si la ronda no ha comenzado, si la ronda ha terminado o si el jugador no está jugando.
         if (
-                damager instanceof Player &&
-                        (
-                                round == null ||
-                                        round.getCurrentRoundState() == GameRound.ROUNDSTATE.ENDED ||
-                                        !round.isPlayerInGame((Player)damager)
-                        )
+            damager instanceof Player &&
+            (
+                round == null ||
+                round.getCurrentRoundState() == GameRound.ROUNDSTATE.ENDED ||
+                !round.isPlayerInGame((Player)damager)
+            )
         )
             return;
 
@@ -220,6 +221,18 @@ public class PlayerEventsHandler {
             return;
 
         player.getInventory().addItem(drop);
+    }
+
+    public void onOverCraftedPlayerGetsDamage(EntityDamageEvent event) {
+        if (!(event.getEntity() instanceof Player player))
+            return;
+        GameRound round = master.getGameRoundManager().getGameRound();
+
+        // NA si la ronda no ha comenzado, si la ronda ha terminado o si el jugador no está jugando.
+        if (round == null || round.getCurrentRoundState() == GameRound.ROUNDSTATE.ENDED || !round.isPlayerInGame(player))
+            return;
+
+        event.setCancelled(true);
     }
 
     // ** NON-PLAYERS **
