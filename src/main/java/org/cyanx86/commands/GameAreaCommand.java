@@ -107,19 +107,19 @@ public class GameAreaCommand implements CommandExecutor {
     }
 
     private void scmCreate(CommandSender sender, String[] args) {
+        if (args.length != 3) {
+            Messenger.msgToSender(
+                sender,
+                OverCrafted.prefix + "&cArgumentos incompletos."    // TODO: Invalid arguments message.
+            );
+            return;
+        }
+
         GameAreaPropertiesAssistant gacAssistant = master.getGapaManager().getAssistantByName(sender.getName());
         if (gacAssistant == null) {
             Messenger.msgToSender(
                 sender,
                 OverCrafted.prefix + "&cNo hay asistente registrado."   // TODO: Invalid assistant message.
-            );
-            return;
-        }
-
-        if (args.length != 3) {
-            Messenger.msgToSender(
-                sender,
-                OverCrafted.prefix + "&cArgumentos incompletos."    // TODO: Invalid arguments message.
             );
             return;
         }
@@ -178,7 +178,6 @@ public class GameAreaCommand implements CommandExecutor {
     private void scmSetSpawnPoint(CommandSender sender) {
         Location spawnLocation = ((Player)sender).getLocation();
         GameArea gamearea = Functions.getGameAreaFromLocation(spawnLocation);
-
         if (gamearea == null) {
             Messenger.msgToSender(
                 sender,
@@ -330,7 +329,7 @@ public class GameAreaCommand implements CommandExecutor {
         Messenger.msgToSender(
             sender,
             OverCrafted.prefix +
-            "&aEl GameArea " + gamearea.getName() + " fue seleccionado para el siguiente juego."
+            "&aEl GameArea &r&o" + gamearea.getName() + "&r&a fue seleccionado para el siguiente juego."
         );
     }
 
@@ -356,15 +355,16 @@ public class GameAreaCommand implements CommandExecutor {
         Messenger.msgToSender(sender, "&b&o" + gamearea.getName() + " properties:");
         Messenger.msgToSender(sender, "&6&o  world: &r&e" + gamearea.getWorld());
         Messenger.msgToSender(sender,
-                "&6&o  corner1: &r&e(" + "&r&c" + gamearea.getCorner(0).getBlockX() +
-                        "&r&e, &r&a" + gamearea.getCorner(0).getBlockY() +
-                        "&r&e, &r&9" + gamearea.getCorner(0).getBlockZ() + "&r&e)"
+            "&6&o  corner1: &r&e(" + "&r&c" + gamearea.getCorner(0).getBlockX() +
+                    "&r&e, &r&a" + gamearea.getCorner(0).getBlockY() +
+                    "&r&e, &r&9" + gamearea.getCorner(0).getBlockZ() + "&r&e)"
         );
         Messenger.msgToSender(sender,
-                "&6&o  corner2: &r&e(" + "&r&c" + gamearea.getCorner(1).getBlockX()+
-                        "&r&e, &r&a" + gamearea.getCorner(1).getBlockY() +
-                        "&r&e, &r&9" + gamearea.getCorner(1).getBlockZ() + "&r&e)"
+            "&6&o  corner2: &r&e(" + "&r&c" + gamearea.getCorner(1).getBlockX()+
+                    "&r&e, &r&a" + gamearea.getCorner(1).getBlockY() +
+                    "&r&e, &r&9" + gamearea.getCorner(1).getBlockZ() + "&r&e)"
         );
+
         Messenger.msgToSender(sender, "&6&o  spawnpoints (&e" + gamearea.getSpawnPointsCount() + "&6):");
         for (int i = 0; i < gamearea.getSpawnPointsCount(); i++) {
             SpawnPoint spawn = gamearea.getSpawnPoints().get(i);
@@ -382,11 +382,11 @@ public class GameAreaCommand implements CommandExecutor {
         for (int i = 0; i < gamearea.getIngredientDispensers().size(); i++) {
             IngredientDispenser dispenser = gamearea.getIngredientDispensers().get(i);
             Messenger.msgToSender(sender,
-                    "&6&o    [" + (i + 1) + "]:" +
-                            "&6 loc: &e(" + "&c" + dispenser.getLocation().getBlockX() +
-                            "&e, &a" + dispenser.getLocation().getBlockY() +
-                            "&e, &9" + dispenser.getLocation().getBlockZ() + "&e)" +
-                            "&6 drop: &e(" + dispenser.getDropItemName() + "&e)"
+                "&6&o    [" + (i + 1) + "]:" +
+                        "&6 loc: &e(" + "&c" + dispenser.getLocation().getBlockX() +
+                        "&e, &a" + dispenser.getLocation().getBlockY() +
+                        "&e, &9" + dispenser.getLocation().getBlockZ() + "&e)" +
+                        "&6 drop: &e(" + dispenser.getDropItemName() + "&e)"
             );
         }
     }
@@ -401,7 +401,6 @@ public class GameAreaCommand implements CommandExecutor {
         }
 
         String name = args[1].toLowerCase();
-
         switch(master.getGameAreaManager().removeGameArea(name)) {
             case NOT_FOUND -> {
                 Messenger.msgToSender(

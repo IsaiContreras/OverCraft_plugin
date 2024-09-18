@@ -34,7 +34,9 @@ public class GamePlayersManager {
     public List<PlayerState> getPlayerStates() { return this.players; }
 
     public PlayerState getPlayerState(@NotNull Player player) {
-        Optional<PlayerState> query = this.players.stream().filter(item -> item.equal(player)).findFirst();
+        Optional<PlayerState> query = this.players.stream()
+                .filter(item -> item.equal(player))
+                .findFirst();
         return query.orElse(null);
     }
 

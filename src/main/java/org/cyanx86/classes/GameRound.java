@@ -162,7 +162,7 @@ public class GameRound {
             this.playersManager.sendMessageToPlayers("&a" + this.time);
 
             this.time--;
-        }, 20, 20);
+        }, 20L, 20L);
     }
 
     private void startRoundTimer() {

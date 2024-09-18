@@ -62,9 +62,7 @@ public class GameArea {
         return this.world;
     }
     public Location getCorner(int index) {
-        if (index < 0 || index > 1)
-            return null;
-        return this.corners[index];
+        return (index < 0 || index > 1 ? null : this.corners[index]);
     }
 
     public int getMaxPlayers() {
@@ -113,7 +111,6 @@ public class GameArea {
         Optional<IngredientDispenser> query = this.dispensers.stream()
                 .filter(item -> item.isLocationOfDispenser(location))
                 .findFirst();
-
         return query.orElse(null);
     }
 

@@ -15,6 +15,7 @@ import org.bukkit.event.hanging.HangingBreakByEntityEvent;
 import org.bukkit.event.player.*;
 import org.bukkit.inventory.EquipmentSlot;
 import org.bukkit.inventory.ItemStack;
+
 import org.cyanx86.OverCrafted;
 import org.cyanx86.classes.GameArea;
 import org.cyanx86.classes.GameAreaPropertiesAssistant;
@@ -42,7 +43,6 @@ public class PlayerEventsHandler {
     // ** MANAGER **
     public void onOverCraftedManagerJoin(PlayerJoinEvent event) {
         Player player = event.getPlayer();
-
         if(!player.hasPermission("overcrafted.manager"))
             return;
 
@@ -151,12 +151,12 @@ public class PlayerEventsHandler {
 
         // NA si la ronda no ha comenzado, si la ronda ha terminado o si el jugador no está jugando.
         if (
-                remover instanceof Player &&
-                        (
-                                round == null ||
-                                        round.getCurrentRoundState() == GameRound.ROUNDSTATE.ENDED ||
-                                        !round.isPlayerInGame((Player)remover)
-                        )
+            remover instanceof Player &&
+            (
+                round == null ||
+                round.getCurrentRoundState() == GameRound.ROUNDSTATE.ENDED ||
+                !round.isPlayerInGame((Player)remover)
+            )
         )
             return;
 
@@ -194,7 +194,7 @@ public class PlayerEventsHandler {
         event.setCancelled(true);
     }
 
-    public void onOverCraftedPlayerInteractWithChest(PlayerInteractEvent event) {
+    public void onOverCraftedPlayerInteractsWithChest(PlayerInteractEvent event) {
         Player player = event.getPlayer();
         GameRound round = master.getGameRoundManager().getGameRound();
 
@@ -235,7 +235,30 @@ public class PlayerEventsHandler {
         event.setCancelled(true);
     }
 
+    /* -- FURNACE INTERACTION MODIFICATION --
+    public void onOverCraftedPlayerInteractsWithFurnace(PlayerInteractEvent event) {
+        Player player = event.getPlayer();
+        GameRound round = master.getGameRoundManager().getGameRound();
+
+        // NA si la ronda no ha comenzado, si la ronda ha terminado o si el jugador no está jugando.
+        if (round == null || round.getCurrentRoundState() == GameRound.ROUNDSTATE.ENDED || !round.isPlayerInGame(player))
+            return;
+
+        Block block = event.getClickedBlock();
+        if (block == null)
+            return;
+
+        if (!(
+            block.getType().equals(Material.FURNACE) &&
+            event.getAction().equals(Action.RIGHT_CLICK_BLOCK)
+        ))
+            return;
+
+        event.setCancelled(true);
+    } */
+
     // ** NON-PLAYERS **
+    /*
     public void onOverCraftedNonPlayerMoves(PlayerMoveEvent event) {
         Player player = event.getPlayer();
         GameRound round = master.getGameRoundManager().getGameRound();
@@ -257,7 +280,7 @@ public class PlayerEventsHandler {
         if (!overlapped) return;
 
         event.setCancelled(true);
-    }
+    }*/
 
     public void onOverCraftedNonPlayerPlacesBlock(BlockPlaceEvent event) {
         GameRound round = master.getGameRoundManager().getGameRound();
@@ -275,8 +298,8 @@ public class PlayerEventsHandler {
         event.setCancelled(true);
 
         Messenger.msgToSender(
-                event.getPlayer(),
-                OverCrafted.prefix + "&cNo puedes poner bloques en un GameArea"
+            event.getPlayer(),
+            OverCrafted.prefix + "&cNo puedes poner bloques en un GameArea"
         );
     }
 
@@ -296,8 +319,8 @@ public class PlayerEventsHandler {
         event.setCancelled(true);
 
         Messenger.msgToSender(
-                event.getPlayer(),
-                OverCrafted.prefix + "&cNo puedes romper bloques de un GameArea"
+            event.getPlayer(),
+            OverCrafted.prefix + "&cNo puedes romper bloques de un GameArea"
         );
     }
 
@@ -319,8 +342,8 @@ public class PlayerEventsHandler {
         event.setCancelled(true);
 
         Messenger.msgToSender(
-                remover,
-                OverCrafted.prefix + "&cNo puedes romper bloques de un GameArea"
+            remover,
+            OverCrafted.prefix + "&cNo puedes romper bloques de un GameArea"
         );
     }
 
@@ -339,8 +362,8 @@ public class PlayerEventsHandler {
         event.setCancelled(true);
 
         Messenger.msgToSender(
-                player,
-                OverCrafted.prefix + "&cNo puedes manipular bloques de un GameArea"
+            player,
+            OverCrafted.prefix + "&cNo puedes manipular bloques de un GameArea"
         );
     }
 
@@ -360,8 +383,8 @@ public class PlayerEventsHandler {
         event.setCancelled(true);
 
         Messenger.msgToSender(
-                damager,
-                OverCrafted.prefix + "&cNo puedes romper bloques de un GameArea"
+            damager,
+            OverCrafted.prefix + "&cNo puedes romper bloques de un GameArea"
         );
     }
 
@@ -492,7 +515,7 @@ public class PlayerEventsHandler {
         }
 
         Messenger.msgToSender(
-                player,
+            player,
             OverCrafted.prefix + "&aSe ha creado un Dispensador de Ingredientes en el GameArea &r&o" +
                     gamearea.getName() + "&r&a."
         );

@@ -99,7 +99,9 @@ public class GameAreaManager {
     }
 
     public GameArea getByName(@NotNull String name) {
-        Optional<GameArea> queryGameArea = gameAreas.stream().filter(item -> item.getName().equals(name)).findFirst();
+        Optional<GameArea> queryGameArea = gameAreas.stream()
+                .filter(item -> item.getName().equals(name))
+                .findFirst();
         return queryGameArea.orElse(null);
     }
 
@@ -111,7 +113,9 @@ public class GameAreaManager {
         return this.gameAreas.isEmpty();
     }
 
-    public List<GameArea> getGameAreas() { return this.gameAreas; }
+    public List<GameArea> getGameAreas() {
+        return this.gameAreas;
+    }
 
     // -- Private
 

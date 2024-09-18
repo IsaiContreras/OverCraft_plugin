@@ -11,8 +11,6 @@ import org.bukkit.event.player.*;
 
 import org.cyanx86.eventhandlers.PlayerEventsHandler;
 
-import javax.swing.text.html.parser.Entity;
-
 public class PlayerListener implements Listener {
 
     // -- [[ ATTRIBUTES ]] --
@@ -40,7 +38,7 @@ public class PlayerListener implements Listener {
     @EventHandler
     public void onPlayerInteracts(PlayerInteractEvent event) {
         this.playerevents.onOverCraftedManagerClicksBlockWithItem(event);
-        this.playerevents.onOverCraftedPlayerInteractWithChest(event);
+        this.playerevents.onOverCraftedPlayerInteractsWithChest(event);
     }
 
     @EventHandler

@@ -90,7 +90,8 @@ public class MainCommand implements CommandExecutor {
 
         Messenger.msgToSender(
             sender,
-            OverCrafted.prefix + "&aLa ronda durará " + DataFormatting.formatSecondsToTime(time) + " minutos."
+            OverCrafted.prefix + "&aLa ronda durará &r&o" +
+                    DataFormatting.formatSecondsToTime(time) + "&r&a minutos."
         );
     }
 

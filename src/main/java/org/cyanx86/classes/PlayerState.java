@@ -45,11 +45,11 @@ public class PlayerState {
         this.prevGameMode = player.getGameMode();
         this.prevInventory = player.getInventory().getContents();
 
-        ItemStack stonepickaxe = new ItemStack(Material.STONE_PICKAXE);
-        Objects.requireNonNull(stonepickaxe.getItemMeta()).setUnbreakable(true);
+        ItemStack stonePickaxe = new ItemStack(Material.STONE_PICKAXE);
+        Objects.requireNonNull(stonePickaxe.getItemMeta()).setUnbreakable(true);
 
         player.getInventory().clear();
-        player.getInventory().addItem(stonepickaxe);
+        player.getInventory().addItem(stonePickaxe);
         player.setGameMode(GameMode.SURVIVAL);
     }
 
@@ -100,6 +100,7 @@ public class PlayerState {
                 this.currentState = PLAYERSTATE.RUNNING;
                 this.player.setWalkSpeed(0.2f);
             }
+
             this.time--;
         }, 20, 20);
     }
