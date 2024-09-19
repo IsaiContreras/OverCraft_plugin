@@ -91,7 +91,7 @@ public class OverCrafted extends JavaPlugin {
 
     private void setupEvents() {
         getServer().getPluginManager().registerEvents(new PlayerListener(), OverCrafted.getInstance());
-        //getServer().getPluginManager().registerEvents(new MiscellaneousListener(), OverCrafted.getInstance());
+        getServer().getPluginManager().registerEvents(new MiscellaneousListener(), OverCrafted.getInstance());
     }
 
 }

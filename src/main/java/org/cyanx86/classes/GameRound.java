@@ -7,6 +7,7 @@ import org.bukkit.scheduler.BukkitTask;
 import org.cyanx86.OverCrafted;
 import org.cyanx86.classes.PlayerState.*;
 import org.cyanx86.managers.GamePlayersManager;
+import org.cyanx86.managers.OrderManager;
 import org.cyanx86.utils.Enums.ListResult;
 
 import java.util.List;
@@ -30,6 +31,7 @@ public class GameRound {
     // -- Private
     private final GameArea gamearea;
     private final GamePlayersManager playersManager;
+    private final OrderManager orderManager;
 
     private ROUNDSTATE currentState = ROUNDSTATE.COUNTDOWN;
 
@@ -46,6 +48,7 @@ public class GameRound {
     public GameRound(@NotNull GameArea gamearea, @NotNull List<Player> players, int time) {
         this.gamearea = gamearea;
         this.playersManager = new GamePlayersManager(players);
+        this.orderManager = new OrderManager(this.gamearea.getRecipes());
         this.roundTime = Math.max(time, 30);
 
         this.movePlayersToGameArea();
@@ -112,6 +115,10 @@ public class GameRound {
             playerstate.immobilize(3);
     }
 
+    public List<Order> getCurrentOrders() {
+        return this.orderManager.getOrderList();
+    }
+
     // -- Private
 
     private void endRound(String reason) {
@@ -120,6 +127,7 @@ public class GameRound {
         );
 
         this.currentState = ROUNDSTATE.ENDED;
+        this.orderManager.stopGenerator();
         this.restorePlayerProperties();
     }
 

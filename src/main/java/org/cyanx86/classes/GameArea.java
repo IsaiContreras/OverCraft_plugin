@@ -2,6 +2,8 @@ package org.cyanx86.classes;
 
 import org.bukkit.Location;
 
+import org.bukkit.Material;
+
 import org.cyanx86.utils.Enums.ListResult;
 import org.cyanx86.utils.Primitives.Cube;
 
@@ -24,6 +26,7 @@ public class GameArea {
     private final Cube cubearea;
     private List<SpawnPoint> spawnpoints = new ArrayList<>();
     private List<IngredientDispenser> dispensers = new ArrayList<>();
+    private List<Material> recipes = new ArrayList<>();
 
     // -- [[ METHODS ]] --
 
@@ -43,7 +46,8 @@ public class GameArea {
             @NotNull Location corner_2,
             int max_players,
             @NotNull List<SpawnPoint> spawn_points,
-            @NotNull List<IngredientDispenser> ingredient_dispensers
+            @NotNull List<IngredientDispenser> ingredient_dispensers,
+            @NotNull List<Material> recipes
     ) {
         this.name = name;
         this.world = world;
@@ -53,6 +57,7 @@ public class GameArea {
         this.cubearea = new Cube(corner_1, corner_2);
         this.spawnpoints = spawn_points;
         this.dispensers = ingredient_dispensers;
+        this.recipes = recipes;
     }
 
     public String getName() {
@@ -122,6 +127,33 @@ public class GameArea {
         this.dispensers.clear();
     }
 
+    public ListResult addRecipe(@NotNull Material recipe) {
+        if (this.recipes.contains(recipe))
+            return ListResult.ALREADY_IN;
+
+        this.recipes.add(recipe);
+        return ListResult.SUCCESS;
+    }
+
+    public int getRecipesCount() {
+        return this.recipes.size();
+    }
+
+    public List<Material> getRecipes() {
+        return this.recipes;
+    }
+
+    public Material getRecipe(@NotNull String recipe) {
+        Optional<Material> query = this.recipes.stream()
+                .filter(item -> item.name().equals(recipe))
+                .findFirst();
+        return query.orElse(null);
+    }
+
+    public void clearRecipes() {
+        this.recipes.clear();
+    }
+
     public boolean isPointInsideBoundaries(@NotNull Location point) {
         return (
             !(point.getBlockX() < cubearea.left || point.getBlockX() > cubearea.right) &&
@@ -142,18 +174,21 @@ public class GameArea {
     }
 
     public boolean isValidSetUp() {
-        return (spawnpoints.size() == maxPlayers && !dispensers.isEmpty());
+        return (spawnpoints.size() == maxPlayers && !dispensers.isEmpty() && !recipes.isEmpty());
     }
 
     public Map<String, Object> serialize() {
         Map<String, Object> data = new HashMap<>();
         List<Map<String, Object>> sppListMap = new ArrayList<>();
         List<Map<String, Object>> idpListMap = new ArrayList<>();
+        List<String> rcpListMap = new ArrayList<>();
 
         for (SpawnPoint spawnpoint : this.spawnpoints)
             sppListMap.add(spawnpoint.serialize());
         for (IngredientDispenser dispenser: this.dispensers)
             idpListMap.add(dispenser.serialize());
+        for (Material recipe : this.recipes)
+            rcpListMap.add(recipe.name());
 
         data.put("name", this.name);
         data.put("world", this.world);
@@ -162,6 +197,7 @@ public class GameArea {
         data.put("max_players", this.maxPlayers);
         data.put("spawn_points", sppListMap);
         data.put("ingredient_dispensers", idpListMap);
+        data.put("recipes", rcpListMap);
 
         return data;
     }
@@ -169,13 +205,17 @@ public class GameArea {
     public static GameArea deserialize(@NotNull Map<String, Object> args) {
         List<SpawnPoint> spawnpointsList = new ArrayList<>();
         List<IngredientDispenser> dispenserList = new ArrayList<>();
+        List<Material> recipeList = new ArrayList<>();
         List<Map<String, Object>> sppMapList = (List<Map<String, Object>>)args.get("spawn_points");
         List<Map<String, Object>> idpMapList = (List<Map<String, Object>>)args.get("ingredient_dispensers");
+        List<String> rcpList = ((List<String>)args.get("recipes"));
 
         for (Map<String, Object> sppMap : sppMapList)
             spawnpointsList.add(SpawnPoint.deserialize(sppMap));
         for (Map<String, Object> idpMap : idpMapList)
             dispenserList.add(IngredientDispenser.deserialize(idpMap));
+        for (String rcpItem : rcpList)
+            recipeList.add(Material.valueOf(rcpItem));
 
         return new GameArea(
             (String)args.get("name"),
@@ -184,7 +224,8 @@ public class GameArea {
             Location.deserialize((Map<String, Object>)args.get("corner_2")),
             (int)args.get("max_players"),
             spawnpointsList,
-            dispenserList
+            dispenserList,
+            recipeList
         );
     }
 

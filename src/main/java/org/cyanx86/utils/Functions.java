@@ -8,6 +8,8 @@ import org.cyanx86.OverCrafted;
 import org.cyanx86.classes.GameArea;
 
 import java.util.Objects;
+import java.util.Optional;
+
 import org.jetbrains.annotations.NotNull;
 
 public class Functions {
@@ -44,6 +46,19 @@ public class Functions {
             )
                 return gmaItem;
         return null;
+    }
+
+    static public GameArea getGameAreaByName(@NotNull String name) {
+        Optional<GameArea> query = master.getGameAreaManager()
+                .getGameAreas()
+                .stream()
+                .filter(item -> item.getName().equals(name))
+                .findFirst();
+        return query.orElse(null);
+    }
+
+    static public int getRandomNumber(int min, int max) {
+        return (int) ((Math.random() * (max - min)) + min);
     }
 
 }

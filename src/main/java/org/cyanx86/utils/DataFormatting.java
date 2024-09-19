@@ -10,6 +10,7 @@ public class DataFormatting {
             (minutes < 10 ? "0" : "") +
             minutes +
             ":" +
+            (seconds < 10 ? "0" : "") +
             seconds
         );
     }

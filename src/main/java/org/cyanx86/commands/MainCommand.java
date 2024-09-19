@@ -5,8 +5,12 @@ import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
 
 import org.cyanx86.OverCrafted;
+import org.cyanx86.classes.GameRound;
+import org.cyanx86.classes.Order;
 import org.cyanx86.utils.DataFormatting;
 import org.cyanx86.utils.Messenger;
+
+import java.util.List;
 
 public class MainCommand implements CommandExecutor {
 
@@ -48,6 +52,9 @@ public class MainCommand implements CommandExecutor {
             case "roundtime":       // subCommand SetRoundTime
                 this.scmSetRoundTime(sender, args);
                 break;
+            case "recipelist":
+                this.scmRecipeList(sender);
+                break;
             case "startround":      // subCommand StartRound
                 this.scmStartRound(sender);
                 break;
@@ -66,12 +73,17 @@ public class MainCommand implements CommandExecutor {
         Messenger.msgToSender(sender, "&7 [[ Comando /overcrafted ]]");
         Messenger.msgToSender(sender, "&7- /overcrafted help");
         Messenger.msgToSender(sender, "&7- /overcrafted roundtime <tiempo>");
+        Messenger.msgToSender(sender, "&7- /overcrafted recipelist");
         Messenger.msgToSender(sender, "&7- /overcrafted startround");
         Messenger.msgToSender(sender, "&7- /overcrafted endround");
     }
 
     private void scmSetRoundTime(CommandSender sender, String[] args) {
         if (args.length != 2) {
+            Messenger.msgToSender(
+                sender,
+                OverCrafted.prefix + "&cArgumentos incompletos."    // TODO: Invalid arguments message.
+            );
             return;
         }
 
@@ -93,6 +105,35 @@ public class MainCommand implements CommandExecutor {
             OverCrafted.prefix + "&aLa ronda durará &r&o" +
                     DataFormatting.formatSecondsToTime(time) + "&r&a minutos."
         );
+    }
+
+    private void scmRecipeList(CommandSender sender) {
+        GameRound round = master.getGameRoundManager().getGameRound();
+        if (round == null || round.getCurrentRoundState() == GameRound.ROUNDSTATE.ENDED) {
+            Messenger.msgToSender(
+                sender,
+                OverCrafted.prefix + "&cAún no comienza la ronda o ha finalizado."
+            );
+            return;
+        }
+
+        Messenger.msgToSender(sender, "&f&l------ OVERCRAFTED ------\n");
+        Messenger.msgToSender(sender, "&f&lRecetas actuales:");  // TODO: Language location.
+
+        List<Order> orderList = round.getCurrentOrders();
+        if (orderList.isEmpty()) {
+            Messenger.msgToSender(
+                sender,
+                "&7&o** Vacío **"
+            );
+            return;
+        }
+        for (Order order : orderList) {
+            Messenger.msgToSender(
+                sender,
+                "&7&o- &r&o" + order.getRecipe().name() + "&r&7&o."
+            );
+        }
     }
 
     private void scmStartRound(CommandSender sender) {

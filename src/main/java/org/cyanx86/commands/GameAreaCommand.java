@@ -1,6 +1,7 @@
 package org.cyanx86.commands;
 
 import org.bukkit.Location;
+import org.bukkit.Material;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
@@ -14,6 +15,7 @@ import org.cyanx86.classes.SpawnPoint;
 import org.cyanx86.utils.Functions;
 import org.cyanx86.utils.Messenger;
 
+import java.util.List;
 import java.util.Optional;
 
 public class GameAreaCommand implements CommandExecutor {
@@ -57,31 +59,37 @@ public class GameAreaCommand implements CommandExecutor {
         }
 
         switch (args[0].toLowerCase()) {
-            case "help":        // subcommand Help
+            case "help":            // subcommand Help
                 this.scmHelp(sender);
                 break;
-            case "create":      // subcommand Create
+            case "create":          // subcommand Create
                 this.scmCreate(sender, args);
                 break;
-            case "setspawn":    // subCommand SetSpawn
+            case "setspawn":        // subCommand SetSpawn
                 this.scmSetSpawnPoint(sender);
                 break;
-            case "resetspawns": // subCommand ResetSpawns
+            case "resetspawns":     // subCommand ResetSpawns
                 this.scmResetSpawns(sender, args);
                 break;
-            case "resetdisp":   // subCommand ResetDispsnser
+            case "resetdisp":       // subCommand ResetDispsnser
                 this.scmResetDispensers(sender, args);
                 break;
-            case "list":        // subCommand List
+            case "addrecipe":       // subCommand AddRecipe
+                this.scmAddRecipe(sender, args);
+                break;
+            case "resetrecipes":    // subCommand ResetRecipes
+                this.scmResetRecipes(sender, args);
+                break;
+            case "list":            // subCommand List
                 this.scmList(sender);
                 break;
-            case "select":      // subCommand Select
+            case "select":          // subCommand Select
                 this.scmSelect(sender, args);
                 break;
-            case "info":        // subCommand Info
+            case "info":            // subCommand Info
                 this.scmInfo(sender, args);
                 break;
-            case "delete":      // subcommand Delete
+            case "delete":          // subcommand Delete
                 this.scmDelete(sender, args);
                 break;
             default:
@@ -100,6 +108,8 @@ public class GameAreaCommand implements CommandExecutor {
         Messenger.msgToSender(sender, "&7- /gamearea setspawn");
         Messenger.msgToSender(sender, "&7- /gamearea resetspawns <nombre>");
         Messenger.msgToSender(sender, "&7- /gamearea resetdisp <nombre>");
+        Messenger.msgToSender(sender, "&7- /gamearea addrecipe <nombre> <material>");
+        Messenger.msgToSender(sender, "&7- /gamearea resetrecipes <nombre>");
         Messenger.msgToSender(sender, "&7- /gamearea list");
         Messenger.msgToSender(sender, "&7- /gamearea select <nombre>");
         Messenger.msgToSender(sender, "&7- /gamearea info <nombre>");
@@ -169,6 +179,7 @@ public class GameAreaCommand implements CommandExecutor {
         }
 
         gacAssistant.resetCorners();
+
         Messenger.msgToSender(
             sender,
             OverCrafted.prefix + "&aSe ha creado el área de juego &r&o" + name + "&r&a."
@@ -229,19 +240,15 @@ public class GameAreaCommand implements CommandExecutor {
             return;
         }
 
-        Optional<GameArea> query = master.getGameAreaManager()
-                .getGameAreas()
-                .stream()
-                .filter(item -> item.getName().equals(args[1].toLowerCase()))
-                .findFirst();
-        if (query.isEmpty()) {
+        GameArea gamearea = Functions.getGameAreaByName(args[1].toLowerCase());
+        if (gamearea == null) {
             Messenger.msgToSender(
                 sender,
                 OverCrafted.prefix + "&cNo se encontró un GameArea con este nombre."
             );
             return;
         }
-        GameArea gamearea = query.get();
+
         gamearea.clearSpawnPointList();
 
         Messenger.msgToSender(
@@ -259,19 +266,15 @@ public class GameAreaCommand implements CommandExecutor {
             return;
         }
 
-        Optional<GameArea> query = master.getGameAreaManager()
-                .getGameAreas()
-                .stream()
-                .filter(item -> item.getName().equals(args[1].toLowerCase()))
-                .findFirst();
-        if (query.isEmpty()) {
+        GameArea gamearea = Functions.getGameAreaByName(args[1].toLowerCase());
+        if (gamearea == null) {
             Messenger.msgToSender(
                 sender,
                 OverCrafted.prefix + "&cNo se encontró un GameArea con este nombre."
             );
             return;
         }
-        GameArea gamearea = query.get();
+
         gamearea.clearIngredientDispensers();
 
         Messenger.msgToSender(
@@ -280,18 +283,92 @@ public class GameAreaCommand implements CommandExecutor {
         );
     }
 
+    private void scmAddRecipe(CommandSender sender, String[] args) {
+        if (args.length != 3) {
+            Messenger.msgToSender(
+                sender,
+                OverCrafted.prefix + "&cArgumentos incompletos."    // TODO: Invalid arguments message.
+            );
+            return;
+        }
+
+        GameArea gamearea = Functions.getGameAreaByName(args[1].toLowerCase());
+        if (gamearea == null) {
+            Messenger.msgToSender(
+                sender,
+                OverCrafted.prefix + "&cNo se encontró un GameArea con este nombre."
+            );
+            return;
+        }
+
+        Material recipe;
+        try {
+            recipe = Material.valueOf(args[2].toUpperCase());
+        } catch (IllegalArgumentException e) {
+            Messenger.msgToSender(
+                sender,
+                OverCrafted.prefix + "&cNo se encontró este Material."
+            );
+            return;
+        }
+
+        switch(gamearea.addRecipe(recipe)) {
+            case ALREADY_IN -> {
+                Messenger.msgToSender(
+                    sender,
+                    OverCrafted.prefix + "&cYa hay una receta en la lista del GameArea."
+                );
+                return;
+            }
+        }
+
+        Messenger.msgToSender(
+            sender,
+            OverCrafted.prefix + "&aSe añadió &r&o" + recipe.name() +
+                    " &r&acomo receta del GameArea &r&o" + gamearea.getName() + "&r&a."
+        );
+    }
+
+    private void scmResetRecipes(CommandSender sender, String[] args) {
+        if (args.length != 2) {
+            Messenger.msgToSender(
+                sender,
+                OverCrafted.prefix + "&cArgumentos incompletos."    // TODO: Invalid arguments message.
+            );
+            return;
+        }
+
+        GameArea gamearea = Functions.getGameAreaByName(args[1].toLowerCase());
+        if (gamearea == null) {
+            Messenger.msgToSender(
+                sender,
+                OverCrafted.prefix + "&cNo se encontró un GameArea con este nombre."
+            );
+            return;
+        }
+
+        gamearea.clearRecipes();
+
+        Messenger.msgToSender(
+            sender,
+            OverCrafted.prefix + "&aSe limpiaron las recetas del GameArea &r&o" + gamearea.getName() + "&r&a."
+        );
+    }
+
     private void scmList(CommandSender sender) {
         Messenger.msgToSender(sender, "&f&l------ OVERCRAFTED ------\n");
         Messenger.msgToSender(sender, "&f&lÁreas de juego:");  // TODO: Language location.
 
-        if (master.getGameAreaManager().getGameAreas().isEmpty()) {
+        List<GameArea> gameAreaList = master.getGameAreaManager().getGameAreas();
+
+        if (gameAreaList.isEmpty()) {
             Messenger.msgToSender(
                 sender,
                 "&7&o** Vacío **"
             );
             return;
         }
-        for(int i = 0; i < master.getGameAreaManager().getGameAreas().size(); i++) {
+        for(int i = 0; i < gameAreaList.size(); i++) {
             Messenger.msgToSender(
                 sender,
                 "&7" + (i + 1) + ".- " + "&o" + master.getGameAreaManager().getGameAreas().get(i).getName()
@@ -387,6 +464,15 @@ public class GameAreaCommand implements CommandExecutor {
                         "&e, &a" + dispenser.getLocation().getBlockY() +
                         "&e, &9" + dispenser.getLocation().getBlockZ() + "&e)" +
                         "&6 drop: &e(" + dispenser.getDropItemName() + "&e)"
+            );
+        }
+
+        Messenger.msgToSender(sender, "&6&o  recipes (&e" + gamearea.getRecipesCount() + "&6):");
+        for (int i = 0; i < gamearea.getRecipes().size(); i++) {
+            Material recipe = gamearea.getRecipes().get(i);
+            Messenger.msgToSender(sender,
+                    "&6&o    [" + (i + 1) + "]:" +
+                            "&6 name: &e&c" + recipe.name() + "&e."
             );
         }
     }
