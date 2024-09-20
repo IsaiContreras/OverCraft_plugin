@@ -9,6 +9,7 @@ import org.cyanx86.classes.GameArea;
 
 import java.util.Objects;
 import java.util.Optional;
+import java.util.Random;
 
 import org.jetbrains.annotations.NotNull;
 
@@ -58,7 +59,7 @@ public class Functions {
     }
 
     static public int getRandomNumber(int min, int max) {
-        return (int) ((Math.random() * (max - min)) + min);
+        return new Random().nextInt((max - min) + 1) + min;
     }
 
 }

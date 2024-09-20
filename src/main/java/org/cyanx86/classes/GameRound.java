@@ -1,6 +1,7 @@
 package org.cyanx86.classes;
 
 import org.bukkit.Bukkit;
+import org.bukkit.Material;
 import org.bukkit.entity.Player;
 import org.bukkit.scheduler.BukkitTask;
 
@@ -75,23 +76,24 @@ public class GameRound {
         return this.currentState;
     }
 
+    /*
     public PLAYERSTATE getStateOfPlayer(@NotNull Player player) {
         PlayerState state = this.playersManager.getPlayerState(player);
         return (state == null) ? null : state.getCurrentState();
-    }
+    }*/
 
     public boolean isPlayerInGame(@NotNull Player player) {
         return this.playersManager.anyPlayer(player);
     }
 
     public ListResult removePlayer(@NotNull Player player) {
-        PlayerState playerstate = this.playersManager.getPlayerState(player);
-        if (playerstate == null)
+        PlayerState playerState = this.playersManager.getPlayerState(player);
+        if (playerState == null)
             return ListResult.NOT_FOUND;
 
-        playerstate.moveToPreviousLocation();
-        playerstate.restoreGameMode();
-        playerstate.restoreInventory();
+        playerState.moveToPreviousLocation();
+        playerState.restoreGameMode();
+        playerState.restoreInventory();
         ListResult result = this.playersManager.removePlayer(player);
 
         if (this.playersManager.getPlayerStates().isEmpty())
@@ -105,18 +107,22 @@ public class GameRound {
     }
 
     public void spawnPlayer(@NotNull Player player, boolean immobilize) {
-        PlayerState playerstate = this.playersManager.getPlayerState(player);
-        if (playerstate == null) return;
+        PlayerState playerState = this.playersManager.getPlayerState(player);
+        if (playerState == null) return;
 
-        SpawnPoint spawnpoint = this.getPlayerSpawn(playerstate);
-        playerstate.moveToLocation(spawnpoint.getSpawnLocation());
+        SpawnPoint spawnpoint = this.getPlayerSpawn(playerState);
+        playerState.moveToLocation(spawnpoint.getSpawnLocation());
 
         if (immobilize)
-            playerstate.immobilize(3);
+            playerState.immobilizeForTime(3);
     }
 
     public List<Order> getCurrentOrders() {
         return this.orderManager.getOrderList();
+    }
+
+    public boolean dispatchOrder(@NotNull Material recipe) {
+        return this.orderManager.removeOrder(recipe);
     }
 
     // -- Private
@@ -127,32 +133,32 @@ public class GameRound {
         );
 
         this.currentState = ROUNDSTATE.ENDED;
-        this.orderManager.stopGenerator();
         this.restorePlayerProperties();
     }
 
-    private SpawnPoint getPlayerSpawn(@NotNull PlayerState playerstate) {
+    private SpawnPoint getPlayerSpawn(@NotNull PlayerState playerState) {
         Optional<SpawnPoint> query = gamearea.getSpawnPoints().stream()
-                .filter(item -> item.getPlayerIndex() == this.playersManager.getPlayerIndex(playerstate))
+                .filter(item -> item.getPlayerIndex() == this.playersManager.getPlayerIndex(playerState))
                 .findFirst();
         return query.orElse(null);
     }
 
-    private void spawnPlayer(@NotNull PlayerState playerstate) {
-        SpawnPoint spawnpoint = this.getPlayerSpawn(playerstate);
-        playerstate.moveToLocation(spawnpoint.getSpawnLocation());
+    private void spawnPlayer(@NotNull PlayerState playerState) {
+        SpawnPoint spawnpoint = this.getPlayerSpawn(playerState);
+        playerState.moveToLocation(spawnpoint.getSpawnLocation());
     }
 
     private void movePlayersToGameArea() {
-        for (PlayerState playerstate : this.playersManager.getPlayerStates())
-            this.spawnPlayer(playerstate);
+        for (PlayerState playerState : this.playersManager.getPlayerStates())
+            this.spawnPlayer(playerState);
     }
 
     private void restorePlayerProperties() {
-        for (PlayerState playerstate : this.playersManager.getPlayerStates()) {
-            playerstate.moveToPreviousLocation();
-            playerstate.restoreGameMode();
-            playerstate.restoreInventory();
+        for (PlayerState playerState : this.playersManager.getPlayerStates()) {
+            playerState.moveToPreviousLocation();
+            playerState.restoreGameMode();
+            playerState.restoreInventory();
+            playerState.mobilize();
         }
     }
 
@@ -176,6 +182,9 @@ public class GameRound {
     private void startRoundTimer() {
         this.playersManager.sendMessageToPlayers("&a¡A CRAFTEAR!");
         this.currentState = ROUNDSTATE.RUNNING;
+        this.orderManager.startGenerator();
+        for (PlayerState playerState : this.playersManager.getPlayerStates())
+            playerState.mobilize();
 
         this.time = this.roundTime;
         this.task = Bukkit.getScheduler().runTaskTimer(OverCrafted.getInstance(), () -> {
@@ -192,6 +201,9 @@ public class GameRound {
     private void intermissionTime() {
         this.playersManager.sendMessageToPlayers("&a¡TIEMPO!");
         this.currentState = ROUNDSTATE.FINISHED;
+        this.orderManager.stopGenerator();
+        for (PlayerState playerState : this.playersManager.getPlayerStates())
+            playerState.immobilize();
 
         this.time = this.endIntermissionTime;
         this.task = Bukkit.getScheduler().runTaskTimer(OverCrafted.getInstance(), () -> {

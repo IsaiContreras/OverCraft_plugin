@@ -10,6 +10,7 @@ import org.cyanx86.utils.Functions;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 import org.jetbrains.annotations.NotNull;
 
@@ -41,8 +42,6 @@ public class OrderManager {
         this.timeForNextOrder = 20;
         this.orderTimeOut = 40;
         this.orderStackLimit = 5;
-
-        this.startGenerator();
     }
 
     public void changeTimeForNextOrder(int timeseconds) {
@@ -59,6 +58,33 @@ public class OrderManager {
 
     public void removeOrder(@NotNull Order order) {
         this.orderList.remove(order);
+        if (this.orderList.isEmpty())
+            this.newOrder();
+    }
+
+    public boolean removeOrder(@NotNull Material recipe) {
+        Optional<Order> query = this.orderList.stream()
+                .filter(item -> item.getRecipe().equals(recipe))
+                .findFirst();
+        if (query.isEmpty())
+            return false;
+
+        boolean result = this.orderList.remove(query.get());
+        if (this.orderList.isEmpty())
+            this.newOrder();
+
+        return result;
+    }
+
+    public void startGenerator() {
+        this.time = 0;
+        this.task = Bukkit.getScheduler().runTaskTimer(master, () -> {
+            if (time == 0) {
+                this.newOrder();
+                this.time = this.timeForNextOrder;
+            } else
+                this.time--;
+        }, 20L, 20L);
     }
 
     public void stopGenerator() {
@@ -74,22 +100,11 @@ public class OrderManager {
             return;
         this.orderList.add(
             new Order(
-                recipes.get(Functions.getRandomNumber(0, this.orderList.size() - 1)),
+                recipes.get(Functions.getRandomNumber(0, this.recipes.size() - 1)),
                 this.orderTimeOut,
                 this
             )
         );
-    }
-
-    private void startGenerator() {
-        this.time = 0;
-        this.task = Bukkit.getScheduler().runTaskTimer(master, () -> {
-            if (time == 0) {
-                this.newOrder();
-                this.time = this.timeForNextOrder;
-            } else
-                this.time--;
-        }, 20L, 20L);
     }
 
 }

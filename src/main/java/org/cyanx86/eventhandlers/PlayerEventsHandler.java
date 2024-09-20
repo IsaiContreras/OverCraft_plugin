@@ -3,9 +3,10 @@ package org.cyanx86.eventhandlers;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.block.Block;
-import org.bukkit.entity.Entity;
-import org.bukkit.entity.ItemFrame;
-import org.bukkit.entity.Player;
+import org.bukkit.block.BlockState;
+import org.bukkit.block.Chest;
+import org.bukkit.block.DoubleChest;
+import org.bukkit.entity.*;
 import org.bukkit.event.block.Action;
 import org.bukkit.event.block.BlockBreakEvent;
 import org.bukkit.event.block.BlockPlaceEvent;
@@ -13,7 +14,9 @@ import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.event.entity.EntityDamageEvent;
 import org.bukkit.event.hanging.HangingBreakByEntityEvent;
 import org.bukkit.event.player.*;
+import org.bukkit.inventory.DoubleChestInventory;
 import org.bukkit.inventory.EquipmentSlot;
+import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 
 import org.cyanx86.OverCrafted;
@@ -67,7 +70,7 @@ public class PlayerEventsHandler {
             return;
 
         this.onOverCraftedManagerCreatesGameAreaCorner(event);
-        this.onOverCraftedManagerCreatesIngredientDispenser(event);
+        //this.onOverCraftedManagerCreatesIngredientDispenser(event);
     }
 
     public void onOverCraftedPlayerDisconnects(PlayerQuitEvent event) {
@@ -92,18 +95,6 @@ public class PlayerEventsHandler {
         // NA si la ronda no ha comenzado o si el jugador no está en el juego o si la ronda ha terminado.
         if (round == null || !round.isPlayerInGame(player) || round.getCurrentRoundState() == GameRound.ROUNDSTATE.ENDED)
             return;
-
-        // No permite moverse si la Ronda no ha empezado
-        if (round.getCurrentRoundState() != GameRound.ROUNDSTATE.RUNNING) {
-            event.setCancelled(true);
-            return;
-        }
-
-        /* No permite moverse si el estado del jugador está en INMOBILIZADO
-        if (round.getStateOfPlayer(player) != null && round.getStateOfPlayer(player) != PLAYERSTATE.RUNNING) {
-            event.setCancelled(true);
-            return;
-        } */
 
         // Si sale del GameArea regresar jugador a su SpawnPoint
         if (!round.getGameArea().isPointInsideBoundaries(player.getLocation()))
@@ -195,11 +186,14 @@ public class PlayerEventsHandler {
     }
 
     public void onOverCraftedPlayerInteractsWithChest(PlayerInteractEvent event) {
-        Player player = event.getPlayer();
         GameRound round = master.getGameRoundManager().getGameRound();
 
         // NA si la ronda no ha comenzado, si la ronda ha terminado o si el jugador no está jugando.
-        if (round == null || round.getCurrentRoundState() == GameRound.ROUNDSTATE.ENDED || !round.isPlayerInGame(player))
+        if (
+            round == null ||
+            round.getCurrentRoundState() == GameRound.ROUNDSTATE.ENDED ||
+            !round.isPlayerInGame(event.getPlayer())
+        )
             return;
 
         Block block = event.getClickedBlock();
@@ -214,13 +208,8 @@ public class PlayerEventsHandler {
 
         event.setCancelled(true);
 
-        ItemStack drop = round.getGameArea()
-                .getIngredientDispenserByLocation(block.getLocation())
-                .dropItem();
-        if (drop == null)
-            return;
-
-        player.getInventory().addItem(drop);
+        this.onOverCraftedPlayerDispenserIngredient(event);
+        this.onOverCraftedPlayerDeliverRecipe(event);
     }
 
     public void onOverCraftedPlayerGetsDamage(EntityDamageEvent event) {
@@ -429,6 +418,7 @@ public class PlayerEventsHandler {
         );
     }
 
+    /*
     private void onOverCraftedManagerCreatesIngredientDispenser(PlayerInteractEvent event) {
         Player player = event.getPlayer();
         ItemStack item = event.getItem();
@@ -441,15 +431,6 @@ public class PlayerEventsHandler {
             item.getType() == Material.IRON_HOE
         ))
             return;
-
-        GameAreaPropertiesAssistant gapAssistant = master.getGapaManager().getAssistantByName(player.getName());
-        if (gapAssistant == null) {
-            Messenger.msgToSender(
-                player,
-                OverCrafted.prefix + "&cNo hay instancia de Asistente iniciada."
-            );
-            return;
-        }
 
         Block block = event.getClickedBlock();
         if (block == null)
@@ -519,7 +500,91 @@ public class PlayerEventsHandler {
             OverCrafted.prefix + "&aSe ha creado un Dispensador de Ingredientes en el GameArea &r&o" +
                     gamearea.getName() + "&r&a."
         );
+
         event.setCancelled(true);
+    } */
+
+    /*
+    private void onOverCraftedManagerCreatesDeliverBar(PlayerInteractEvent event) {
+        Player player = event.getPlayer();
+        ItemStack item = event.getItem();
+        if (item == null)
+            return;
+
+        if (!(
+            event.getAction().equals(Action.RIGHT_CLICK_BLOCK) &&
+            Objects.equals(event.getHand(), EquipmentSlot.HAND) &&
+            item.getType() == Material.IRON_HOE
+        ))
+            return;
+
+        Block block = event.getClickedBlock();
+        if (block == null)
+            return;
+        BlockState blockState = block.getState();
+        if (!(blockState instanceof Chest))
+            return;
+        Inventory inventory = ((Chest)blockState).getInventory();
+        if (!(inventory instanceof DoubleChestInventory))
+            return;
+        DoubleChest dChest = (DoubleChest)inventory.getHolder();
+
+
+    } */
+
+    private void onOverCraftedPlayerDispenserIngredient(PlayerInteractEvent event) {
+        Block block = event.getClickedBlock();
+        if (block == null)
+            return;
+
+        Material dropping = null;
+        for (Entity entity : block.getWorld().getNearbyEntities(block.getLocation(), 2, 2, 2))
+            if (
+                entity instanceof ItemFrame itemframe &&
+                entity.getLocation().getBlock().getRelative(((ItemFrame)entity).getAttachedFace()).equals(block)
+            ) {
+                dropping = itemframe.getItem().getType();
+                break;
+            }
+        if (dropping == null)
+            return;
+        Player player = event.getPlayer();
+        ItemStack drop = new ItemStack(dropping);
+
+        player.getInventory().addItem(drop);
+    }
+
+    private void onOverCraftedPlayerDeliverRecipe(PlayerInteractEvent event) {
+        Block block = event.getClickedBlock();
+        if (block == null)
+            return;
+
+        boolean isGlowItemFrame = false;
+        for (Entity entity : block.getWorld().getNearbyEntities(block.getLocation(), 2, 2, 2))
+            if (
+                entity instanceof GlowItemFrame &&
+                entity.getLocation().getBlock().getRelative(((GlowItemFrame)entity).getAttachedFace()).equals(block)
+            ) {
+                isGlowItemFrame = true;
+                break;
+            }
+        if (!isGlowItemFrame)
+            return;
+
+        Player player = event.getPlayer();
+        GameRound round = master.getGameRoundManager().getGameRound();
+        ItemStack item = player.getInventory().getItem(EquipmentSlot.HAND);
+        if (item == null)
+            return;
+
+        if (round.dispatchOrder(item.getType())) {
+            if (Objects.requireNonNull(player.getInventory().getItem(EquipmentSlot.HAND)).getAmount() == 1)
+                player.getInventory().setItem(EquipmentSlot.HAND, new ItemStack(Material.AIR));
+            else
+                Objects.requireNonNull(player.getInventory().getItem(EquipmentSlot.HAND)).setAmount(
+                        Objects.requireNonNull(player.getInventory().getItem(EquipmentSlot.HAND)).getAmount() - 1
+                );
+        }
     }
 
 }

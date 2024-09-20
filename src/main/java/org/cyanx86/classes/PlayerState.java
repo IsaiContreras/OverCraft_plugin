@@ -48,6 +48,7 @@ public class PlayerState {
         ItemStack stonePickaxe = new ItemStack(Material.STONE_PICKAXE);
         Objects.requireNonNull(stonePickaxe.getItemMeta()).setUnbreakable(true);
 
+        this.immobilize();
         player.getInventory().clear();
         player.getInventory().addItem(stonePickaxe);
         player.setGameMode(GameMode.SURVIVAL);
@@ -85,10 +86,19 @@ public class PlayerState {
         this.player.setGameMode(this.prevGameMode);
     }
 
-    public void immobilize(int timeseconds) {
+    public void immobilizeForTime(int timeseconds) {
+        this.immobilize();
+        this.setImmobileTimer(timeseconds);
+    }
+
+    public void immobilize() {
         this.currentState = PLAYERSTATE.IMMOBILIZED;
         this.player.setWalkSpeed(0.0f);
-        this.setImmobileTimer(timeseconds);
+    }
+
+    public void mobilize() {
+        this.currentState = PLAYERSTATE.RUNNING;
+        this.player.setWalkSpeed(0.2f);
     }
 
     // -- Private
@@ -97,8 +107,7 @@ public class PlayerState {
         this.task = Bukkit.getScheduler().runTaskTimer(OverCrafted.getInstance(), () -> {
             if (this.time == 0) {
                 this.task.cancel();
-                this.currentState = PLAYERSTATE.RUNNING;
-                this.player.setWalkSpeed(0.2f);
+                this.mobilize();
             }
 
             this.time--;
