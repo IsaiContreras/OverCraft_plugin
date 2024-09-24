@@ -15,7 +15,7 @@ import org.jetbrains.annotations.NotNull;
 
 public class Functions {
 
-    static private OverCrafted master = OverCrafted.getInstance();
+    static final private OverCrafted master = OverCrafted.getInstance();
 
     static public boolean blockBelongsGameArea(@NotNull Block block) {
         for (GameArea gmaItem : master.getGameAreaManager().getGameAreas()) {
