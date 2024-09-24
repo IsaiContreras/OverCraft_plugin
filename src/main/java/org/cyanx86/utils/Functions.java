@@ -18,7 +18,7 @@ public class Functions {
     static private OverCrafted master = OverCrafted.getInstance();
 
     static public boolean blockBelongsGameArea(@NotNull Block block) {
-        for (GameArea gmaItem: master.getGameAreaManager().getGameAreas()) {
+        for (GameArea gmaItem : master.getGameAreaManager().getGameAreas()) {
             if (!Objects.equals(gmaItem.getWorld(), block.getWorld().getName()))
                 continue;
             if (gmaItem.isPointInsideBoundaries(block.getLocation())) {
@@ -29,7 +29,7 @@ public class Functions {
     }
 
     static public boolean entityBelongsGameArea(@NotNull Entity entity) {
-        for (GameArea gmaItem: master.getGameAreaManager().getGameAreas()) {
+        for (GameArea gmaItem : master.getGameAreaManager().getGameAreas()) {
             if (!Objects.equals(gmaItem.getWorld(), entity.getWorld().getName()))
                 continue;
             if (gmaItem.isPointInsideBoundaries(entity.getLocation())) {

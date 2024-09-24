@@ -14,16 +14,16 @@ public class GamePlayersManager {
 
     // -- [[ ATTRIBUTES ]] --
 
-    // -- Public
+    // -- PUBLIC --
 
-    // -- Private
+    // -- PRIVATE --
     private final OverCrafted master = OverCrafted.getInstance();
 
     private final List<PlayerState> players = new ArrayList<>();
 
     // -- [[ METHODS ]] --
 
-    // -- Public
+    // -- PUBLIC --
     public GamePlayersManager(@NotNull List<Player> players) {
         Collections.shuffle(players);
 
@@ -31,7 +31,9 @@ public class GamePlayersManager {
             this.players.add(new PlayerState(player));
     }
 
-    public List<PlayerState> getPlayerStates() { return this.players; }
+    public List<PlayerState> getPlayerStates() {
+        return new ArrayList<>(this.players);
+    }
 
     public PlayerState getPlayerState(@NotNull Player player) {
         Optional<PlayerState> query = this.players.stream()
@@ -63,6 +65,6 @@ public class GamePlayersManager {
             playerstate.sendMessageToPlayer(OverCrafted.prefix + message);
     }
 
-    // -- Private
+    // -- PRIVATE --
 
 }

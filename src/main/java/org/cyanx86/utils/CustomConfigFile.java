@@ -14,9 +14,9 @@ public class CustomConfigFile {
 
     // -- [[ ATTRIBUTES ]] --
 
-    // -- Public
+    // -- PUBLIC --
 
-    // -- Private
+    // -- PRIVATE --
     private final OverCrafted master = OverCrafted.getInstance();
     private final String filename;
     private final String foldername;
@@ -28,7 +28,7 @@ public class CustomConfigFile {
 
     // -- [[ METHODS ]] --
 
-    // -- Public
+    // -- PUBLIC --
     public CustomConfigFile(@NotNull String filename, String foldername, boolean must_create) {
         this.filename = filename;
         this.foldername = foldername;
@@ -36,7 +36,7 @@ public class CustomConfigFile {
     }
     public String getPath() { return this.filename; }
 
-    // -- Private
+    // -- PRIVATE --
     public void registerConfig() {
         if (foldername != null)
             file = new File(master.getDataFolder() + File.separator + foldername, filename);

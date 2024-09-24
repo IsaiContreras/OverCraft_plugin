@@ -15,9 +15,9 @@ public class GameAreaManager {
 
     // -- [[ ATTRIBUTES ]] --
 
-    // -- Public
+    // -- PUBLIC --
 
-    // -- Private
+    // -- PRIVATE --
     private final OverCrafted master = OverCrafted.getInstance();
     private final CustomConfigFile configFile;
 
@@ -26,9 +26,9 @@ public class GameAreaManager {
 
     private final List<GameArea> gameAreas = new ArrayList<>();
 
-    // -- [[ METHODS ]]
+    // -- [[ METHODS ]] --
 
-    // -- Public
+    // -- PUBLIC --
     public GameAreaManager() {
         this.configFile = new CustomConfigFile(
             filename,
@@ -105,6 +105,11 @@ public class GameAreaManager {
         return queryGameArea.orElse(null);
     }
 
+    public List<GameArea> getGameAreas() {
+        return new ArrayList<>(this.gameAreas);
+    }
+
+    // Validators
     public boolean alreadyExists(@NotNull String name) {
         return this.gameAreas.stream().anyMatch(item -> item.getName().equals(name));
     }
@@ -113,10 +118,6 @@ public class GameAreaManager {
         return this.gameAreas.isEmpty();
     }
 
-    public List<GameArea> getGameAreas() {
-        return this.gameAreas;
-    }
-
-    // -- Private
+    // -- PRIVATE --
 
 }

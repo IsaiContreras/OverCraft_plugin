@@ -14,30 +14,29 @@ public class GameArea {
 
     // -- [[ ATTRIBUTES ]] --
 
-    // -- Public
+    // -- PUBLIC --
 
-    // -- Private
+    // -- PRIVATE --
 
     private final String name;
     private final String world;
     private final int maxPlayers;
 
     private final Location[] corners = new Location[2];
-    private final Cube cubearea;
-    private List<SpawnPoint> spawnpoints = new ArrayList<>();
-    private List<IngredientDispenser> dispensers = new ArrayList<>();
+    private final Cube cubeArea;
+    private List<SpawnPoint> spawnPoints = new ArrayList<>();
     private List<Material> recipes = new ArrayList<>();
 
     // -- [[ METHODS ]] --
 
-    // -- Public
+    // -- PUBLIC --
     public GameArea(@NotNull String name, @NotNull Location corner1, @NotNull Location corner2, int maxPlayers) {
         this.name = name;
         this.world = Objects.requireNonNull(corner1.getWorld()).getName();
         this.maxPlayers = maxPlayers;
         this.corners[0] = corner1;
         this.corners[1] = corner2;
-        this.cubearea = new Cube(corner1, corner2);
+        this.cubeArea = new Cube(corner1, corner2);
     }
     public GameArea(
             @NotNull String name,
@@ -46,7 +45,6 @@ public class GameArea {
             @NotNull Location corner_2,
             int max_players,
             @NotNull List<SpawnPoint> spawn_points,
-            @NotNull List<IngredientDispenser> ingredient_dispensers,
             @NotNull List<Material> recipes
     ) {
         this.name = name;
@@ -54,9 +52,8 @@ public class GameArea {
         this.maxPlayers = max_players;
         this.corners[0] = corner_1;
         this.corners[1] = corner_2;
-        this.cubearea = new Cube(corner_1, corner_2);
-        this.spawnpoints = spawn_points;
-        this.dispensers = ingredient_dispensers;
+        this.cubeArea = new Cube(corner_1, corner_2);
+        this.spawnPoints = spawn_points;
         this.recipes = recipes;
     }
 
@@ -74,59 +71,32 @@ public class GameArea {
         return this.maxPlayers;
     }
 
+    // SpawnPoints
     public ListResult addSpawnPoint(@NotNull SpawnPoint spawnpoint) {
         if (!this.isPointInsideBoundaries(spawnpoint.getSpawnLocation()))
             return ListResult.INVALID_ITEM;
-        if (this.spawnpoints.size() == maxPlayers)
+        if (this.spawnPoints.size() == maxPlayers)
             return ListResult.FULL_LIST;
 
-        spawnpoint.setPlayerIndex(spawnpoints.size() + 1);
+        spawnpoint.setPlayerIndex(spawnPoints.size() + 1);
 
-        this.spawnpoints.add(spawnpoint);
+        this.spawnPoints.add(spawnpoint);
         return ListResult.SUCCESS;
     }
 
     public List<SpawnPoint> getSpawnPoints() {
-        return this.spawnpoints;
+        return new ArrayList<>(this.spawnPoints);
     }
 
     public int getSpawnPointsCount() {
-        return this.spawnpoints.size();
+        return this.spawnPoints.size();
     }
 
     public void clearSpawnPointList() {
-        this.spawnpoints.clear();
+        this.spawnPoints.clear();
     }
 
-    public ListResult addIngredientDispenser(@NotNull IngredientDispenser dispenser) {
-        if (!this.isPointInsideBoundaries(dispenser.getLocation()))
-            return ListResult.INVALID_ITEM;
-        if (this.getIngredientDispenserByLocation(dispenser.getLocation()) != null)
-            return ListResult.ALREADY_IN;
-
-        this.dispensers.add(dispenser);
-        return ListResult.SUCCESS;
-    }
-
-    public List<IngredientDispenser> getIngredientDispensers() {
-        return this.dispensers;
-    }
-
-    public IngredientDispenser getIngredientDispenserByLocation(@NotNull Location location) {
-        Optional<IngredientDispenser> query = this.dispensers.stream()
-                .filter(item -> item.isLocationOfDispenser(location))
-                .findFirst();
-        return query.orElse(null);
-    }
-
-    public int getIngredientDispensersCount() {
-        return this.dispensers.size();
-    }
-
-    public void clearIngredientDispensers() {
-        this.dispensers.clear();
-    }
-
+    // Recipes
     public ListResult addRecipe(@NotNull Material recipe) {
         if (this.recipes.contains(recipe))
             return ListResult.ALREADY_IN;
@@ -140,25 +110,19 @@ public class GameArea {
     }
 
     public List<Material> getRecipes() {
-        return this.recipes;
-    }
-
-    public Material getRecipe(@NotNull String recipe) {
-        Optional<Material> query = this.recipes.stream()
-                .filter(item -> item.name().equals(recipe))
-                .findFirst();
-        return query.orElse(null);
+        return new ArrayList<>(this.recipes);
     }
 
     public void clearRecipes() {
         this.recipes.clear();
     }
 
+    // Validators
     public boolean isPointInsideBoundaries(@NotNull Location point) {
         return (
-            !(point.getBlockX() < cubearea.left || point.getBlockX() > cubearea.right) &&
-            !(point.getBlockY() < cubearea.bottom || point.getBlockY() > cubearea.top) &&
-            !(point.getBlockZ() < cubearea.back || point.getBlockZ() > cubearea.front)
+            !(point.getBlockX() < cubeArea.left || point.getBlockX() > cubeArea.right) &&
+            !(point.getBlockY() < cubeArea.bottom || point.getBlockY() > cubeArea.top) &&
+            !(point.getBlockZ() < cubeArea.back || point.getBlockZ() > cubeArea.front)
         );
     }
 
@@ -167,26 +131,25 @@ public class GameArea {
             return false;
 
         return (
-            (this.cubearea.left <= other.cubearea.right && this.cubearea.right >= other.cubearea.left) &&
-            (this.cubearea.bottom <= other.cubearea.top && this.cubearea.top >= other.cubearea.bottom) &&
-            (this.cubearea.back <= other.cubearea.front && this.cubearea.front >= other.cubearea.back)
+            (this.cubeArea.left <= other.cubeArea.right && this.cubeArea.right >= other.cubeArea.left) &&
+            (this.cubeArea.bottom <= other.cubeArea.top && this.cubeArea.top >= other.cubeArea.bottom) &&
+            (this.cubeArea.back <= other.cubeArea.front && this.cubeArea.front >= other.cubeArea.back)
         );
     }
 
     public boolean isValidSetUp() {
-        return (spawnpoints.size() == maxPlayers && !dispensers.isEmpty() && !recipes.isEmpty());
+        return (spawnPoints.size() == maxPlayers && !recipes.isEmpty());
     }
 
+    // Data management
     public Map<String, Object> serialize() {
         Map<String, Object> data = new HashMap<>();
         List<Map<String, Object>> sppListMap = new ArrayList<>();
         List<Map<String, Object>> idpListMap = new ArrayList<>();
         List<String> rcpListMap = new ArrayList<>();
 
-        for (SpawnPoint spawnpoint : this.spawnpoints)
+        for (SpawnPoint spawnpoint : this.spawnPoints)
             sppListMap.add(spawnpoint.serialize());
-        for (IngredientDispenser dispenser: this.dispensers)
-            idpListMap.add(dispenser.serialize());
         for (Material recipe : this.recipes)
             rcpListMap.add(recipe.name());
 
@@ -204,16 +167,12 @@ public class GameArea {
 
     public static GameArea deserialize(@NotNull Map<String, Object> args) {
         List<SpawnPoint> spawnpointsList = new ArrayList<>();
-        List<IngredientDispenser> dispenserList = new ArrayList<>();
         List<Material> recipeList = new ArrayList<>();
         List<Map<String, Object>> sppMapList = (List<Map<String, Object>>)args.get("spawn_points");
-        List<Map<String, Object>> idpMapList = (List<Map<String, Object>>)args.get("ingredient_dispensers");
         List<String> rcpList = ((List<String>)args.get("recipes"));
 
         for (Map<String, Object> sppMap : sppMapList)
             spawnpointsList.add(SpawnPoint.deserialize(sppMap));
-        for (Map<String, Object> idpMap : idpMapList)
-            dispenserList.add(IngredientDispenser.deserialize(idpMap));
         for (String rcpItem : rcpList)
             recipeList.add(Material.valueOf(rcpItem));
 
@@ -224,11 +183,10 @@ public class GameArea {
             Location.deserialize((Map<String, Object>)args.get("corner_2")),
             (int)args.get("max_players"),
             spawnpointsList,
-            dispenserList,
             recipeList
         );
     }
 
-    // -- Private
+    // -- PRIVATE --
 
 }

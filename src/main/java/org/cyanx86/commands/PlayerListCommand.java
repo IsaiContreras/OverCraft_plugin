@@ -9,28 +9,28 @@ import org.bukkit.entity.Player;
 import org.cyanx86.OverCrafted;
 import org.cyanx86.utils.Messenger;
 
-import java.util.List;
+import org.jetbrains.annotations.NotNull;
 
 public class PlayerListCommand implements CommandExecutor {
 
     // -- [[ ATRIBUTES ]] --
 
-    // -- Public
+    // -- PUBLIC --
 
-    // -- Private
+    // -- PRIVATE --
     private final OverCrafted master = OverCrafted.getInstance();
 
     // -- [[ METHODS ]] --
 
-    // -- Public
+    // -- PUBLIC --
 
     @Override
-    public boolean onCommand(CommandSender sender, Command command, String s, String[] args) {
+    public boolean onCommand(@NotNull CommandSender sender, @NotNull Command command, @NotNull String s, String[] args) {
         this.handleSubcommand(sender, args);
         return true;
     }
 
-    // -- Private
+    // -- PRIVATE --
     private void handleSubcommand(CommandSender sender, String[] args) {
         if(!sender.hasPermission("overcrafted.manager")) {
             Messenger.msgToSender(

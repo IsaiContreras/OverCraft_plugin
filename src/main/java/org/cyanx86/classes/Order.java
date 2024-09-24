@@ -10,9 +10,9 @@ public class Order {
 
     // -- [[ ATTRIBUTES ]] --
 
-    // -- Public
+    // -- PUBLIC --
 
-    // -- Private
+    // -- PRIVATE --
     private final Material recipe;
     private final OrderManager father;
 
@@ -22,7 +22,7 @@ public class Order {
 
     // -- [[ METHODS ]] --
 
-    // -- Public
+    // -- PUBLIC --
     public Order(Material recipe, int timeout, OrderManager father) {
         this.recipe = recipe;
         this.timeout = timeout;
@@ -34,11 +34,15 @@ public class Order {
         return this.recipe;
     }
 
-    // -- Private
+    public void dispose() {
+        this.task.cancel();
+    }
+
+    // -- PRIVATE --
     private void startTimer() {
         this.task = Bukkit.getScheduler().runTaskLater(OverCrafted.getInstance(), () -> {
-            this.task.cancel();
-            this.father.removeOrder(this);
+            this.dispose();
+            this.father.removeOrder(this, true);
         }, (this.timeout * 20L));
     }
 

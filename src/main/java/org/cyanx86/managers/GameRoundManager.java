@@ -15,9 +15,9 @@ public class GameRoundManager {
 
     // -- [[ ATTRIBUTES ]] --
 
-    // -- Public
+    // -- PUBLIC --
 
-    // -- Private
+    // -- PRIVATE --
     private final OverCrafted master = OverCrafted.getInstance();
 
     private GameRound gameround;
@@ -28,7 +28,7 @@ public class GameRoundManager {
 
     // -- [[ METHODS ]] --
 
-    // -- Public
+    // -- PUBLIC --
 
     // Round
     public boolean startRound() {
@@ -100,9 +100,9 @@ public class GameRoundManager {
     }
 
     public List<Player> getGamePlayers() {
-        return this.gamePlayers;
+        return new ArrayList<>(this.gamePlayers);
     }
 
-    // -- Private
+    // -- PRIVATE --
 
 }

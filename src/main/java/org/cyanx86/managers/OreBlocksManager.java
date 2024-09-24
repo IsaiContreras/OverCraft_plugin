@@ -9,24 +9,24 @@ public class OreBlocksManager {
 
     // -- [[ ATTRIBUTES ]]
 
-    // -- Public
+    // -- PUBLIC --
 
-    // -- Private
-    private final Map<Material, Material> orelist = new HashMap<>();
+    // -- PRIVATE --
+    private final Map<Material, Material> oreList = new HashMap<>();
 
     // -- [[ METHODS ]]
 
-    // -- Public
+    // -- PUBLIC --
     public OreBlocksManager() {
-        this.orelist.put(Material.COAL_ORE, Material.COAL);
-        this.orelist.put(Material.IRON_ORE, Material.RAW_IRON);
-        this.orelist.put(Material.GOLD_ORE, Material.RAW_GOLD);
+        this.oreList.put(Material.COAL_ORE, Material.COAL);
+        this.oreList.put(Material.IRON_ORE, Material.RAW_IRON);
+        this.oreList.put(Material.GOLD_ORE, Material.RAW_GOLD);
     }
 
     public Map<Material, Material> getOreMap() {
-        return this.orelist;
+        return new HashMap<>(this.oreList);
     }
 
-    // -- Private
+    // -- PRIVATE --
 
 }

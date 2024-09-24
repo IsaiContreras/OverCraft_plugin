@@ -11,21 +11,20 @@ import org.bukkit.scheduler.BukkitTask;
 import org.cyanx86.OverCrafted;
 import org.cyanx86.utils.Messenger;
 
-import org.jetbrains.annotations.NotNull;
-
 import java.util.Objects;
+import org.jetbrains.annotations.NotNull;
 
 public class PlayerState {
 
     // -- [[ ATTRIBUTES ]] --
 
-    // -- Public
+    // -- PUBLIC --
     public enum PLAYERSTATE {
         RUNNING,
         IMMOBILIZED
     }
 
-    // -- Private
+    // -- PRIVATE --
     private final Player player;
     private PLAYERSTATE currentState = PLAYERSTATE.RUNNING;
 
@@ -38,7 +37,7 @@ public class PlayerState {
 
     // -- [[ METHODS ]] --
 
-    // -- Public
+    // -- PUBLIC --
     public PlayerState(@NotNull Player player) {
         this.player = player;
         this.previousLocation = player.getLocation();
@@ -56,10 +55,6 @@ public class PlayerState {
 
     public PLAYERSTATE getCurrentState() {
         return this.currentState;
-    }
-
-    public boolean equal(@NotNull Player player) {
-        return this.player.equals(player);
     }
 
     public void moveToLocation(@NotNull Location location) {
@@ -101,7 +96,11 @@ public class PlayerState {
         this.player.setWalkSpeed(0.2f);
     }
 
-    // -- Private
+    public boolean equal(@NotNull Player player) {
+        return this.player.equals(player);
+    }
+
+    // -- PRIVATE --
     private void setImmobileTimer(int time) {
         this.time = time;
         this.task = Bukkit.getScheduler().runTaskTimer(OverCrafted.getInstance(), () -> {

@@ -10,16 +10,16 @@ public class SpawnPoint {
 
     // -- [[ ATTRIBUTES ]] --
 
-    // -- Public
+    // -- PUBLIC --
 
-    // -- Private
+    // -- PRIVATE --
     private final Location location;
 
     private int playerIndex = 0;
 
     // -- [[ METHODS ]] --
 
-    // -- Public
+    // -- PUBLIC --
     public SpawnPoint(@NotNull Location location) {
         this.location = location;
     }
@@ -33,14 +33,15 @@ public class SpawnPoint {
         return this.location;
     }
 
-    public void setPlayerIndex(int index) {
-        this.playerIndex = index;
-    }
-
     public int getPlayerIndex() {
         return this.playerIndex;
     }
 
+    public void setPlayerIndex(int index) {
+        this.playerIndex = index;
+    }
+
+    // Data management
     public Map<String, Object> serialize() {
         Map<String, Object> data = new HashMap<>();
 
@@ -59,6 +60,6 @@ public class SpawnPoint {
         );
     }
 
-    // -- Private
+    // -- PRIVATE --
 
 }

@@ -5,7 +5,9 @@ import org.bukkit.plugin.java.JavaPlugin;
 import org.cyanx86.commands.GameAreaCommand;
 import org.cyanx86.commands.MainCommand;
 import org.cyanx86.commands.PlayerListCommand;
+import org.cyanx86.listeners.ManagerPlayerListener;
 import org.cyanx86.listeners.MiscellaneousListener;
+import org.cyanx86.listeners.NonPlayerListener;
 import org.cyanx86.listeners.PlayerListener;
 import org.cyanx86.managers.GameAreaPropertiesAssistantManager;
 import org.cyanx86.managers.GameAreaManager;
@@ -19,29 +21,29 @@ public class OverCrafted extends JavaPlugin {
 
     // -- [[ ATTRIBUTES ]] --
 
-    // -- Public
+    // -- PUBLIC --
     public static String prefix = "&6[&l&eOverCrafted&6] ";
 
-    // -- Private
+    // -- PRIVATE --
     private static OverCrafted instance;
     private final String version = getDescription().getVersion();
 
     private GameAreaManager gameAreaManager;
-    private GameAreaPropertiesAssistantManager gapaManager;
+    private GameAreaPropertiesAssistantManager gameAreaPropertiesAssistantManager;
     private GameRoundManager gameRoundManager;
 
     private OreBlocksManager oreBlocks;
 
     // -- [[ METHODS ]] --
 
-    // -- Public
+    // -- PUBLIC --
 
     // Events
     public void onEnable() {
         instance = this;
 
         gameAreaManager = new GameAreaManager();
-        gapaManager = new GameAreaPropertiesAssistantManager();
+        gameAreaPropertiesAssistantManager = new GameAreaPropertiesAssistantManager();
         gameRoundManager = new GameRoundManager();
 
         oreBlocks = new OreBlocksManager();
@@ -62,8 +64,8 @@ public class OverCrafted extends JavaPlugin {
     }
 
     // GameArea managing
-    public GameAreaPropertiesAssistantManager getGapaManager() {
-        return this.gapaManager;
+    public GameAreaPropertiesAssistantManager getGameAreaPropertiesAssistantManager() {
+        return this.gameAreaPropertiesAssistantManager;
     }
 
     public GameAreaManager getGameAreaManager() {
@@ -82,7 +84,7 @@ public class OverCrafted extends JavaPlugin {
         return instance;
     }
 
-    // -- Private
+    // -- PRIVATE --
     private void setupCommands() {
         Objects.requireNonNull(this.getCommand("overcrafted")).setExecutor(new MainCommand());
         Objects.requireNonNull(this.getCommand("playerlist")).setExecutor(new PlayerListCommand());
@@ -90,8 +92,10 @@ public class OverCrafted extends JavaPlugin {
     }
 
     private void setupEvents() {
-        getServer().getPluginManager().registerEvents(new PlayerListener(), OverCrafted.getInstance());
-        getServer().getPluginManager().registerEvents(new MiscellaneousListener(), OverCrafted.getInstance());
+        getServer().getPluginManager().registerEvents(new PlayerListener(), this);
+        getServer().getPluginManager().registerEvents(new NonPlayerListener(), this);
+        getServer().getPluginManager().registerEvents(new ManagerPlayerListener(), this);
+        getServer().getPluginManager().registerEvents(new MiscellaneousListener(), this);
     }
 
 }

@@ -10,34 +10,34 @@ import org.bukkit.entity.Player;
 import org.cyanx86.OverCrafted;
 import org.cyanx86.classes.GameArea;
 import org.cyanx86.classes.GameAreaPropertiesAssistant;
-import org.cyanx86.classes.IngredientDispenser;
 import org.cyanx86.classes.SpawnPoint;
+import org.cyanx86.utils.Enums;
 import org.cyanx86.utils.Functions;
 import org.cyanx86.utils.Messenger;
 
 import java.util.List;
-import java.util.Optional;
+import org.jetbrains.annotations.NotNull;
 
 public class GameAreaCommand implements CommandExecutor {
 
     // -- [[ ATRIBUTES ]] --
 
-    // -- Public
+    // -- PUBLIC --
 
-    // -- Private
+    // -- PRIVATE --
     private final OverCrafted master = OverCrafted.getInstance();
 
     // -- [[ METHODS ]] --
 
-    // -- Public
+    // -- PUBLIC --
 
     @Override
-    public boolean onCommand(CommandSender sender, Command command, String s, String[] args) {
+    public boolean onCommand(@NotNull CommandSender sender, @NotNull Command command, @NotNull String s, String[] args) {
         this.handleSubcommands(sender, args);
         return true;
     }
 
-    // -- Private
+    // -- PRIVATE --
     private void handleSubcommands(CommandSender sender, String[] args) {
         if (!(sender instanceof Player)) {
             Messenger.msgToSender(
@@ -70,9 +70,6 @@ public class GameAreaCommand implements CommandExecutor {
                 break;
             case "resetspawns":     // subCommand ResetSpawns
                 this.scmResetSpawns(sender, args);
-                break;
-            case "resetdisp":       // subCommand ResetDispsnser
-                this.scmResetDispensers(sender, args);
                 break;
             case "addrecipe":       // subCommand AddRecipe
                 this.scmAddRecipe(sender, args);
@@ -107,7 +104,6 @@ public class GameAreaCommand implements CommandExecutor {
         Messenger.msgToSender(sender, "&7- /gamearea create <nombre>");
         Messenger.msgToSender(sender, "&7- /gamearea setspawn");
         Messenger.msgToSender(sender, "&7- /gamearea resetspawns <nombre>");
-        Messenger.msgToSender(sender, "&7- /gamearea resetdisp <nombre>");
         Messenger.msgToSender(sender, "&7- /gamearea addrecipe <nombre> <material>");
         Messenger.msgToSender(sender, "&7- /gamearea resetrecipes <nombre>");
         Messenger.msgToSender(sender, "&7- /gamearea list");
@@ -125,7 +121,8 @@ public class GameAreaCommand implements CommandExecutor {
             return;
         }
 
-        GameAreaPropertiesAssistant gacAssistant = master.getGapaManager().getAssistantByName(sender.getName());
+        GameAreaPropertiesAssistant gacAssistant = master.getGameAreaPropertiesAssistantManager()
+                .getAssistantByName(sender.getName());
         if (gacAssistant == null) {
             Messenger.msgToSender(
                 sender,
@@ -257,32 +254,6 @@ public class GameAreaCommand implements CommandExecutor {
         );
     }
 
-    private void scmResetDispensers(CommandSender sender, String[] args) {
-        if (args.length != 2) {
-            Messenger.msgToSender(
-                sender,
-                OverCrafted.prefix + "&cArgumentos incompletos."    // TODO: Invalid arguments message.
-            );
-            return;
-        }
-
-        GameArea gamearea = Functions.getGameAreaByName(args[1].toLowerCase());
-        if (gamearea == null) {
-            Messenger.msgToSender(
-                sender,
-                OverCrafted.prefix + "&cNo se encontró un GameArea con este nombre."
-            );
-            return;
-        }
-
-        gamearea.clearIngredientDispensers();
-
-        Messenger.msgToSender(
-            sender,
-            OverCrafted.prefix + "&aSe limpiaron los dispensadores del GameArea &r&o" + gamearea.getName() + "&r&a."
-        );
-    }
-
     private void scmAddRecipe(CommandSender sender, String[] args) {
         if (args.length != 3) {
             Messenger.msgToSender(
@@ -312,14 +283,12 @@ public class GameAreaCommand implements CommandExecutor {
             return;
         }
 
-        switch(gamearea.addRecipe(recipe)) {
-            case ALREADY_IN -> {
-                Messenger.msgToSender(
-                    sender,
-                    OverCrafted.prefix + "&cYa hay una receta en la lista del GameArea."
-                );
-                return;
-            }
+        if (gamearea.addRecipe(recipe) == Enums.ListResult.ALREADY_IN) {
+            Messenger.msgToSender(
+                sender,
+                OverCrafted.prefix + "&cYa hay una receta en la lista del GameArea."
+            );
+            return;
         }
 
         Messenger.msgToSender(
@@ -452,18 +421,6 @@ public class GameAreaCommand implements CommandExecutor {
                         "&e, &9" + String.format("%.2f", spawn.getSpawnLocation().getZ()) +
                         "&e, &b" + String.format("%.2f", spawn.getSpawnLocation().getYaw()) +
                         "&e, &d" + String.format("%.2f", spawn.getSpawnLocation().getPitch()) + "&e)"
-            );
-        }
-
-        Messenger.msgToSender(sender, "&6&o  dispensers (&e" + gamearea.getIngredientDispensersCount() + "&6):");
-        for (int i = 0; i < gamearea.getIngredientDispensers().size(); i++) {
-            IngredientDispenser dispenser = gamearea.getIngredientDispensers().get(i);
-            Messenger.msgToSender(sender,
-                "&6&o    [" + (i + 1) + "]:" +
-                        "&6 loc: &e(" + "&c" + dispenser.getLocation().getBlockX() +
-                        "&e, &a" + dispenser.getLocation().getBlockY() +
-                        "&e, &9" + dispenser.getLocation().getBlockZ() + "&e)" +
-                        "&6 drop: &e(" + dispenser.getDropItemName() + "&e)"
             );
         }
 

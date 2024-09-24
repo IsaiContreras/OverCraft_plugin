@@ -18,10 +18,11 @@ public class OrderManager {
 
     // -- [[ ATTRIBUTES ]] --
 
-    // -- Public
+    // -- PUBLIC --
 
-    // -- Private
+    // -- PRIVATE --
     private final OverCrafted master = OverCrafted.getInstance();
+    private final ScoreManager scoreManager;
 
     private final List<Order> orderList = new ArrayList<>();
     private final List<Material> recipes;
@@ -36,42 +37,52 @@ public class OrderManager {
 
     // -- [[ METHODS ]] --
 
-    // -- Public
-    public OrderManager(@NotNull List<Material> recipes) {
+    // -- PUBLIC --
+    public OrderManager(@NotNull List<Material> recipes, ScoreManager scoreManager) {
         this.recipes = recipes;
+        this.scoreManager = scoreManager;
         this.timeForNextOrder = 20;
-        this.orderTimeOut = 40;
+        this.orderTimeOut = 80;
         this.orderStackLimit = 5;
     }
 
-    public void changeTimeForNextOrder(int timeseconds) {
+    public void setTimeForNextOrder(int timeseconds) {
         this.timeForNextOrder = timeseconds;
     }
 
-    public void changeOrderTimeOut(int timeseconds) {
+    public void setOrderTimeOut(int timeseconds) {
         this.orderTimeOut = timeseconds;
     }
 
     public List<Order> getOrderList() {
-        return this.orderList;
+        return new ArrayList<>(this.orderList);
     }
 
-    public void removeOrder(@NotNull Order order) {
+    public void removeOrder(@NotNull Order order, boolean lost) {
         this.orderList.remove(order);
         if (this.orderList.isEmpty())
             this.newOrder();
+
+        if (lost)
+            this.scoreManager.incrementLostOrder();
     }
 
-    public boolean removeOrder(@NotNull Material recipe) {
+    public boolean removeOrder(@NotNull Material recipe, boolean lost) {
         Optional<Order> query = this.orderList.stream()
                 .filter(item -> item.getRecipe().equals(recipe))
                 .findFirst();
         if (query.isEmpty())
             return false;
 
+        Order order = query.get();
+        order.dispose();
+
         boolean result = this.orderList.remove(query.get());
         if (this.orderList.isEmpty())
             this.newOrder();
+
+        if (lost)
+            this.scoreManager.incrementLostOrder();
 
         return result;
     }
@@ -92,7 +103,7 @@ public class OrderManager {
         this.time = 0;
     }
 
-    // -- Private
+    // -- PRIVATE --
     private void newOrder() {
         if (this.recipes.isEmpty())
             return;

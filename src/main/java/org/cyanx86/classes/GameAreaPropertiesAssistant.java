@@ -9,21 +9,20 @@ public class GameAreaPropertiesAssistant {
 
     // -- [[ ATTRIBUTES ]] --
 
-    // -- Public
+    // -- PUBLIC --
 
-    // -- Private
+    // -- PRIVATE --
     private byte index = 0;
     private final Location[] corners = new Location[2];
 
     // -- [[ METHODS ]] --
 
-    // -- Public
+    // -- PUBLIC --
     public GameAreaPropertiesAssistant() {
         this.resetCorners();
     }
 
     public byte getCornerIndex() { return this.index; }
-
     public Location getCorner(int index) {
         return ((index < 0 || index > 1) ? null : this.corners[index]);
     }
@@ -38,16 +37,18 @@ public class GameAreaPropertiesAssistant {
         if (index > 1) index = 0;
     }
 
+    // Actions
     public void resetCorners() {
         Arrays.fill(corners, null);
     }
 
+    // Validators
     public boolean isDefinedCorners() {
         for (Location corner : corners)
             if (corner == null) return false;
         return true;
     }
 
-    // -- Private
+    // -- PRIVATE --
 
 }

@@ -15,9 +15,9 @@ public class GameAreaPropertiesAssistantManager {
 
     // -- [[ ATTRIBUTES ]] --
 
-    // -- Public
+    // -- PUBLIC --
 
-    // -- Private
+    // -- PRIVATE --
     private final OverCrafted master = OverCrafted.getInstance();
 
     private final Map<UUID, GameAreaPropertiesAssistant> assistants = new HashMap<>();
@@ -25,7 +25,7 @@ public class GameAreaPropertiesAssistantManager {
 
     // -- [[ METHODS ]] --
 
-    // -- Public
+    // -- PUBLIC --
 
     public ListResult signInAssistant(@NotNull Player player) {
         if (assistants.containsKey(player.getUniqueId()))
@@ -59,6 +59,6 @@ public class GameAreaPropertiesAssistantManager {
         return assistants.get(uuid);
     }
 
-    // -- Private
+    // -- PRIVATE --
 
 }

@@ -11,27 +11,30 @@ import org.cyanx86.utils.DataFormatting;
 import org.cyanx86.utils.Messenger;
 
 import java.util.List;
+import java.util.Map;
+
+import org.jetbrains.annotations.NotNull;
 
 public class MainCommand implements CommandExecutor {
 
     // -- [[ ATTRIBUTES ]] --
 
-    // -- Public
+    // -- PUBLIC --
 
-    // -- Private
+    // -- PRIVATE --
     private final OverCrafted master = OverCrafted.getInstance();
 
     // -- [[ METHODS ]] --
 
-    // -- Public
+    // -- PUBLIC --
 
     @Override
-    public boolean onCommand(CommandSender sender, Command command, String s, String[] args) {
+    public boolean onCommand(@NotNull CommandSender sender, @NotNull Command command, @NotNull String s, String[] args) {
         this.handleSubcommands(sender, args);
         return true;
     }
 
-    // -- Private
+    // -- PRIVATE --
     private void handleSubcommands(CommandSender sender, String[] args) {
         if (!sender.hasPermission("overcrafted.manager")) {
             Messenger.msgToSender(
@@ -61,6 +64,9 @@ public class MainCommand implements CommandExecutor {
             case "endround":        // subcommand EndRound
                 this.scmEndRound(sender);
                 break;
+            case "results":
+                this.scmResults(sender);
+                break;
             default:
                 this.scmHelp(sender);
                 break;
@@ -76,6 +82,7 @@ public class MainCommand implements CommandExecutor {
         Messenger.msgToSender(sender, "&7- /overcrafted recipelist");
         Messenger.msgToSender(sender, "&7- /overcrafted startround");
         Messenger.msgToSender(sender, "&7- /overcrafted endround");
+        Messenger.msgToSender(sender, "&7- /overcrafted results");
     }
 
     private void scmSetRoundTime(CommandSender sender, String[] args) {
@@ -158,6 +165,28 @@ public class MainCommand implements CommandExecutor {
             sender,
             OverCrafted.prefix + "&aRonda cancelada."
         );
+    }
+
+    private void scmResults(CommandSender sender) {
+        GameRound round = master.getGameRoundManager().getGameRound();
+        if (round == null || round.getCurrentRoundState() != GameRound.ROUNDSTATE.ENDED) {
+            Messenger.msgToSender(
+                sender,
+                OverCrafted.prefix + "&cAún no hay ronda finalizada."
+            );
+            return;
+        }
+
+        Map<String, Object> results = round.getScores();
+
+        Messenger.msgToSender(sender, "&f&l------ OVERCRAFTED ------\n");
+        Messenger.msgToSender(sender, "&f&lResultados:");
+        Messenger.msgToSender(sender, "  &7Ordenes entregadas: &o" +
+                results.get("delivered"));
+        Messenger.msgToSender(sender, "  &7Ordenes perdidas: &o" +
+                results.get("lost"));
+        Messenger.msgToSender(sender, "  &7Puntos totales: &o" +
+                results.get("total"));
     }
 
 }
