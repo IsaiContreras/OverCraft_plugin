@@ -65,6 +65,11 @@ public class GamePlayersManager {
             playerstate.sendMessageToPlayer(OverCrafted.prefix + message);
     }
 
+    public void sendTitleToPlayers(@NotNull String message1, @NotNull String message2, int fadeIn, int time, int fadeOut) {
+        for (PlayerState playerState : this.players)
+            playerState.sendTitleToPlayer(message1, message2, fadeIn, time, fadeOut);
+    }
+
     // -- PRIVATE --
 
 }

@@ -13,6 +13,7 @@ import org.bukkit.event.block.BlockBreakEvent;
 import org.bukkit.event.block.BlockPlaceEvent;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.event.entity.EntityDamageEvent;
+import org.bukkit.event.entity.FoodLevelChangeEvent;
 import org.bukkit.event.hanging.HangingBreakByEntityEvent;
 import org.bukkit.event.player.*;
 import org.bukkit.inventory.EquipmentSlot;
@@ -160,6 +161,18 @@ public class PlayerListener implements Listener {
         GameRound round = master.getGameRoundManager().getGameRound();
 
         // NA si la ronda no ha comenzado, si la ronda ha terminado o si el jugador no está jugando.
+        if (this.isNotRoundPlayerRequisites(round, player))
+            return;
+
+        event.setCancelled(true);
+    }
+
+    @EventHandler
+    public void onPlayerFoodLevelChange(FoodLevelChangeEvent event) {
+        if (!(event.getEntity() instanceof Player player))
+            return;
+        GameRound round = master.getGameRoundManager().getGameRound();
+
         if (this.isNotRoundPlayerRequisites(round, player))
             return;
 

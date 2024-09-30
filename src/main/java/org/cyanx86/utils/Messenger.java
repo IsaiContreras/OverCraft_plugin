@@ -26,9 +26,14 @@ public class Messenger {
         return ChatColor.translateAlternateColorCodes('&', message);
     }
 
-    public static void msgToMultPlayers(@NotNull List<Player> players, @NotNull String message) {
-        for (Player player : players)
-            msgToSender(player, message);
+    public static void titleToPlayer(@NotNull Player player, @NotNull String message1, @NotNull String message2, int fadeIn, int time, int fadeOut) {
+        player.sendTitle(
+            coloredText(message1),
+            coloredText(message2),
+            fadeIn,
+            time,
+            fadeOut
+        );
     }
 
 }

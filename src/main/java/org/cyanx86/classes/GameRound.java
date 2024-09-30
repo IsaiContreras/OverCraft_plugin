@@ -113,9 +113,7 @@ public class GameRound {
         if (playerState == null)
             return ListResult.NOT_FOUND;
 
-        playerState.moveToPreviousLocation();
-        playerState.restoreGameMode();
-        playerState.restoreInventory();
+        playerState.restorePlayer();
         ListResult result = this.playersManager.removePlayer(player);
 
         if (this.playersManager.getPlayerStates().isEmpty())
@@ -159,14 +157,26 @@ public class GameRound {
                 return;
             }
 
-            this.playersManager.sendMessageToPlayers("&a" + this.time);
+            this.playersManager.sendTitleToPlayers(
+                "&eComienza en",
+                "&a" + this.time,
+                0,
+                20,
+                0
+            );
 
             this.time--;
         }, 20L, 20L);
     }
 
     private void startRoundTimer() {
-        this.playersManager.sendMessageToPlayers("&a¡A CRAFTEAR!");
+        this.playersManager.sendTitleToPlayers(
+            "&a¡A CRAFTEAR!",
+            "",
+            0,
+            20,
+            0
+        );
         this.currentState = ROUNDSTATE.RUNNING;
         this.orderManager.startGenerator();
         for (PlayerState playerState : this.playersManager.getPlayerStates())
@@ -185,7 +195,13 @@ public class GameRound {
     }
 
     private void intermissionTime() {
-        this.playersManager.sendMessageToPlayers("&a¡TIEMPO!");
+        this.playersManager.sendTitleToPlayers(
+            "&a¡TIEMPO!",
+            "",
+            0,
+            60,
+            0
+        );
         this.currentState = ROUNDSTATE.FINISHED;
         this.orderManager.stopGenerator();
         for (PlayerState playerState : this.playersManager.getPlayerStates())
@@ -204,7 +220,7 @@ public class GameRound {
 
     private void endRound(String reason) {
         this.playersManager.sendMessageToPlayers(
-                reason != null ? reason : "&a¡Buen juego! La ronda ha terminado."
+            reason != null ? reason : "&a¡Buen juego! La ronda ha terminado."
         );
 
         this.currentState = ROUNDSTATE.ENDED;
@@ -223,12 +239,8 @@ public class GameRound {
     }
 
     private void restorePlayerProperties() {
-        for (PlayerState playerState : this.playersManager.getPlayerStates()) {
-            playerState.moveToPreviousLocation();
-            playerState.restoreGameMode();
-            playerState.restoreInventory();
-            playerState.mobilize();
-        }
+        for (PlayerState playerState : this.playersManager.getPlayerStates())
+            playerState.restorePlayer();
     }
 
 }

@@ -36,13 +36,6 @@ public class MainCommand implements CommandExecutor {
 
     // -- PRIVATE --
     private void handleSubcommands(CommandSender sender, String[] args) {
-        if (!sender.hasPermission("overcrafted.manager")) {
-            Messenger.msgToSender(
-                sender,
-                OverCrafted.prefix + "&cNo tienes permiso para usar este comando." // TODO: No permission message.
-            );
-            return;
-        }
         if (args.length == 0) {
             this.scmHelp(sender);
             return;
@@ -86,6 +79,13 @@ public class MainCommand implements CommandExecutor {
     }
 
     private void scmSetRoundTime(CommandSender sender, String[] args) {
+        if (!sender.hasPermission("overcrafted.manager")) {
+            Messenger.msgToSender(
+                sender,
+                OverCrafted.prefix + "&cNo tienes permiso para usar este comando." // TODO: No permission message.
+            );
+            return;
+        }
         if (args.length != 2) {
             Messenger.msgToSender(
                 sender,
@@ -144,6 +144,13 @@ public class MainCommand implements CommandExecutor {
     }
 
     private void scmStartRound(CommandSender sender) {
+        if (!sender.hasPermission("overcrafted.manager")) {
+            Messenger.msgToSender(
+                sender,
+                OverCrafted.prefix + "&cNo tienes permiso para usar este comando." // TODO: No permission message.
+            );
+            return;
+        }
         if(!master.getGameRoundManager().startRound()) {
             Messenger.msgToSender(
                 sender,
@@ -153,6 +160,13 @@ public class MainCommand implements CommandExecutor {
     }
 
     private void scmEndRound(CommandSender sender) {
+        if (!sender.hasPermission("overcrafted.manager")) {
+            Messenger.msgToSender(
+                sender,
+                OverCrafted.prefix + "&cNo tienes permiso para usar este comando." // TODO: No permission message.
+            );
+            return;
+        }
         if (!master.getGameRoundManager().terminateRound(null)) {
             Messenger.msgToSender(
                 sender,

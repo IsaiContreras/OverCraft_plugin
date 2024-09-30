@@ -1,7 +1,6 @@
 package org.cyanx86.classes;
 
 import org.bukkit.Location;
-
 import org.bukkit.Material;
 
 import org.cyanx86.utils.Enums.ListResult;
