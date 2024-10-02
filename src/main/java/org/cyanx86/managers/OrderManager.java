@@ -4,14 +4,20 @@ import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.scheduler.BukkitTask;
 
+import org.bukkit.scoreboard.Objective;
+import org.bukkit.scoreboard.Scoreboard;
 import org.cyanx86.OverCrafted;
 import org.cyanx86.classes.Order;
+import org.cyanx86.classes.OrderDisplayer;
+import org.cyanx86.utils.DataFormatting;
 import org.cyanx86.utils.Functions;
 
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Optional;
 
+import org.cyanx86.utils.Messenger;
 import org.jetbrains.annotations.NotNull;
 
 public class OrderManager {
@@ -27,13 +33,18 @@ public class OrderManager {
     private final List<Order> orderList = new ArrayList<>();
     private final List<Material> recipes;
 
+    private final OrderDisplayer displayer = new OrderDisplayer();
+
     private int timeForNextOrder;
     private int orderTimeOut;
 
     private int orderStackLimit;
 
+    private Objective ordersDisplayer;
+
     private int time;
     private BukkitTask task;
+    private int taskId;
 
     // -- [[ METHODS ]] --
 
@@ -84,6 +95,8 @@ public class OrderManager {
         if (lost)
             this.scoreManager.incrementLostOrder();
 
+        this.updateDisplayer();
+
         return result;
     }
 
@@ -96,15 +109,28 @@ public class OrderManager {
             } else
                 this.time--;
         }, 20L, 20L);
+        this.taskId = this.task.getTaskId();
     }
 
     public void stopGenerator() {
+        Bukkit.getScheduler().cancelTask(this.taskId);
+        this.clearOrders();
+        this.displayer.clearScore();
         this.task.cancel();
         this.time = 0;
     }
 
+    public Scoreboard getDisplayer() {
+        return this.displayer.getScoreboard();
+    }
+
+    public void updateState(Order order, String state) {
+        this.displayer.changeTeam(order, state);
+    }
+
     // -- PRIVATE --
     private void newOrder() {
+        Messenger.msgToConsole("Creating new order");
         if (this.recipes.isEmpty())
             return;
         if (this.orderList.size() == 5)
@@ -116,6 +142,32 @@ public class OrderManager {
                 this
             )
         );
+        this.updateDisplayer();
+    }
+
+    private void updateDisplayer() {
+        this.displayer.clearScore();
+        int orderNumber = 1;
+
+        for(Order order : this.orderList) {
+            String state = DataFormatting.repeate(orderNumber, "§r");
+            String object = DataFormatting.formatMaterialToString(order.getRecipe().name());
+
+            String name = state + object;
+
+            this.displayer.addLine(orderNumber, name, order);
+            orderNumber += 1;
+        }
+    }
+
+    private void clearOrders() {
+        Iterator<Order> iterator = this.orderList.iterator();
+        while (iterator.hasNext()) {
+            Order order = iterator.next();
+            iterator.remove();
+            order.dispose();
+        }
+
     }
 
 }

@@ -15,4 +15,15 @@ public class DataFormatting {
         );
     }
 
+    public static String formatMaterialToString(String mat) {
+        String modString = mat.toLowerCase();
+
+        return modString.replace("_", " ");
+    }
+
+    public static String repeate(int i, String s) {
+        StringBuilder sb = new StringBuilder();
+        sb.append(String.valueOf(s).repeat(Math.max(0, i)));
+        return sb.toString();
+    }
 }

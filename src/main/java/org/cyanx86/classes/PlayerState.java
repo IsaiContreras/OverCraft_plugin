@@ -8,6 +8,8 @@ import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.scheduler.BukkitTask;
 
+import org.bukkit.scoreboard.Score;
+import org.bukkit.scoreboard.Scoreboard;
 import org.cyanx86.OverCrafted;
 import org.cyanx86.utils.Messenger;
 
@@ -94,6 +96,10 @@ public class PlayerState {
     public void mobilize() {
         this.currentState = PLAYERSTATE.RUNNING;
         this.player.setWalkSpeed(0.2f);
+    }
+
+    public void setDisplayer(Scoreboard scoreboard) {
+        this.player.setScoreboard(scoreboard);
     }
 
     public boolean equal(@NotNull Player player) {
