@@ -19,14 +19,9 @@ public class PlayerState {
     // -- [[ ATTRIBUTES ]] --
 
     // -- PUBLIC --
-    public enum PLAYERSTATE {
-        RUNNING,
-        IMMOBILIZED
-    }
 
     // -- PRIVATE --
     private final Player player;
-    private PLAYERSTATE currentState = PLAYERSTATE.RUNNING;
 
     private final Location prevLocation;
     private final GameMode prevGameMode;
@@ -54,10 +49,6 @@ public class PlayerState {
         player.getInventory().clear();
         player.getInventory().addItem(stonePickaxe);
         player.setGameMode(GameMode.SURVIVAL);
-    }
-
-    public PLAYERSTATE getCurrentState() {
-        return this.currentState;
     }
 
     public void moveToLocation(@NotNull Location location) {
@@ -90,12 +81,10 @@ public class PlayerState {
     }
 
     public void immobilize() {
-        this.currentState = PLAYERSTATE.IMMOBILIZED;
         this.player.setWalkSpeed(0.0f);
     }
 
     public void mobilize() {
-        this.currentState = PLAYERSTATE.RUNNING;
         this.player.setWalkSpeed(0.2f);
     }
 

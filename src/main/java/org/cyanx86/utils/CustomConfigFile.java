@@ -10,7 +10,7 @@ import java.io.File;
 import java.io.IOException;
 import org.jetbrains.annotations.NotNull;
 
-public class CustomConfigFile {
+public abstract class CustomConfigFile {
 
     // -- [[ ATTRIBUTES ]] --
 
@@ -24,31 +24,32 @@ public class CustomConfigFile {
     private FileConfiguration fileConfig;
     private File file;
 
-    private boolean mustCreate;
+    private final boolean mustCreate;
 
     // -- [[ METHODS ]] --
 
     // -- PUBLIC --
-    public CustomConfigFile(@NotNull String filename, String foldername, boolean must_create) {
+    protected CustomConfigFile(@NotNull String filename, String foldername, boolean must_create) {
         this.filename = filename;
         this.foldername = foldername;
         this.mustCreate = must_create;
     }
-    public String getPath() { return this.filename; }
+    protected String getPath() { return this.filename; }
 
     // -- PRIVATE --
-    public void registerConfig() {
+    protected boolean registerConfig() {
         if (foldername != null)
             file = new File(master.getDataFolder() + File.separator + foldername, filename);
         else
             file = new File(master.getDataFolder(), filename);
 
+        boolean fileCreated = false;
         if (!file.exists()) {
             if (mustCreate) {
                 try {
-                    file.createNewFile();
+                    fileCreated = file.createNewFile();
                 } catch (IOException e) {
-                    e.printStackTrace();
+                    return false;
                 }
             } else {
                 if (foldername != null)
@@ -62,25 +63,24 @@ public class CustomConfigFile {
         try {
             fileConfig.load(file);
         } catch(IOException | InvalidConfigurationException e) {
-            e.printStackTrace();
+            return false;
         }
+        return !fileCreated;
     }
 
-    public void saveConfig() {
+    protected void saveConfig() {
         try {
             fileConfig.save(file);
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
+        } catch (IOException ignored) { }
     }
 
-    public FileConfiguration getConfig() {
+    protected FileConfiguration getConfig() {
         if (fileConfig == null)
             reloadConfig();
         return fileConfig;
     }
 
-    public void reloadConfig() {
+    protected void reloadConfig() {
         if (fileConfig == null) {
             if (foldername != null)
                 file = new File(master.getDataFolder() + File.separator + foldername, filename);
@@ -94,5 +94,9 @@ public class CustomConfigFile {
             fileConfig.setDefaults(defConfig);
         }
     }
+
+    protected abstract void load();
+    protected abstract void reload();
+    protected abstract void save();
 
 }

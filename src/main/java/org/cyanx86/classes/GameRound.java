@@ -6,14 +6,14 @@ import org.bukkit.entity.Player;
 import org.bukkit.scheduler.BukkitTask;
 
 import org.cyanx86.OverCrafted;
+import org.cyanx86.config.RoundSettings;
 import org.cyanx86.managers.GamePlayersManager;
 import org.cyanx86.managers.OrderManager;
 import org.cyanx86.managers.ScoreManager;
 import org.cyanx86.utils.Enums.ListResult;
+import org.cyanx86.utils.Messenger;
 
 import java.util.*;
-
-import org.cyanx86.utils.Messenger;
 import org.jetbrains.annotations.NotNull;
 
 public class GameRound {
@@ -36,9 +36,9 @@ public class GameRound {
 
     private ROUNDSTATE currentState = ROUNDSTATE.COUNTDOWN;
 
-    private final int startCountdownTime = 3;
+    private final int startCountdownTime;
     private final int roundTime;
-    private final int endIntermissionTime = 3;
+    private final int endIntermissionTime;
 
     private BukkitTask task;
     private int time;
@@ -46,12 +46,16 @@ public class GameRound {
     // -- [[ METHODS ]] --
 
     // -- PUBLIC --
-    public GameRound(@NotNull GameArea gamearea, @NotNull List<Player> players, int time) {
+    public GameRound(@NotNull GameArea gamearea, @NotNull List<Player> players) {
         this.gameArea = gamearea;
         this.playersManager = new GamePlayersManager(players);
-        this.scoreManager = new ScoreManager(30);
+        this.scoreManager = new ScoreManager();
         this.orderManager = new OrderManager(this.gameArea.getRecipes(), this.scoreManager);
-        this.roundTime = Math.max(time, 30);
+
+        RoundSettings settings = RoundSettings.getInstance();
+        this.startCountdownTime = settings.getGRStartCountdown();
+        this.roundTime = settings.getGRTime();
+        this.endIntermissionTime = settings.getGRIntermissionTime();
 
         this.movePlayersToGameArea();
 
@@ -73,12 +77,6 @@ public class GameRound {
 
         return results;
     }
-
-    /*
-    public PLAYERSTATE getStateOfPlayer(@NotNull Player player) {
-        PlayerState state = this.playersManager.getPlayerState(player);
-        return (state == null) ? null : state.getCurrentState();
-    }*/
 
     // Actions
     public boolean terminateRound(String reason) {
@@ -139,7 +137,7 @@ public class GameRound {
 
     // -- PRIVATE --
     private SpawnPoint getPlayerSpawn(@NotNull PlayerState playerState) {
-        Optional<SpawnPoint> query = gameArea.getSpawnPoints().stream()
+        Optional<SpawnPoint> query = this.gameArea.getSpawnPoints().stream()
                 .filter(item -> item.getPlayerIndex() == this.playersManager.getPlayerIndex(playerState))
                 .findFirst();
         return query.orElse(null);
@@ -199,7 +197,7 @@ public class GameRound {
             "&a¡TIEMPO!",
             "",
             0,
-            60,
+            20 * this.endIntermissionTime,
             0
         );
         this.currentState = ROUNDSTATE.FINISHED;

@@ -45,9 +45,6 @@ public class MainCommand implements CommandExecutor {
             case "help":            // subCommand Help
                 this.scmHelp(sender);
                 break;
-            case "roundtime":       // subCommand SetRoundTime
-                this.scmSetRoundTime(sender, args);
-                break;
             case "recipelist":
                 this.scmRecipeList(sender);
                 break;
@@ -71,47 +68,10 @@ public class MainCommand implements CommandExecutor {
         Messenger.msgToSender(sender, "&f&l------ OVERCRAFTED ------");
         Messenger.msgToSender(sender, "&7 [[ Comando /overcrafted ]]");
         Messenger.msgToSender(sender, "&7- /overcrafted help");
-        Messenger.msgToSender(sender, "&7- /overcrafted roundtime <tiempo>");
         Messenger.msgToSender(sender, "&7- /overcrafted recipelist");
         Messenger.msgToSender(sender, "&7- /overcrafted startround");
         Messenger.msgToSender(sender, "&7- /overcrafted endround");
         Messenger.msgToSender(sender, "&7- /overcrafted results");
-    }
-
-    private void scmSetRoundTime(CommandSender sender, String[] args) {
-        if (!sender.hasPermission("overcrafted.manager")) {
-            Messenger.msgToSender(
-                sender,
-                OverCrafted.prefix + "&cNo tienes permiso para usar este comando." // TODO: No permission message.
-            );
-            return;
-        }
-        if (args.length != 2) {
-            Messenger.msgToSender(
-                sender,
-                OverCrafted.prefix + "&cArgumentos incompletos."    // TODO: Invalid arguments message.
-            );
-            return;
-        }
-
-        int time;
-        try {
-            time = Integer.parseInt(args[1]);
-        } catch (NumberFormatException e) {
-            Messenger.msgToSender(
-                sender,
-                OverCrafted.prefix + "&cEste argumento solo acepta valores numéricos."
-            );
-            return;
-        }
-
-        master.getGameRoundManager().setRoundTime(time);
-
-        Messenger.msgToSender(
-            sender,
-            OverCrafted.prefix + "&aLa ronda durará &r&o" +
-                    DataFormatting.formatSecondsToTime(time) + "&r&a minutos."
-        );
     }
 
     private void scmRecipeList(CommandSender sender) {

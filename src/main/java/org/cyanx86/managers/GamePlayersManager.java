@@ -17,8 +17,6 @@ public class GamePlayersManager {
     // -- PUBLIC --
 
     // -- PRIVATE --
-    private final OverCrafted master = OverCrafted.getInstance();
-
     private final List<PlayerState> players = new ArrayList<>();
 
     // -- [[ METHODS ]] --
@@ -26,7 +24,6 @@ public class GamePlayersManager {
     // -- PUBLIC --
     public GamePlayersManager(@NotNull List<Player> players) {
         Collections.shuffle(players);
-
         for (Player player : players)
             this.players.add(new PlayerState(player));
     }
