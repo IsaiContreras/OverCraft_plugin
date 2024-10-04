@@ -8,6 +8,7 @@ public class Defaults {
             public static int startCountdown = 3;
             public static int roundTime = 270;
             public static int endIntermission = 3;
+            public static int playerImmobilization = 3;
         }
 
         public static class ScoreManager {

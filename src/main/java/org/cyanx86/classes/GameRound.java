@@ -40,6 +40,8 @@ public class GameRound {
     private final int roundTime;
     private final int endIntermissionTime;
 
+    private final int playerImmobilizationTime;
+
     private BukkitTask task;
     private int time;
 
@@ -56,6 +58,8 @@ public class GameRound {
         this.startCountdownTime = settings.getGRStartCountdown();
         this.roundTime = settings.getGRTime();
         this.endIntermissionTime = settings.getGRIntermissionTime();
+
+        this.playerImmobilizationTime = settings.getGRPlayerImmobilizationTime();
 
         this.movePlayersToGameArea();
 
@@ -103,7 +107,7 @@ public class GameRound {
         playerState.moveToLocation(spawnpoint.getSpawnLocation());
 
         if (immobilize)
-            playerState.immobilizeForTime(3);
+            playerState.immobilizeForTime(this.playerImmobilizationTime);
     }
 
     public ListResult removePlayer(@NotNull Player player) {

@@ -17,6 +17,7 @@ public class RoundSettings extends CustomConfigFile {
     private int grStartCountdown;
     private int grRoundTime;
     private int grEndIntermission;
+    private int grPlayerImmobilizationTime;
 
     private int smValuePerOrder;
 
@@ -36,6 +37,7 @@ public class RoundSettings extends CustomConfigFile {
     public int getGRStartCountdown() { return this.grStartCountdown; }
     public int getGRTime() { return this.grRoundTime; }
     public int getGRIntermissionTime() { return this.grEndIntermission; }
+    public int getGRPlayerImmobilizationTime() { return this.grPlayerImmobilizationTime; }
 
     public int getSMValuePerOrder() { return this.smValuePerOrder; }
 
@@ -66,6 +68,8 @@ public class RoundSettings extends CustomConfigFile {
                 (int)config.get("game_round.round_time") : this.grRoundTime;
         this.grEndIntermission = config.get("game_round.end_intermission") != null ?
                 (int)config.get("game_round.end_intermission") : this.grEndIntermission;
+        this.grPlayerImmobilizationTime = config.get("game_round.player_immobilization") != null ?
+                (int)config.get("game_round.player_immobilization") : this.grPlayerImmobilizationTime;
 
         this.smValuePerOrder = config.get("score_manager.value_per_order") != null ?
                 (int)config.get("score_manager.value_per_order") : this.smValuePerOrder;
@@ -91,6 +95,7 @@ public class RoundSettings extends CustomConfigFile {
         config.set("game_round.start_countdown", this.grStartCountdown);
         config.set("game_round.round_time", this.grRoundTime);
         config.set("game_round.end_intermission", this.grEndIntermission);
+        config.set("game_round.player_immobilization", this.grPlayerImmobilizationTime);
 
         config.set("score_manager.value_per_order", this.smValuePerOrder);
 
@@ -112,6 +117,7 @@ public class RoundSettings extends CustomConfigFile {
         this.grStartCountdown = GameRound.startCountdown;
         this.grRoundTime = GameRound.roundTime;
         this.grEndIntermission = GameRound.endIntermission;
+        this.grPlayerImmobilizationTime = GameRound.playerImmobilization;
     }
 
     private void defaultScoreManager() {
