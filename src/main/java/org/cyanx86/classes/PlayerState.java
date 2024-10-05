@@ -45,12 +45,12 @@ public class PlayerState {
 
         ItemStack stonePickaxe = new ItemStack(Material.STONE_PICKAXE);
         Objects.requireNonNull(stonePickaxe.getItemMeta()).setUnbreakable(true);
-        player.setFoodLevel(20);
+        this.player.setFoodLevel(20);
 
         this.immobilize();
-        player.getInventory().clear();
-        player.getInventory().addItem(stonePickaxe);
-        player.setGameMode(GameMode.SURVIVAL);
+        this.player.getInventory().clear();
+        this.player.getInventory().addItem(stonePickaxe);
+        this.player.setGameMode(GameMode.SURVIVAL);
     }
 
     public void moveToLocation(@NotNull Location location) {
@@ -68,7 +68,16 @@ public class PlayerState {
         Messenger.titleToPlayer(this.player, message1, message2, fadeIn, time, fadeOut);
     }
 
+    public void sendActionBarToPlayer(@NotNull String message) {
+        Messenger.actionBarToPlayer(
+            this.player,
+            message
+        );
+    }
+
     public void restorePlayer() {
+        if (this.task != null)
+            this.task.cancel();
         this.player.teleport(this.prevLocation);
         this.player.getInventory().clear();
         this.player.getInventory().setContents(prevInventory);
@@ -110,7 +119,7 @@ public class PlayerState {
             Messenger.titleToPlayer(
                 this.player,
                 "&c¡Te saliste del área!",
-                "&a" + this.time,
+                "&eTe recuperarás en: &a" + this.time,
                 0,
                 20,
                 0

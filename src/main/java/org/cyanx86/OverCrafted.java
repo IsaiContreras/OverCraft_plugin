@@ -5,15 +5,16 @@ import org.bukkit.plugin.java.JavaPlugin;
 import org.cyanx86.commands.GameAreaCommand;
 import org.cyanx86.commands.MainCommand;
 import org.cyanx86.commands.PlayerListCommand;
+import org.cyanx86.config.RecipesBonus;
 import org.cyanx86.config.RoundSettings;
 import org.cyanx86.listeners.ManagerPlayerListener;
 import org.cyanx86.listeners.MiscellaneousListener;
 import org.cyanx86.listeners.NonPlayerListener;
 import org.cyanx86.listeners.PlayerListener;
 import org.cyanx86.managers.GameAreaPropertiesAssistantManager;
-import org.cyanx86.managers.GameAreaManager;
+import org.cyanx86.config.GameAreaLoader;
 import org.cyanx86.managers.GameRoundManager;
-import org.cyanx86.managers.OreBlocksManager;
+import org.cyanx86.config.OreBlocksLoader;
 import org.cyanx86.utils.Messenger;
 
 import java.util.Objects;
@@ -29,13 +30,12 @@ public class OverCrafted extends JavaPlugin {
     private static OverCrafted instance;
     private final String version = getDescription().getVersion();
 
-    private GameAreaManager gameAreaManager;
+    private GameAreaLoader gameAreaManager;
+    private OreBlocksLoader oreBlocks;
+    private RecipesBonus recipesBonus;
+
     private GameAreaPropertiesAssistantManager gameAreaPropertiesAssistantManager;
     private GameRoundManager gameRoundManager;
-
-    private RoundSettings roundSettings;
-
-    private OreBlocksManager oreBlocks;
 
     // -- [[ METHODS ]] --
 
@@ -45,13 +45,14 @@ public class OverCrafted extends JavaPlugin {
     public void onEnable() {
         instance = this;
 
-        gameAreaManager = new GameAreaManager();
+        gameAreaManager = new GameAreaLoader();
+        oreBlocks = new OreBlocksLoader();
+        recipesBonus = new RecipesBonus();
+
         gameAreaPropertiesAssistantManager = new GameAreaPropertiesAssistantManager();
         gameRoundManager = new GameRoundManager();
 
-        oreBlocks = new OreBlocksManager();
-
-        roundSettings = RoundSettings.getInstance();
+        RoundSettings.getInstance();
 
         this.setupCommands();
         this.setupEvents();
@@ -73,7 +74,7 @@ public class OverCrafted extends JavaPlugin {
         return this.gameAreaPropertiesAssistantManager;
     }
 
-    public GameAreaManager getGameAreaManager() {
+    public GameAreaLoader getGameAreaManager() {
         return this.gameAreaManager;
     }
 
@@ -81,9 +82,11 @@ public class OverCrafted extends JavaPlugin {
         return this.gameRoundManager;
     }
 
-    public OreBlocksManager getOreBlocks() {
+    public OreBlocksLoader getOreBlocks() {
         return this.oreBlocks;
     }
+
+    public RecipesBonus getRecipesBonus() { return this.recipesBonus; }
 
     public static OverCrafted getInstance() {
         return instance;

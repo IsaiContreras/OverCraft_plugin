@@ -4,9 +4,12 @@ import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
 import org.bukkit.scheduler.BukkitTask;
+
 import org.cyanx86.OverCrafted;
 import org.cyanx86.managers.OrderManager;
 import org.cyanx86.utils.Messenger;
+
+import org.jetbrains.annotations.NotNull;
 
 public class Order {
 
@@ -30,7 +33,7 @@ public class Order {
     // -- [[ METHODS ]] --
 
     // -- PUBLIC --
-    public Order(Material recipe, int timeout, OrderManager father) {
+    public Order(@NotNull Material recipe, int timeout, @NotNull OrderManager father) {
         this.recipe = recipe;
         this.timeout = timeout;
         this.father = father;

@@ -32,7 +32,7 @@ public class GameArea {
     // -- PUBLIC --
     public GameArea(@NotNull String name, @NotNull Location corner1, @NotNull Location corner2, int minPlayers, int maxPlayers) {
         this.name = name;
-        this.world = Objects.requireNonNull(corner1.getWorld()).getName();
+        this.world = corner1.getWorld() != null ? corner1.getWorld().getName() : null;
         this.minPlayers = minPlayers;
         this.maxPlayers = maxPlayers;
         this.corners[0] = corner1;
@@ -171,24 +171,36 @@ public class GameArea {
     }
 
     public static GameArea deserialize(@NotNull Map<String, Object> args) {
-        List<SpawnPoint> spawnpointsList = new ArrayList<>();
+        List<SpawnPoint> spawnPointsList = new ArrayList<>();
         List<Material> recipeList = new ArrayList<>();
-        List<Map<String, Object>> sppMapList = (List<Map<String, Object>>)args.get("spawn_points");
-        List<String> rcpList = ((List<String>)args.get("recipes"));
+        List<Map<String, Object>> sppMapList;
+        List<String> rcpList;
+
+        Map<String, Object> corner1LocSerial;
+        Map<String, Object> corner2LocSerial;
+
+        try {
+            sppMapList = (List<Map<String, Object>>) args.get("spawn_points");
+            rcpList = ((List<String>) args.get("recipes"));
+            corner1LocSerial = (Map<String, Object>)args.get("corner_1");
+            corner2LocSerial = (Map<String, Object>)args.get("corner_2");
+        } catch (ClassCastException e) {
+            return null;
+        }
 
         for (Map<String, Object> sppMap : sppMapList)
-            spawnpointsList.add(SpawnPoint.deserialize(sppMap));
+            spawnPointsList.add(SpawnPoint.deserialize(sppMap));
         for (String rcpItem : rcpList)
             recipeList.add(Material.valueOf(rcpItem));
 
         return new GameArea(
             (String)args.get("name"),
             (String)args.get("world"),
-            Location.deserialize((Map<String, Object>)args.get("corner_1")),
-            Location.deserialize((Map<String, Object>)args.get("corner_2")),
+            Location.deserialize(corner1LocSerial),
+            Location.deserialize(corner2LocSerial),
             (int)args.get("min_players"),
             (int)args.get("max_players"),
-            spawnpointsList,
+            spawnPointsList,
             recipeList
         );
     }

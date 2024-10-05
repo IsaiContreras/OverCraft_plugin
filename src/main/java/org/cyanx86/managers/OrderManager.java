@@ -40,6 +40,7 @@ public class OrderManager {
     private int orderTimeOut;
 
     private final int orderStackLimit;
+    private final float bonusProbability;
 
     private Objective ordersDisplayer;
 
@@ -58,6 +59,7 @@ public class OrderManager {
         this.timeForNextOrder = settings.getOMTimeForNextOrder();
         this.orderTimeOut = settings.getOMOrderTimeout();
         this.orderStackLimit = settings.getOMOrderStackLimit();
+        this.bonusProbability = settings.getOMBonusProbability();
     }
 
     public void setTimeForNextOrder(int timeseconds) {
@@ -90,7 +92,6 @@ public class OrderManager {
 
         Order order = query.get();
         order.dispose();
-        Messenger.msgToConsole("[OrderManager] ");
 
         boolean result = this.orderList.remove(query.get());
         if (this.orderList.isEmpty())
@@ -98,6 +99,13 @@ public class OrderManager {
 
         if (lost)
             this.scoreManager.incrementLostOrder();
+        else if (Functions.getRandomFloatNumber() <= this.bonusProbability) {
+            this.scoreManager.addBonus(
+                OverCrafted.getInstance().getRecipesBonus().getBonusValue(
+                    order.getRecipe()
+                )
+            );
+        }
 
         this.updateDisplayer();
 
@@ -141,7 +149,7 @@ public class OrderManager {
             return;
         this.orderList.add(
             new Order(
-                this.recipes.get(Functions.getRandomNumber(0, this.recipes.size() - 1)),
+                this.recipes.get(Functions.getRandomIntNumber(0, this.recipes.size() - 1)),
                 this.orderTimeOut,
                 this
             )

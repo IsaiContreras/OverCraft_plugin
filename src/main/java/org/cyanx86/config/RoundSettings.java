@@ -24,6 +24,7 @@ public class RoundSettings extends CustomConfigFile {
     private int omTimeForNextOrder;
     private int omOrderTimeout;
     private int omOrderStackLimit;
+    private float omBonusProbability;
 
     // -- [[ METHODS ]] --
 
@@ -44,6 +45,7 @@ public class RoundSettings extends CustomConfigFile {
     public int getOMTimeForNextOrder() { return this.omTimeForNextOrder; }
     public int getOMOrderTimeout() { return this.omOrderTimeout; }
     public int getOMOrderStackLimit() { return this.omOrderStackLimit; }
+    public float getOMBonusProbability() { return this.omBonusProbability; }
 
     // -- PRIVATE --
     private RoundSettings() {
@@ -80,6 +82,8 @@ public class RoundSettings extends CustomConfigFile {
                 (int)config.get("order_manager.order_timeout") : this.omOrderTimeout;
         this.omOrderStackLimit = config.get("order_manager.order_stack_limit") != null ?
                 (int)config.get("order_manager.order_stack_limit") : this.omOrderStackLimit;
+        this.omBonusProbability = config.get("order_manager.bonus_probability") != null ?
+                (float)((double)config.get("order_manager.bonus_probability")) : this.omBonusProbability;
     }
 
     @Override
@@ -102,6 +106,7 @@ public class RoundSettings extends CustomConfigFile {
         config.set("order_manager.time_for_next_order", this.omTimeForNextOrder);
         config.set("order_manager.order_timeout", this.omOrderTimeout);
         config.set("order_manager.order_stack_limit", this.omOrderStackLimit);
+        config.set("order_manager.bonus_probability", this.omBonusProbability);
 
         this.saveConfig();
     }
@@ -130,6 +135,7 @@ public class RoundSettings extends CustomConfigFile {
         this.omTimeForNextOrder = OrderManager.timeForNextOrder;
         this.omOrderTimeout = OrderManager.orderTimeOut;
         this.omOrderStackLimit = OrderManager.orderStackLimit;
+        this.omBonusProbability = OrderManager.bonusProbability;
     }
 
 }

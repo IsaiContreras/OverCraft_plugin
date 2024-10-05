@@ -1,4 +1,4 @@
-package org.cyanx86.managers;
+package org.cyanx86.config;
 
 import org.bukkit.Location;
 import org.bukkit.configuration.file.FileConfiguration;
@@ -10,7 +10,7 @@ import org.cyanx86.utils.Enums.ListResult;
 import java.util.*;
 import org.jetbrains.annotations.NotNull;
 
-public class GameAreaManager extends CustomConfigFile {
+public class GameAreaLoader extends CustomConfigFile {
 
     // -- [[ ATTRIBUTES ]] --
 
@@ -22,7 +22,7 @@ public class GameAreaManager extends CustomConfigFile {
     // -- [[ METHODS ]] --
 
     // -- PUBLIC --
-    public GameAreaManager() {
+    public GameAreaLoader() {
         super(
             "gameareas.yml",
             "ocf_settings",

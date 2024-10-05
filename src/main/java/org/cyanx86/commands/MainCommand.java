@@ -7,7 +7,6 @@ import org.bukkit.command.CommandSender;
 import org.cyanx86.OverCrafted;
 import org.cyanx86.classes.GameRound;
 import org.cyanx86.classes.Order;
-import org.cyanx86.utils.DataFormatting;
 import org.cyanx86.utils.Messenger;
 
 import java.util.List;
@@ -35,7 +34,7 @@ public class MainCommand implements CommandExecutor {
     }
 
     // -- PRIVATE --
-    private void handleSubcommands(CommandSender sender, String[] args) {
+    private void handleSubcommands(@NotNull CommandSender sender, @NotNull String[] args) {
         if (args.length == 0) {
             this.scmHelp(sender);
             return;
@@ -64,7 +63,7 @@ public class MainCommand implements CommandExecutor {
     }
 
     // Subcommands
-    private void scmHelp(CommandSender sender) {
+    private void scmHelp(@NotNull CommandSender sender) {
         Messenger.msgToSender(sender, "&f&l------ OVERCRAFTED ------");
         Messenger.msgToSender(sender, "&7 [[ Comando /overcrafted ]]");
         Messenger.msgToSender(sender, "&7- /overcrafted help");
@@ -74,7 +73,7 @@ public class MainCommand implements CommandExecutor {
         Messenger.msgToSender(sender, "&7- /overcrafted results");
     }
 
-    private void scmRecipeList(CommandSender sender) {
+    private void scmRecipeList(@NotNull CommandSender sender) {
         GameRound round = master.getGameRoundManager().getGameRound();
         if (round == null || round.getCurrentRoundState() == GameRound.ROUNDSTATE.ENDED) {
             Messenger.msgToSender(
@@ -103,7 +102,7 @@ public class MainCommand implements CommandExecutor {
         }
     }
 
-    private void scmStartRound(CommandSender sender) {
+    private void scmStartRound(@NotNull CommandSender sender) {
         if (!sender.hasPermission("overcrafted.manager")) {
             Messenger.msgToSender(
                 sender,
@@ -119,7 +118,7 @@ public class MainCommand implements CommandExecutor {
         }
     }
 
-    private void scmEndRound(CommandSender sender) {
+    private void scmEndRound(@NotNull CommandSender sender) {
         if (!sender.hasPermission("overcrafted.manager")) {
             Messenger.msgToSender(
                 sender,
@@ -141,7 +140,7 @@ public class MainCommand implements CommandExecutor {
         );
     }
 
-    private void scmResults(CommandSender sender) {
+    private void scmResults(@NotNull CommandSender sender) {
         GameRound round = master.getGameRoundManager().getGameRound();
         if (round == null || round.getCurrentRoundState() != GameRound.ROUNDSTATE.ENDED) {
             Messenger.msgToSender(
@@ -159,8 +158,12 @@ public class MainCommand implements CommandExecutor {
                 results.get("delivered"));
         Messenger.msgToSender(sender, "  &7Ordenes perdidas: &o" +
                 results.get("lost"));
+        Messenger.msgToSender(sender, "  &7Puntaje: &o" +
+                results.get("score"));
+        Messenger.msgToSender(sender, "  &7Bonus: &o" +
+                results.get("bonus"));
         Messenger.msgToSender(sender, "  &7Puntos totales: &o" +
-                results.get("total"));
+                ((int)results.get("score") + (int)results.get("bonus")));
     }
 
 }

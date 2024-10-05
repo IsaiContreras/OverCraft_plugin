@@ -58,8 +58,12 @@ public class Functions {
         return query.orElse(null);
     }
 
-    static public int getRandomNumber(int min, int max) {
+    static public int getRandomIntNumber(int min, int max) {
         return new Random().nextInt((max - min) + 1) + min;
+    }
+
+    static public float getRandomFloatNumber() {
+        return new Random().nextFloat();
     }
 
 }

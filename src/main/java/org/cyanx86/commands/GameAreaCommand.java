@@ -38,7 +38,7 @@ public class GameAreaCommand implements CommandExecutor {
     }
 
     // -- PRIVATE --
-    private void handleSubcommands(CommandSender sender, String[] args) {
+    private void handleSubcommands(@NotNull CommandSender sender, @NotNull String[] args) {
         if (!(sender instanceof Player)) {
             Messenger.msgToSender(
                 sender,
@@ -96,7 +96,7 @@ public class GameAreaCommand implements CommandExecutor {
     }
 
     // Subcommands
-    private void scmHelp(CommandSender sender) {
+    private void scmHelp(@NotNull CommandSender sender) {
         // TODO: Language location of Help Page
         Messenger.msgToSender(sender, "&f&l------ OVERCRAFTED ------");
         Messenger.msgToSender(sender, "&7 [[ Comando /gamearea ]]");
@@ -112,7 +112,7 @@ public class GameAreaCommand implements CommandExecutor {
         Messenger.msgToSender(sender, "&7- /gamearea delete <nombre>");
     }
 
-    private void scmCreate(CommandSender sender, String[] args) {
+    private void scmCreate(@NotNull CommandSender sender, @NotNull String[] args) {
         if (args.length != 4) {
             Messenger.msgToSender(
                 sender,
@@ -186,7 +186,7 @@ public class GameAreaCommand implements CommandExecutor {
         );
     }
 
-    private void scmSetSpawnPoint(CommandSender sender) {
+    private void scmSetSpawnPoint(@NotNull CommandSender sender) {
         Location spawnLocation = ((Player)sender).getLocation();
         GameArea gamearea = Functions.getGameAreaFromLocation(spawnLocation);
         if (gamearea == null) {
@@ -231,7 +231,7 @@ public class GameAreaCommand implements CommandExecutor {
         );
     }
 
-    private void scmResetSpawns(CommandSender sender, String[] args) {
+    private void scmResetSpawns(@NotNull CommandSender sender, @NotNull String[] args) {
         if (args.length != 2) {
             Messenger.msgToSender(
                 sender,
@@ -257,7 +257,7 @@ public class GameAreaCommand implements CommandExecutor {
         );
     }
 
-    private void scmAddRecipe(CommandSender sender, String[] args) {
+    private void scmAddRecipe(@NotNull CommandSender sender, @NotNull String[] args) {
         if (args.length != 3) {
             Messenger.msgToSender(
                 sender,
@@ -301,7 +301,7 @@ public class GameAreaCommand implements CommandExecutor {
         );
     }
 
-    private void scmResetRecipes(CommandSender sender, String[] args) {
+    private void scmResetRecipes(@NotNull CommandSender sender, @NotNull String[] args) {
         if (args.length != 2) {
             Messenger.msgToSender(
                 sender,
@@ -327,7 +327,7 @@ public class GameAreaCommand implements CommandExecutor {
         );
     }
 
-    private void scmList(CommandSender sender) {
+    private void scmList(@NotNull CommandSender sender) {
         Messenger.msgToSender(sender, "&f&l------ OVERCRAFTED ------\n");
         Messenger.msgToSender(sender, "&f&lÁreas de juego:");  // TODO: Language location.
 
@@ -348,7 +348,7 @@ public class GameAreaCommand implements CommandExecutor {
         }
     }
 
-    private void scmSelect(CommandSender sender, String[] args) {
+    private void scmSelect(@NotNull CommandSender sender, @NotNull String[] args) {
         if (args.length != 2) {
             Messenger.msgToSender(
                 sender,
@@ -382,7 +382,7 @@ public class GameAreaCommand implements CommandExecutor {
         );
     }
 
-    private void scmInfo(CommandSender sender, String[] args) {
+    private void scmInfo(@NotNull CommandSender sender, @NotNull String[] args) {
         if (args.length != 2) {
             Messenger.msgToSender(
                 sender,
@@ -446,7 +446,7 @@ public class GameAreaCommand implements CommandExecutor {
         }
     }
 
-    private void scmDelete(CommandSender sender, String[] args) {
+    private void scmDelete(@NotNull CommandSender sender, @NotNull String[] args) {
         if (args.length != 2) {
             Messenger.msgToSender(
                 sender,

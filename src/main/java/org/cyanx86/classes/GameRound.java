@@ -12,6 +12,7 @@ import org.cyanx86.config.RoundSettings;
 import org.cyanx86.managers.GamePlayersManager;
 import org.cyanx86.managers.OrderManager;
 import org.cyanx86.managers.ScoreManager;
+import org.cyanx86.utils.DataFormatting;
 import org.cyanx86.utils.Enums.ListResult;
 import org.cyanx86.utils.Messenger;
 
@@ -50,8 +51,8 @@ public class GameRound {
     // -- [[ METHODS ]] --
 
     // -- PUBLIC --
-    public GameRound(@NotNull GameArea gamearea, @NotNull List<Player> players) {
-        this.gameArea = gamearea;
+    public GameRound(@NotNull GameArea gameArea, @NotNull List<Player> players) {
+        this.gameArea = gameArea;
         this.playersManager = new GamePlayersManager(players);
         this.scoreManager = new ScoreManager();
         this.orderManager = new OrderManager(this.gameArea.getRecipes(), this.scoreManager);
@@ -79,7 +80,8 @@ public class GameRound {
 
         results.put("delivered", this.scoreManager.getDeliveredOrders());
         results.put("lost", this.scoreManager.getLostOrders());
-        results.put("total", this.scoreManager.getTotalScore());
+        results.put("bonus", this.scoreManager.getBonus());
+        results.put("score", this.scoreManager.getScore());
 
         return results;
     }
@@ -88,7 +90,7 @@ public class GameRound {
     public boolean terminateRound(String reason) {
         if (this.currentState == ROUNDSTATE.ENDED) return false;
 
-        String message = reason != null ? reason : "&cLa ronda fue cancelada.";
+        String message = (reason != null ? reason : "&cLa ronda fue cancelada.");
 
         this.task.cancel();
         this.endRound(message);
@@ -187,7 +189,6 @@ public class GameRound {
         for (PlayerState playerState : this.playersManager.getPlayerStates())
             playerState.mobilize();
 
-
         this.time = this.roundTime;
         this.task = Bukkit.getScheduler().runTaskTimer(OverCrafted.getInstance(), () -> {
             if (this.time == 0) {
@@ -195,6 +196,11 @@ public class GameRound {
                 this.intermissionTime();
                 return;
             }
+
+            this.playersManager.sendActionBarToPlayers(
+                DataFormatting.formatSecondsToTime(this.time)
+            );
+
             this.time--;
             // Display timer
         }, 20L, 20L);
@@ -205,7 +211,7 @@ public class GameRound {
             "&a¡TIEMPO!",
             "",
             0,
-            20 * this.endIntermissionTime,
+            this.endIntermissionTime * 20,
             0
         );
         this.currentState = ROUNDSTATE.FINISHED;

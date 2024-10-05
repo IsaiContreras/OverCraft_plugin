@@ -46,9 +46,9 @@ public class ScoreManager {
         return this.lostOrders;
     }
 
-    public int getTotalScore() {
-        return this.score + this.bonus;
-    }
+    public int getScore() { return this.score; }
+
+    public int getBonus() { return this.bonus; }
 
     // -- PRIVATE --
     private void updateScore() {

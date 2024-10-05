@@ -31,7 +31,7 @@ public class PlayerListCommand implements CommandExecutor {
     }
 
     // -- PRIVATE --
-    private void handleSubcommand(CommandSender sender, String[] args) {
+    private void handleSubcommand(@NotNull CommandSender sender, @NotNull String[] args) {
         if(!sender.hasPermission("overcrafted.manager")) {
             Messenger.msgToSender(
                 sender,
@@ -64,7 +64,7 @@ public class PlayerListCommand implements CommandExecutor {
     }
 
     // -- Subcommands
-    private void scmHelp(CommandSender sender) {
+    private void scmHelp(@NotNull CommandSender sender) {
         // TODO: Language location of Help Page
         Messenger.msgToSender(sender, "&f&l------ OVERCRAFTED ------\n");
         Messenger.msgToSender(sender, "&7 [[ Comando /playerlist ]]");
@@ -75,7 +75,7 @@ public class PlayerListCommand implements CommandExecutor {
         Messenger.msgToSender(sender, "&7- /playerlist clear");
     }
 
-    private void scmAdd(CommandSender sender, String[] args) {
+    private void scmAdd(@NotNull CommandSender sender, @NotNull String[] args) {
         if (args.length != 2) {
             Messenger.msgToSender(
                 sender,
@@ -128,7 +128,7 @@ public class PlayerListCommand implements CommandExecutor {
             );
     }
 
-    private void scmRemove(CommandSender sender, String[] args) {
+    private void scmRemove(@NotNull CommandSender sender, @NotNull String[] args) {
         if (args.length != 2) {
             Messenger.msgToSender(
                 sender,
@@ -174,7 +174,7 @@ public class PlayerListCommand implements CommandExecutor {
             );
     }
 
-    private void scmShow(CommandSender sender) {
+    private void scmShow(@NotNull CommandSender sender) {
         Messenger.msgToSender(sender, "&f&l------ OVERCRAFTED ------\n");
         Messenger.msgToSender(sender, "&f&lJugadores actuales:");  // TODO: Language location.
 
@@ -194,7 +194,7 @@ public class PlayerListCommand implements CommandExecutor {
         }
     }
 
-    private void scmClear(CommandSender sender) {
+    private void scmClear(@NotNull CommandSender sender) {
         switch(master.getGameRoundManager().clearPlayerList()) {
             case EMPTY_LIST -> {
                 Messenger.msgToSender(

@@ -67,6 +67,11 @@ public class GamePlayersManager {
             playerState.sendTitleToPlayer(message1, message2, fadeIn, time, fadeOut);
     }
 
+    public void sendActionBarToPlayers(@NotNull String message) {
+        for (PlayerState playerState : this.players)
+            playerState.sendActionBarToPlayer(message);
+    }
+
     // -- PRIVATE --
 
 }

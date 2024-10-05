@@ -39,8 +39,7 @@ public class GameRoundManager {
 
         this.gameround = new GameRound(
                 this.gamearea,
-                this.gamePlayers,
-                this.roundTime
+                this.gamePlayers
         );
         this.gamearea = null;
         this.gamePlayers.clear();

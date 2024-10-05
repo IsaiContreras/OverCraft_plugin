@@ -19,6 +19,7 @@ public class Defaults {
             public static int timeForNextOrder = 20;
             public static int orderTimeOut = 80;
             public static int orderStackLimit = 5;
+            public static float bonusProbability = 0.2f;
         }
 
     }

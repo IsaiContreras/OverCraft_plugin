@@ -1,12 +1,14 @@
 package org.cyanx86.utils;
 
+import net.md_5.bungee.api.ChatMessageType;
+import net.md_5.bungee.api.chat.TextComponent;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
-import java.util.List;
 import org.jetbrains.annotations.NotNull;
+import org.w3c.dom.Text;
 
 public class Messenger {
 
@@ -33,6 +35,13 @@ public class Messenger {
             fadeIn,
             time,
             fadeOut
+        );
+    }
+
+    public static void actionBarToPlayer(@NotNull Player player, @NotNull String message) {
+        player.spigot().sendMessage(
+            ChatMessageType.ACTION_BAR,
+            TextComponent.fromLegacyText(coloredText(message))
         );
     }
 
