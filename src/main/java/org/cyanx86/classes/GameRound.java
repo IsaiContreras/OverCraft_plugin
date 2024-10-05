@@ -5,6 +5,8 @@ import org.bukkit.Material;
 import org.bukkit.entity.Player;
 import org.bukkit.scheduler.BukkitTask;
 
+import org.bukkit.scoreboard.Score;
+import org.bukkit.scoreboard.Scoreboard;
 import org.cyanx86.OverCrafted;
 import org.cyanx86.config.RoundSettings;
 import org.cyanx86.managers.GamePlayersManager;
@@ -181,8 +183,10 @@ public class GameRound {
         );
         this.currentState = ROUNDSTATE.RUNNING;
         this.orderManager.startGenerator();
+
         for (PlayerState playerState : this.playersManager.getPlayerStates())
             playerState.mobilize();
+
 
         this.time = this.roundTime;
         this.task = Bukkit.getScheduler().runTaskTimer(OverCrafted.getInstance(), () -> {
@@ -236,8 +240,12 @@ public class GameRound {
     }
 
     private void movePlayersToGameArea() {
-        for (PlayerState playerState : this.playersManager.getPlayerStates())
+        Scoreboard sb = this.orderManager.getDisplayer();
+
+        for (PlayerState playerState : this.playersManager.getPlayerStates()) {
             this.spawnPlayer(playerState);
+            playerState.setDisplayer(sb);
+        }
     }
 
     private void restorePlayerProperties() {

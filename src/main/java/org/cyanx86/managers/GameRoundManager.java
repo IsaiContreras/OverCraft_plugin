@@ -5,6 +5,7 @@ import org.bukkit.entity.Player;
 import org.cyanx86.OverCrafted;
 import org.cyanx86.classes.GameArea;
 import org.cyanx86.classes.GameRound;
+import org.cyanx86.classes.OrderDisplayer;
 import org.cyanx86.utils.Enums.ListResult;
 
 import java.util.ArrayList;
@@ -37,8 +38,9 @@ public class GameRoundManager {
             return false;
 
         this.gameround = new GameRound(
-            this.gamearea,
-            this.gamePlayers
+                this.gamearea,
+                this.gamePlayers,
+                this.roundTime
         );
         this.gamearea = null;
         this.gamePlayers.clear();
