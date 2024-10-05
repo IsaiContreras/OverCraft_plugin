@@ -3,7 +3,6 @@ package org.cyanx86.managers;
 import org.bukkit.Location;
 import org.bukkit.configuration.file.FileConfiguration;
 
-import org.cyanx86.OverCrafted;
 import org.cyanx86.classes.GameArea;
 import org.cyanx86.utils.CustomConfigFile;
 import org.cyanx86.utils.Enums.ListResult;
@@ -11,50 +10,47 @@ import org.cyanx86.utils.Enums.ListResult;
 import java.util.*;
 import org.jetbrains.annotations.NotNull;
 
-public class GameAreaManager {
+public class GameAreaManager extends CustomConfigFile {
 
     // -- [[ ATTRIBUTES ]] --
 
     // -- PUBLIC --
 
     // -- PRIVATE --
-    private final OverCrafted master = OverCrafted.getInstance();
-    private final CustomConfigFile configFile;
-
-    private final String filename = "gameareas.yml";
-    private final String folder = "ocf_settings";
-
     private final List<GameArea> gameAreas = new ArrayList<>();
 
     // -- [[ METHODS ]] --
 
     // -- PUBLIC --
     public GameAreaManager() {
-        this.configFile = new CustomConfigFile(
-            filename,
-            folder,
+        super(
+            "gameareas.yml",
+            "ocf_settings",
             true
         );
-        this.configFile.registerConfig();
-        this.loadConfig();
+        if (this.registerConfig())
+            this.load();
     }
 
     // Read/Write Methods
-    public void loadConfig() {
-        FileConfiguration config = this.configFile.getConfig();
+    @Override
+    protected void load() {
+        FileConfiguration config = this.getConfig();
         List<Map<?, ?>> gmaMapList = config.getMapList("gameareas");
 
         for (Map<?, ?> gmaMap : gmaMapList)
             gameAreas.add(GameArea.deserialize((Map<String, Object>)gmaMap));
     }
 
-    public void reloadConfig() {
-        this.configFile.reloadConfig();
-        this.loadConfig();
+    @Override
+    public void reload() {
+        this.reloadConfig();
+        this.load();
     }
 
-    public void saveConfig() {
-        FileConfiguration config = this.configFile.getConfig();
+    @Override
+    public void save() {
+        FileConfiguration config = this.getConfig();
 
         List<Map<String, Object>> gmaMapList = new ArrayList<>();
 
@@ -62,11 +58,11 @@ public class GameAreaManager {
             gmaMapList.add(gma.serialize());
 
         config.set("gameareas", gmaMapList);
-        this.configFile.saveConfig();
+        this.saveConfig();
     }
 
     // List managing
-    public ListResult addGameArea(@NotNull String name, @NotNull Location corner1, @NotNull Location corner2, int maxPlayers) {
+    public ListResult addGameArea(@NotNull String name, @NotNull Location corner1, @NotNull Location corner2, int minPlayers, int maxPlayers) {
         if (this.alreadyExists(name))
             return ListResult.ALREADY_IN;
 
@@ -74,6 +70,7 @@ public class GameAreaManager {
             name,
             corner1,
             corner2,
+            minPlayers,
             maxPlayers
         );
 
@@ -99,7 +96,7 @@ public class GameAreaManager {
     }
 
     public GameArea getByName(@NotNull String name) {
-        Optional<GameArea> queryGameArea = gameAreas.stream()
+        Optional<GameArea> queryGameArea = this.gameAreas.stream()
                 .filter(item -> item.getName().equals(name))
                 .findFirst();
         return queryGameArea.orElse(null);

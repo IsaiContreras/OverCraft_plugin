@@ -25,7 +25,6 @@ public class GameRoundManager {
 
     private GameArea gamearea;
     private final List<Player> gamePlayers = new ArrayList<>();
-    private int roundTime = 30;
 
     // -- [[ METHODS ]] --
 
@@ -33,9 +32,9 @@ public class GameRoundManager {
 
     // Round
     public boolean startRound() {
-        if (gamearea == null)
+        if (this.gamearea == null)
             return false;
-        if (gamePlayers.isEmpty())
+        if (this.gamePlayers.isEmpty())
             return false;
 
         this.gameround = new GameRound(
@@ -54,11 +53,7 @@ public class GameRoundManager {
     }
 
     public GameRound getGameRound() {
-        return gameround;
-    }
-
-    public void setRoundTime(int time) {
-        this.roundTime = Math.max(time, 30);
+        return this.gameround;
     }
 
     // GameArea managing
@@ -72,9 +67,9 @@ public class GameRoundManager {
 
     // Player managing
     public ListResult addPlayer(@NotNull Player player) {
-        if (gamearea == null)
+        if (this.gamearea == null)
             return ListResult.ERROR;
-        if (this.gamePlayers.size() == gamearea.getMaxPlayers())
+        if (this.gamePlayers.size() == this.gamearea.getMaxPlayers())
             return ListResult.FULL_LIST;
         if (this.gamePlayers.contains(player))
             return ListResult.ALREADY_IN;
@@ -93,7 +88,7 @@ public class GameRoundManager {
     }
 
     public ListResult clearPlayerList() {
-        if (gamePlayers.isEmpty())
+        if (this.gamePlayers.isEmpty())
             return ListResult.EMPTY_LIST;
 
         this.gamePlayers.clear();

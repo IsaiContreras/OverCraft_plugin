@@ -10,6 +10,7 @@ import org.cyanx86.OverCrafted;
 import org.cyanx86.classes.Order;
 import org.cyanx86.classes.OrderDisplayer;
 import org.cyanx86.utils.DataFormatting;
+import org.cyanx86.config.RoundSettings;
 import org.cyanx86.utils.Functions;
 
 import java.util.ArrayList;
@@ -38,7 +39,7 @@ public class OrderManager {
     private int timeForNextOrder;
     private int orderTimeOut;
 
-    private int orderStackLimit;
+    private final int orderStackLimit;
 
     private Objective ordersDisplayer;
 
@@ -52,9 +53,11 @@ public class OrderManager {
     public OrderManager(@NotNull List<Material> recipes, ScoreManager scoreManager) {
         this.recipes = recipes;
         this.scoreManager = scoreManager;
-        this.timeForNextOrder = 20;
-        this.orderTimeOut = 80;
-        this.orderStackLimit = 5;
+
+        RoundSettings settings = RoundSettings.getInstance();
+        this.timeForNextOrder = settings.getOMTimeForNextOrder();
+        this.orderTimeOut = settings.getOMOrderTimeout();
+        this.orderStackLimit = settings.getOMOrderStackLimit();
     }
 
     public void setTimeForNextOrder(int timeseconds) {
@@ -87,6 +90,7 @@ public class OrderManager {
 
         Order order = query.get();
         order.dispose();
+        Messenger.msgToConsole("[OrderManager] ");
 
         boolean result = this.orderList.remove(query.get());
         if (this.orderList.isEmpty())
@@ -103,7 +107,7 @@ public class OrderManager {
     public void startGenerator() {
         this.time = 0;
         this.task = Bukkit.getScheduler().runTaskTimer(master, () -> {
-            if (time == 0) {
+            if (this.time == 0) {
                 this.newOrder();
                 this.time = this.timeForNextOrder;
             } else
@@ -133,11 +137,11 @@ public class OrderManager {
         Messenger.msgToConsole("Creating new order");
         if (this.recipes.isEmpty())
             return;
-        if (this.orderList.size() == 5)
+        if (this.orderList.size() == this.orderStackLimit)
             return;
         this.orderList.add(
             new Order(
-                recipes.get(Functions.getRandomNumber(0, this.recipes.size() - 1)),
+                this.recipes.get(Functions.getRandomNumber(0, this.recipes.size() - 1)),
                 this.orderTimeOut,
                 this
             )

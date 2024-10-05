@@ -45,8 +45,8 @@ public class SpawnPoint {
     public Map<String, Object> serialize() {
         Map<String, Object> data = new HashMap<>();
 
-        data.put("location", location.serialize());
-        data.put("player_index", playerIndex);
+        data.put("location", this.location.serialize());
+        data.put("player_index", this.playerIndex);
 
         return data;
     }

@@ -21,18 +21,14 @@ public class PlayerState {
     // -- [[ ATTRIBUTES ]] --
 
     // -- PUBLIC --
-    public enum PLAYERSTATE {
-        RUNNING,
-        IMMOBILIZED
-    }
 
     // -- PRIVATE --
     private final Player player;
-    private PLAYERSTATE currentState = PLAYERSTATE.RUNNING;
 
-    private final Location previousLocation;
+    private final Location prevLocation;
     private final GameMode prevGameMode;
     private final ItemStack[] prevInventory;
+    private final int prevFoodLevel;
 
     private int time;
     private BukkitTask task;
@@ -42,12 +38,14 @@ public class PlayerState {
     // -- PUBLIC --
     public PlayerState(@NotNull Player player) {
         this.player = player;
-        this.previousLocation = player.getLocation();
+        this.prevLocation = player.getLocation();
         this.prevGameMode = player.getGameMode();
         this.prevInventory = player.getInventory().getContents();
+        this.prevFoodLevel = player.getFoodLevel();
 
         ItemStack stonePickaxe = new ItemStack(Material.STONE_PICKAXE);
         Objects.requireNonNull(stonePickaxe.getItemMeta()).setUnbreakable(true);
+        player.setFoodLevel(20);
 
         this.immobilize();
         player.getInventory().clear();
@@ -55,16 +53,8 @@ public class PlayerState {
         player.setGameMode(GameMode.SURVIVAL);
     }
 
-    public PLAYERSTATE getCurrentState() {
-        return this.currentState;
-    }
-
     public void moveToLocation(@NotNull Location location) {
         this.player.teleport(location);
-    }
-
-    public void moveToPreviousLocation() {
-        this.player.teleport(this.previousLocation);
     }
 
     public void sendMessageToPlayer(@NotNull String message) {
@@ -74,13 +64,17 @@ public class PlayerState {
         );
     }
 
-    public void restoreInventory() {
-        this.player.getInventory().clear();
-        this.player.getInventory().setContents(prevInventory);
+    public void sendTitleToPlayer(@NotNull String message1, @NotNull String message2, int fadeIn, int time, int fadeOut) {
+        Messenger.titleToPlayer(this.player, message1, message2, fadeIn, time, fadeOut);
     }
 
-    public void restoreGameMode() {
+    public void restorePlayer() {
+        this.player.teleport(this.prevLocation);
+        this.player.getInventory().clear();
+        this.player.getInventory().setContents(prevInventory);
         this.player.setGameMode(this.prevGameMode);
+        this.player.setFoodLevel(this.prevFoodLevel);
+        this.mobilize();
     }
 
     public void immobilizeForTime(int timeseconds) {
@@ -89,12 +83,10 @@ public class PlayerState {
     }
 
     public void immobilize() {
-        this.currentState = PLAYERSTATE.IMMOBILIZED;
         this.player.setWalkSpeed(0.0f);
     }
 
     public void mobilize() {
-        this.currentState = PLAYERSTATE.RUNNING;
         this.player.setWalkSpeed(0.2f);
     }
 
@@ -114,6 +106,15 @@ public class PlayerState {
                 this.task.cancel();
                 this.mobilize();
             }
+
+            Messenger.titleToPlayer(
+                this.player,
+                "&c¡Te saliste del área!",
+                "&a" + this.time,
+                0,
+                20,
+                0
+            );
 
             this.time--;
         }, 20, 20);

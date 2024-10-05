@@ -1,7 +1,6 @@
 package org.cyanx86.classes;
 
 import org.bukkit.Location;
-
 import org.bukkit.Material;
 
 import org.cyanx86.utils.Enums.ListResult;
@@ -20,6 +19,7 @@ public class GameArea {
 
     private final String name;
     private final String world;
+    private final int minPlayers;
     private final int maxPlayers;
 
     private final Location[] corners = new Location[2];
@@ -30,9 +30,10 @@ public class GameArea {
     // -- [[ METHODS ]] --
 
     // -- PUBLIC --
-    public GameArea(@NotNull String name, @NotNull Location corner1, @NotNull Location corner2, int maxPlayers) {
+    public GameArea(@NotNull String name, @NotNull Location corner1, @NotNull Location corner2, int minPlayers, int maxPlayers) {
         this.name = name;
         this.world = Objects.requireNonNull(corner1.getWorld()).getName();
+        this.minPlayers = minPlayers;
         this.maxPlayers = maxPlayers;
         this.corners[0] = corner1;
         this.corners[1] = corner2;
@@ -41,19 +42,21 @@ public class GameArea {
     public GameArea(
             @NotNull String name,
             @NotNull String world,
-            @NotNull Location corner_1,
-            @NotNull Location corner_2,
-            int max_players,
-            @NotNull List<SpawnPoint> spawn_points,
+            @NotNull Location corner1,
+            @NotNull Location corner2,
+            int minPlayers,
+            int maxPlayers,
+            @NotNull List<SpawnPoint> spawnPoints,
             @NotNull List<Material> recipes
     ) {
         this.name = name;
         this.world = world;
-        this.maxPlayers = max_players;
-        this.corners[0] = corner_1;
-        this.corners[1] = corner_2;
-        this.cubeArea = new Cube(corner_1, corner_2);
-        this.spawnPoints = spawn_points;
+        this.minPlayers = minPlayers;
+        this.maxPlayers = maxPlayers;
+        this.corners[0] = corner1;
+        this.corners[1] = corner2;
+        this.cubeArea = new Cube(corner1, corner2);
+        this.spawnPoints = spawnPoints;
         this.recipes = recipes;
     }
 
@@ -67,6 +70,7 @@ public class GameArea {
         return (index < 0 || index > 1 ? null : this.corners[index]);
     }
 
+    public int getMinPlayers() { return this.minPlayers; }
     public int getMaxPlayers() {
         return this.maxPlayers;
     }
@@ -120,9 +124,9 @@ public class GameArea {
     // Validators
     public boolean isPointInsideBoundaries(@NotNull Location point) {
         return (
-            !(point.getBlockX() < cubeArea.left || point.getBlockX() > cubeArea.right) &&
-            !(point.getBlockY() < cubeArea.bottom || point.getBlockY() > cubeArea.top) &&
-            !(point.getBlockZ() < cubeArea.back || point.getBlockZ() > cubeArea.front)
+            !(point.getBlockX() < this.cubeArea.left || point.getBlockX() > this.cubeArea.right) &&
+            !(point.getBlockY() < this.cubeArea.bottom || point.getBlockY() > this.cubeArea.top) &&
+            !(point.getBlockZ() < this.cubeArea.back || point.getBlockZ() > this.cubeArea.front)
         );
     }
 
@@ -138,7 +142,7 @@ public class GameArea {
     }
 
     public boolean isValidSetUp() {
-        return (spawnPoints.size() == maxPlayers && !recipes.isEmpty());
+        return (spawnPoints.size() == this.maxPlayers && !this.recipes.isEmpty());
     }
 
     // Data management
@@ -157,6 +161,7 @@ public class GameArea {
         data.put("world", this.world);
         data.put("corner_1", this.corners[0].serialize());
         data.put("corner_2", this.corners[1].serialize());
+        data.put("min_players", this.minPlayers);
         data.put("max_players", this.maxPlayers);
         data.put("spawn_points", sppListMap);
         data.put("ingredient_dispensers", idpListMap);
@@ -181,6 +186,7 @@ public class GameArea {
             (String)args.get("world"),
             Location.deserialize((Map<String, Object>)args.get("corner_1")),
             Location.deserialize((Map<String, Object>)args.get("corner_2")),
+            (int)args.get("min_players"),
             (int)args.get("max_players"),
             spawnpointsList,
             recipeList

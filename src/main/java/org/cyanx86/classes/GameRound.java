@@ -8,14 +8,14 @@ import org.bukkit.scheduler.BukkitTask;
 import org.bukkit.scoreboard.Score;
 import org.bukkit.scoreboard.Scoreboard;
 import org.cyanx86.OverCrafted;
+import org.cyanx86.config.RoundSettings;
 import org.cyanx86.managers.GamePlayersManager;
 import org.cyanx86.managers.OrderManager;
 import org.cyanx86.managers.ScoreManager;
 import org.cyanx86.utils.Enums.ListResult;
+import org.cyanx86.utils.Messenger;
 
 import java.util.*;
-
-import org.cyanx86.utils.Messenger;
 import org.jetbrains.annotations.NotNull;
 
 public class GameRound {
@@ -38,9 +38,11 @@ public class GameRound {
 
     private ROUNDSTATE currentState = ROUNDSTATE.COUNTDOWN;
 
-    private final int startCountdownTime = 3;
+    private final int startCountdownTime;
     private final int roundTime;
-    private final int endIntermissionTime = 3;
+    private final int endIntermissionTime;
+
+    private final int playerImmobilizationTime;
 
     private BukkitTask task;
     private int time;
@@ -48,12 +50,18 @@ public class GameRound {
     // -- [[ METHODS ]] --
 
     // -- PUBLIC --
-    public GameRound(@NotNull GameArea gamearea, @NotNull List<Player> players, int time) {
+    public GameRound(@NotNull GameArea gamearea, @NotNull List<Player> players) {
         this.gameArea = gamearea;
         this.playersManager = new GamePlayersManager(players);
-        this.scoreManager = new ScoreManager(30);
+        this.scoreManager = new ScoreManager();
         this.orderManager = new OrderManager(this.gameArea.getRecipes(), this.scoreManager);
-        this.roundTime = Math.max(time, 30);
+
+        RoundSettings settings = RoundSettings.getInstance();
+        this.startCountdownTime = settings.getGRStartCountdown();
+        this.roundTime = settings.getGRTime();
+        this.endIntermissionTime = settings.getGRIntermissionTime();
+
+        this.playerImmobilizationTime = settings.getGRPlayerImmobilizationTime();
 
         this.movePlayersToGameArea();
 
@@ -75,12 +83,6 @@ public class GameRound {
 
         return results;
     }
-
-    /*
-    public PLAYERSTATE getStateOfPlayer(@NotNull Player player) {
-        PlayerState state = this.playersManager.getPlayerState(player);
-        return (state == null) ? null : state.getCurrentState();
-    }*/
 
     // Actions
     public boolean terminateRound(String reason) {
@@ -107,7 +109,7 @@ public class GameRound {
         playerState.moveToLocation(spawnpoint.getSpawnLocation());
 
         if (immobilize)
-            playerState.immobilizeForTime(3);
+            playerState.immobilizeForTime(this.playerImmobilizationTime);
     }
 
     public ListResult removePlayer(@NotNull Player player) {
@@ -115,9 +117,7 @@ public class GameRound {
         if (playerState == null)
             return ListResult.NOT_FOUND;
 
-        playerState.moveToPreviousLocation();
-        playerState.restoreGameMode();
-        playerState.restoreInventory();
+        playerState.restorePlayer();
         ListResult result = this.playersManager.removePlayer(player);
 
         if (this.playersManager.getPlayerStates().isEmpty())
@@ -143,7 +143,7 @@ public class GameRound {
 
     // -- PRIVATE --
     private SpawnPoint getPlayerSpawn(@NotNull PlayerState playerState) {
-        Optional<SpawnPoint> query = gameArea.getSpawnPoints().stream()
+        Optional<SpawnPoint> query = this.gameArea.getSpawnPoints().stream()
                 .filter(item -> item.getPlayerIndex() == this.playersManager.getPlayerIndex(playerState))
                 .findFirst();
         return query.orElse(null);
@@ -161,14 +161,26 @@ public class GameRound {
                 return;
             }
 
-            this.playersManager.sendMessageToPlayers("&a" + this.time);
+            this.playersManager.sendTitleToPlayers(
+                "&eComienza en",
+                "&a" + this.time,
+                0,
+                20,
+                0
+            );
 
             this.time--;
         }, 20L, 20L);
     }
 
     private void startRoundTimer() {
-        this.playersManager.sendMessageToPlayers("&a¡A CRAFTEAR!");
+        this.playersManager.sendTitleToPlayers(
+            "&a¡A CRAFTEAR!",
+            "",
+            0,
+            20,
+            0
+        );
         this.currentState = ROUNDSTATE.RUNNING;
         this.orderManager.startGenerator();
 
@@ -189,7 +201,13 @@ public class GameRound {
     }
 
     private void intermissionTime() {
-        this.playersManager.sendMessageToPlayers("&a¡TIEMPO!");
+        this.playersManager.sendTitleToPlayers(
+            "&a¡TIEMPO!",
+            "",
+            0,
+            20 * this.endIntermissionTime,
+            0
+        );
         this.currentState = ROUNDSTATE.FINISHED;
         this.orderManager.stopGenerator();
         for (PlayerState playerState : this.playersManager.getPlayerStates())
@@ -208,7 +226,7 @@ public class GameRound {
 
     private void endRound(String reason) {
         this.playersManager.sendMessageToPlayers(
-                reason != null ? reason : "&a¡Buen juego! La ronda ha terminado."
+            reason != null ? reason : "&a¡Buen juego! La ronda ha terminado."
         );
 
         this.currentState = ROUNDSTATE.ENDED;
@@ -231,12 +249,8 @@ public class GameRound {
     }
 
     private void restorePlayerProperties() {
-        for (PlayerState playerState : this.playersManager.getPlayerStates()) {
-            playerState.moveToPreviousLocation();
-            playerState.restoreGameMode();
-            playerState.restoreInventory();
-            playerState.mobilize();
-        }
+        for (PlayerState playerState : this.playersManager.getPlayerStates())
+            playerState.restorePlayer();
     }
 
 }

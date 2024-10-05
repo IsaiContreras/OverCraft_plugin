@@ -113,9 +113,9 @@ public class NonPlayerListener implements Listener {
         GameRound round = master.getGameRoundManager().getGameRound();
 
         if (
-            damager instanceof Player && damager.hasPermission("overcrafted.manager") ||
+            !Functions.entityBelongsGameArea(event.getEntity()) ||
             damager instanceof Player player && this.isRoundOff(round, player) ||
-            !Functions.entityBelongsGameArea(event.getEntity())
+            damager instanceof Player && damager.hasPermission("overcrafted.manager")
         )
             return;
 

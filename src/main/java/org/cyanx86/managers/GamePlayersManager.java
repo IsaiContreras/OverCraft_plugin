@@ -17,8 +17,6 @@ public class GamePlayersManager {
     // -- PUBLIC --
 
     // -- PRIVATE --
-    private final OverCrafted master = OverCrafted.getInstance();
-
     private final List<PlayerState> players = new ArrayList<>();
 
     // -- [[ METHODS ]] --
@@ -26,7 +24,6 @@ public class GamePlayersManager {
     // -- PUBLIC --
     public GamePlayersManager(@NotNull List<Player> players) {
         Collections.shuffle(players);
-
         for (Player player : players)
             this.players.add(new PlayerState(player));
     }
@@ -63,6 +60,11 @@ public class GamePlayersManager {
     public void sendMessageToPlayers(@NotNull String message) {
         for (PlayerState playerstate : this.players)
             playerstate.sendMessageToPlayer(OverCrafted.prefix + message);
+    }
+
+    public void sendTitleToPlayers(@NotNull String message1, @NotNull String message2, int fadeIn, int time, int fadeOut) {
+        for (PlayerState playerState : this.players)
+            playerState.sendTitleToPlayer(message1, message2, fadeIn, time, fadeOut);
     }
 
     // -- PRIVATE --

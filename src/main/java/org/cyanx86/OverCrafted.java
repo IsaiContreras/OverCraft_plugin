@@ -5,6 +5,7 @@ import org.bukkit.plugin.java.JavaPlugin;
 import org.cyanx86.commands.GameAreaCommand;
 import org.cyanx86.commands.MainCommand;
 import org.cyanx86.commands.PlayerListCommand;
+import org.cyanx86.config.RoundSettings;
 import org.cyanx86.listeners.ManagerPlayerListener;
 import org.cyanx86.listeners.MiscellaneousListener;
 import org.cyanx86.listeners.NonPlayerListener;
@@ -32,6 +33,8 @@ public class OverCrafted extends JavaPlugin {
     private GameAreaPropertiesAssistantManager gameAreaPropertiesAssistantManager;
     private GameRoundManager gameRoundManager;
 
+    private RoundSettings roundSettings;
+
     private OreBlocksManager oreBlocks;
 
     // -- [[ METHODS ]] --
@@ -48,6 +51,8 @@ public class OverCrafted extends JavaPlugin {
 
         oreBlocks = new OreBlocksManager();
 
+        roundSettings = RoundSettings.getInstance();
+
         this.setupCommands();
         this.setupEvents();
 
@@ -57,7 +62,7 @@ public class OverCrafted extends JavaPlugin {
     }
 
     public void onDisable() {
-        gameAreaManager.saveConfig();
+        gameAreaManager.save();
         Messenger.msgToConsole(
             prefix + "ePlugin desactivado."
         );

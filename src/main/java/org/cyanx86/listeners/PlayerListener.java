@@ -168,12 +168,11 @@ public class PlayerListener implements Listener {
     }
 
     @EventHandler
-    public void onFoodBarDecayed(FoodLevelChangeEvent event) {
+    public void onPlayerFoodLevelChange(FoodLevelChangeEvent event) {
         if (!(event.getEntity() instanceof Player player))
             return;
         GameRound round = master.getGameRoundManager().getGameRound();
 
-        // NA si la ronda no ha comenzado, si la ronda ha terminado o si el jugador no está jugando.
         if (this.isNotRoundPlayerRequisites(round, player))
             return;
 

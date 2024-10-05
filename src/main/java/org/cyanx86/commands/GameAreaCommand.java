@@ -101,7 +101,7 @@ public class GameAreaCommand implements CommandExecutor {
         Messenger.msgToSender(sender, "&f&l------ OVERCRAFTED ------");
         Messenger.msgToSender(sender, "&7 [[ Comando /gamearea ]]");
         Messenger.msgToSender(sender, "&7- /gamearea help");
-        Messenger.msgToSender(sender, "&7- /gamearea create <nombre>");
+        Messenger.msgToSender(sender, "&7- /gamearea create <nombre> <minPlayers> <maxPlayers>");
         Messenger.msgToSender(sender, "&7- /gamearea setspawn");
         Messenger.msgToSender(sender, "&7- /gamearea resetspawns <nombre>");
         Messenger.msgToSender(sender, "&7- /gamearea addrecipe <nombre> <material>");
@@ -113,7 +113,7 @@ public class GameAreaCommand implements CommandExecutor {
     }
 
     private void scmCreate(CommandSender sender, String[] args) {
-        if (args.length != 3) {
+        if (args.length != 4) {
             Messenger.msgToSender(
                 sender,
                 OverCrafted.prefix + "&cArgumentos incompletos."    // TODO: Invalid arguments message.
@@ -140,9 +140,11 @@ public class GameAreaCommand implements CommandExecutor {
         }
 
         String name = args[1].toLowerCase();
+        int minPlayers;
         int maxPlayers;
         try {
-            maxPlayers = Integer.parseInt(args[2]);
+            minPlayers = Integer.parseInt(args[2]);
+            maxPlayers = Integer.parseInt(args[3]);
         } catch(NumberFormatException e) {
             Messenger.msgToSender(
                 sender,
@@ -156,7 +158,8 @@ public class GameAreaCommand implements CommandExecutor {
                 name,
                 gacAssistant.getCorner(0),
                 gacAssistant.getCorner(1),
-                maxPlayers
+                Math.min(minPlayers, maxPlayers),
+                Math.max(minPlayers, maxPlayers)
             )
         ) {
             case ALREADY_IN -> {
@@ -400,6 +403,15 @@ public class GameAreaCommand implements CommandExecutor {
         Messenger.msgToSender(sender, "&f&l---- OverCrafted GameArea ----");
         Messenger.msgToSender(sender, "&b&o" + gamearea.getName() + " properties:");
         Messenger.msgToSender(sender, "&6&o  world: &r&e" + gamearea.getWorld());
+        Messenger.msgToSender(sender,
+            "&6&o  for &r&e" +
+                    (
+                        gamearea.getMinPlayers() == gamearea.getMaxPlayers() ?
+                                gamearea.getMinPlayers() :
+                                gamearea.getMinPlayers() + "&6&o to &r&e" + gamearea.getMaxPlayers()
+                    ) +
+                    "&6&o players."
+        );
         Messenger.msgToSender(sender,
             "&6&o  corner1: &r&e(" + "&r&c" + gamearea.getCorner(0).getBlockX() +
                     "&r&e, &r&a" + gamearea.getCorner(0).getBlockY() +

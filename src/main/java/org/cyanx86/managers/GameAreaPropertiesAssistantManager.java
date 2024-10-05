@@ -28,35 +28,31 @@ public class GameAreaPropertiesAssistantManager {
     // -- PUBLIC --
 
     public ListResult signInAssistant(@NotNull Player player) {
-        if (assistants.containsKey(player.getUniqueId()))
+        if (this.assistants.containsKey(player.getUniqueId()))
             return ListResult.ALREADY_IN;
 
-        assistants.put(player.getUniqueId(), new GameAreaPropertiesAssistant());
-        playerUUIDs.put(player.getName(), player.getUniqueId());
+        this.assistants.put(player.getUniqueId(), new GameAreaPropertiesAssistant());
+        this.playerUUIDs.put(player.getName(), player.getUniqueId());
 
         return ListResult.SUCCESS;
     }
 
     public ListResult eraseAssistant(@NotNull Player player) {
-        if (!playerUUIDs.containsKey(player.getName()))
+        if (!this.playerUUIDs.containsKey(player.getName()))
             return ListResult.NOT_FOUND;
 
-        UUID playerUUID = playerUUIDs.get(player.getName());
-        assistants.remove(playerUUID);
-        playerUUIDs.remove(player.getName());
+        UUID playerUUID = this.playerUUIDs.get(player.getName());
+        this.assistants.remove(playerUUID);
+        this.playerUUIDs.remove(player.getName());
 
         return ListResult.SUCCESS;
     }
 
     public GameAreaPropertiesAssistant getAssistantByName(@NotNull String name) {
-        UUID playerUUID = playerUUIDs.get(name);
+        UUID playerUUID = this.playerUUIDs.get(name);
         if (playerUUID == null)
             return null;
-        return assistants.get(playerUUID);
-    }
-
-    public GameAreaPropertiesAssistant getAssistantByUUID(@NotNull UUID uuid) {
-        return assistants.get(uuid);
+        return this.assistants.get(playerUUID);
     }
 
     // -- PRIVATE --
