@@ -47,43 +47,40 @@ public class RoundSettings extends CustomConfigFile {
     public int getOMOrderStackLimit() { return this.omOrderStackLimit; }
     public float getOMBonusProbability() { return this.omBonusProbability; }
 
-    // -- PRIVATE --
-    private RoundSettings() {
-        super(
-            "roundsettings.yml",
-            "ocf_settings",
-            true
-        );
-        this.loadDefault();
-        if (this.registerConfig())
-            this.load();
-        else this.save();
-    }
-
+    // -- PROTECTED --
     @Override
     protected void load() {
         FileConfiguration config = this.getConfig();
 
-        this.grStartCountdown = config.get("game_round.start_countdown") != null ?
-                (int)config.get("game_round.start_countdown") : this.grStartCountdown;
-        this.grRoundTime = config.get("game_round.round_time") != null ?
-                (int)config.get("game_round.round_time") : this.grRoundTime;
-        this.grEndIntermission = config.get("game_round.end_intermission") != null ?
-                (int)config.get("game_round.end_intermission") : this.grEndIntermission;
-        this.grPlayerImmobilizationTime = config.get("game_round.player_immobilization") != null ?
-                (int)config.get("game_round.player_immobilization") : this.grPlayerImmobilizationTime;
+        try { if (config.get("game_round.start_countdown") != null)
+            this.grStartCountdown = (int)config.get("game_round.start_countdown");
+        } catch (NullPointerException | ClassCastException ignored) { }
+        try { if (config.get("game_round.round_time") != null)
+            this.grRoundTime = (int)config.get("game_round.round_time");
+        } catch (NullPointerException | ClassCastException ignored) { }
+        try { if (config.get("game_round.end_intermission") != null)
+            this.grEndIntermission = (int)config.get("game_round.end_intermission");
+        } catch (NullPointerException | ClassCastException ignored) { }
+        try { if (config.get("game_round.player_immobilization") != null)
+            this.grPlayerImmobilizationTime = (int)config.get("game_round.player_immobilization");
+        } catch (NullPointerException | ClassCastException ignored) { }
 
-        this.smValuePerOrder = config.get("score_manager.value_per_order") != null ?
-                (int)config.get("score_manager.value_per_order") : this.smValuePerOrder;
+        try { if (config.get("score_manager.value_per_order") != null)
+            this.smValuePerOrder = (int)config.get("score_manager.value_per_order");
+        } catch (NullPointerException | ClassCastException ignored) { }
 
-        this.omTimeForNextOrder = config.get("order_manager.time_for_next_order") != null ?
-                (int)config.get("order_manager.time_for_next_order") : this.omTimeForNextOrder;
-        this.omOrderTimeout = config.get("order_manager.order_timeout") != null ?
-                (int)config.get("order_manager.order_timeout") : this.omOrderTimeout;
-        this.omOrderStackLimit = config.get("order_manager.order_stack_limit") != null ?
-                (int)config.get("order_manager.order_stack_limit") : this.omOrderStackLimit;
-        this.omBonusProbability = config.get("order_manager.bonus_probability") != null ?
-                (float)((double)config.get("order_manager.bonus_probability")) : this.omBonusProbability;
+        try { if (config.get("order_manager.time_for_next_order") != null)
+            this.omTimeForNextOrder = (int)config.get("order_manager.time_for_next_order");
+        } catch (NullPointerException | ClassCastException ignored) { }
+        try { if (config.get("order_manager.order_timeout") != null)
+            this.omOrderTimeout = (int)config.get("order_manager.order_timeout");
+        } catch (NullPointerException | ClassCastException ignored) { }
+        try { if (config.get("order_manager.order_stack_limit") != null)
+            this.omOrderStackLimit = (int)config.get("order_manager.order_stack_limit");
+        } catch (NullPointerException | ClassCastException ignored) { }
+        try { if (config.get("order_manager.bonus_probability") != null)
+            this.omBonusProbability = (float)((double)config.get("order_manager.bonus_probability"));
+        } catch (NullPointerException | ClassCastException ignored) { }
     }
 
     @Override
@@ -111,26 +108,27 @@ public class RoundSettings extends CustomConfigFile {
         this.saveConfig();
     }
 
-    private void loadDefault() {
-        this.defaultGameRound();
-        this.defaultScoreManager();
-        this.defaultOrderManager();
+    // -- PRIVATE --
+    private RoundSettings() {
+        super(
+            "roundsettings.yml",
+            "ocf_settings",
+            true
+        );
+        this.loadDefault();
+        if (this.registerConfig())
+            this.load();
+        else this.save();
     }
 
-    private void defaultGameRound() {
+    private void loadDefault() {
         // Game Round Settings
         this.grStartCountdown = GameRound.startCountdown;
         this.grRoundTime = GameRound.roundTime;
         this.grEndIntermission = GameRound.endIntermission;
         this.grPlayerImmobilizationTime = GameRound.playerImmobilization;
-    }
-
-    private void defaultScoreManager() {
         // Score Manager Settings
         this.smValuePerOrder = ScoreManager.valuePerOrder;
-    }
-
-    private void defaultOrderManager() {
         // Order Manager Settings
         this.omTimeForNextOrder = OrderManager.timeForNextOrder;
         this.omOrderTimeout = OrderManager.orderTimeOut;

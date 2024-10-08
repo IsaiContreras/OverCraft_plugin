@@ -1,9 +1,6 @@
 package org.cyanx86.classes;
 
-import org.bukkit.Bukkit;
-import org.bukkit.GameMode;
-import org.bukkit.Location;
-import org.bukkit.Material;
+import org.bukkit.*;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.scheduler.BukkitTask;
@@ -72,6 +69,23 @@ public class PlayerState {
         Messenger.actionBarToPlayer(
             this.player,
             message
+        );
+    }
+
+    public void sendSoundToPlayer(@NotNull Sound sound, float volume, float pitch) {
+        this.player.playSound(
+            this.player.getLocation(),
+            sound,
+            volume,
+            pitch
+        );
+    }
+
+    public void sendNoteToPlayer(@NotNull Instrument instrument, @NotNull Note note) {
+        this.player.playNote(
+            this.player.getLocation(),
+            instrument,
+            note
         );
     }
 

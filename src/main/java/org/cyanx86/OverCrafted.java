@@ -5,16 +5,13 @@ import org.bukkit.plugin.java.JavaPlugin;
 import org.cyanx86.commands.GameAreaCommand;
 import org.cyanx86.commands.MainCommand;
 import org.cyanx86.commands.PlayerListCommand;
-import org.cyanx86.config.RecipesBonus;
-import org.cyanx86.config.RoundSettings;
+import org.cyanx86.config.*;
 import org.cyanx86.listeners.ManagerPlayerListener;
 import org.cyanx86.listeners.MiscellaneousListener;
 import org.cyanx86.listeners.NonPlayerListener;
 import org.cyanx86.listeners.PlayerListener;
 import org.cyanx86.managers.GameAreaPropertiesAssistantManager;
-import org.cyanx86.config.GameAreaLoader;
 import org.cyanx86.managers.GameRoundManager;
-import org.cyanx86.config.OreBlocksLoader;
 import org.cyanx86.utils.Messenger;
 
 import java.util.Objects;
@@ -53,6 +50,7 @@ public class OverCrafted extends JavaPlugin {
         gameRoundManager = new GameRoundManager();
 
         RoundSettings.getInstance();
+        SoundSettings.getInstance();
 
         this.setupCommands();
         this.setupEvents();

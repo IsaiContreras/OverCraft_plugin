@@ -1,15 +1,14 @@
 package org.cyanx86.utils;
 
 import org.bukkit.Location;
+import org.bukkit.Note;
 import org.bukkit.block.Block;
 import org.bukkit.entity.Entity;
 
 import org.cyanx86.OverCrafted;
 import org.cyanx86.classes.GameArea;
 
-import java.util.Objects;
-import java.util.Optional;
-import java.util.Random;
+import java.util.*;
 
 import org.jetbrains.annotations.NotNull;
 
@@ -64,6 +63,31 @@ public class Functions {
 
     static public float getRandomFloatNumber() {
         return new Random().nextFloat();
+    }
+
+    static public Map<String, Object> serializeNote(@NotNull Note note) {
+        Map<String, Object> data = new HashMap<>();
+
+        data.put("octave", note.getOctave());
+        data.put("tone", note.getTone().name());
+        data.put("sharped", note.isSharped());
+
+        return data;
+    }
+
+    static public Note deserializeNote(@NotNull Map<String, Object> args) {
+        Note.Tone tone;
+        try {
+             tone = Note.Tone.valueOf((String)args.get("tone"));
+        } catch (NullPointerException | ClassCastException e){
+            return null;
+        }
+
+        return new Note(
+            (int)args.get("octave"),
+            tone,
+            (boolean)args.get("sharped")
+        );
     }
 
 }

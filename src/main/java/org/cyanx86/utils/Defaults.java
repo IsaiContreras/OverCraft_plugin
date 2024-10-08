@@ -1,5 +1,9 @@
 package org.cyanx86.utils;
 
+import org.bukkit.Instrument;
+import org.bukkit.Note;
+import org.bukkit.Sound;
+
 public class Defaults {
 
     public static class RoundSettings {
@@ -22,6 +26,19 @@ public class Defaults {
             public static float bonusProbability = 0.2f;
         }
 
+    }
+
+    public static class RoundSounds {
+        public static Instrument countDownInstrument = Instrument.BIT;
+        public static Note countDownTone = new Note(1, Note.Tone.F, true);
+        public static Note startTone = new Note(2, Note.Tone.F, true);
+
+        public static Sound timeRunningOutSound = Sound.BLOCK_ANVIL_PLACE;
+        public static Sound finishSound = Sound.BLOCK_ANVIL_USE;
+
+        public static Sound orderEntrySound = Sound.BLOCK_AMETHYST_CLUSTER_HIT;
+        public static Sound deliveredOrderSound = Sound.BLOCK_ENCHANTMENT_TABLE_USE;
+        public static Sound lostOrderSound = Sound.BLOCK_END_PORTAL_SPAWN;
     }
 
 }

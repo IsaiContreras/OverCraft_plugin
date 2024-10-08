@@ -1,7 +1,6 @@
 package org.cyanx86.classes;
 
-import org.bukkit.Bukkit;
-import org.bukkit.Material;
+import org.bukkit.*;
 import org.bukkit.entity.Player;
 import org.bukkit.scheduler.BukkitTask;
 
@@ -12,6 +11,7 @@ import org.cyanx86.config.RoundSettings;
 import org.cyanx86.managers.GamePlayersManager;
 import org.cyanx86.managers.OrderManager;
 import org.cyanx86.managers.ScoreManager;
+import org.cyanx86.managers.SoundEffectsManager;
 import org.cyanx86.utils.DataFormatting;
 import org.cyanx86.utils.Enums.ListResult;
 import org.cyanx86.utils.Messenger;
@@ -36,6 +36,7 @@ public class GameRound {
     private final GamePlayersManager playersManager;
     private final OrderManager orderManager;
     private final ScoreManager scoreManager;
+    private final SoundEffectsManager soundEffectsManager;
 
     private ROUNDSTATE currentState = ROUNDSTATE.COUNTDOWN;
 
@@ -55,7 +56,8 @@ public class GameRound {
         this.gameArea = gameArea;
         this.playersManager = new GamePlayersManager(players);
         this.scoreManager = new ScoreManager();
-        this.orderManager = new OrderManager(this.gameArea.getRecipes(), this.scoreManager);
+        this.soundEffectsManager = new SoundEffectsManager(this.playersManager);
+        this.orderManager = new OrderManager(this.gameArea.getRecipes(), this.soundEffectsManager, this.scoreManager);
 
         RoundSettings settings = RoundSettings.getInstance();
         this.startCountdownTime = settings.getGRStartCountdown();
@@ -135,6 +137,7 @@ public class GameRound {
 
     public boolean dispatchOrder(@NotNull Material recipe) {
         this.scoreManager.incrementDeliveredOrder();
+        this.soundEffectsManager.playDeliveredOrder();
         return this.orderManager.removeOrder(recipe, false);
     }
 
@@ -170,6 +173,7 @@ public class GameRound {
                 20,
                 0
             );
+            this.soundEffectsManager.playCountDownNote();
 
             this.time--;
         }, 20L, 20L);
@@ -183,6 +187,7 @@ public class GameRound {
             20,
             0
         );
+        this.soundEffectsManager.playStartRound();
         this.currentState = ROUNDSTATE.RUNNING;
         this.orderManager.startGenerator();
 
@@ -191,15 +196,18 @@ public class GameRound {
 
         this.time = this.roundTime;
         this.task = Bukkit.getScheduler().runTaskTimer(OverCrafted.getInstance(), () -> {
+            this.playersManager.sendActionBarToPlayers(
+                "&" + (this.time <= 30 ? "c" : "f") +
+                        DataFormatting.formatSecondsToTime(this.time)
+            );
+            if (this.time == 30)
+                this.soundEffectsManager.playTimeRunningOut();
+
             if (this.time == 0) {
                 this.task.cancel();
                 this.intermissionTime();
                 return;
             }
-
-            this.playersManager.sendActionBarToPlayers(
-                DataFormatting.formatSecondsToTime(this.time)
-            );
 
             this.time--;
             // Display timer
@@ -214,6 +222,8 @@ public class GameRound {
             this.endIntermissionTime * 20,
             0
         );
+        this.soundEffectsManager.playFinish();
+
         this.currentState = ROUNDSTATE.FINISHED;
         this.orderManager.stopGenerator();
         for (PlayerState playerState : this.playersManager.getPlayerStates())

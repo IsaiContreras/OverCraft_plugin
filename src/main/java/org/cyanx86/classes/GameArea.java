@@ -70,7 +70,9 @@ public class GameArea {
         return (index < 0 || index > 1 ? null : this.corners[index]);
     }
 
-    public int getMinPlayers() { return this.minPlayers; }
+    public int getMinPlayers() {
+        return this.minPlayers;
+    }
     public int getMaxPlayers() {
         return this.maxPlayers;
     }

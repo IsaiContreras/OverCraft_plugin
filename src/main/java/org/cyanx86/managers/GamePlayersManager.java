@@ -1,5 +1,8 @@
 package org.cyanx86.managers;
 
+import org.bukkit.Instrument;
+import org.bukkit.Note;
+import org.bukkit.Sound;
 import org.bukkit.entity.Player;
 
 import org.cyanx86.OverCrafted;
@@ -70,6 +73,23 @@ public class GamePlayersManager {
     public void sendActionBarToPlayers(@NotNull String message) {
         for (PlayerState playerState : this.players)
             playerState.sendActionBarToPlayer(message);
+    }
+
+    public void sendSoundToPlayer(@NotNull Sound sound, float volume, float pitch) {
+        for (PlayerState playerState : this.players)
+            playerState.sendSoundToPlayer(
+                sound,
+                volume,
+                pitch
+            );
+    }
+
+    public void sendNoteToPlayer(@NotNull Instrument instrument, @NotNull Note note) {
+        for (PlayerState playerState : this.players)
+            playerState.sendNoteToPlayer(
+                instrument,
+                note
+            );
     }
 
     // -- PRIVATE --

@@ -2,6 +2,7 @@ package org.cyanx86.managers;
 
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
+import org.bukkit.Sound;
 import org.bukkit.scheduler.BukkitTask;
 
 import org.bukkit.scoreboard.Objective;
@@ -29,6 +30,7 @@ public class OrderManager {
 
     // -- PRIVATE --
     private final OverCrafted master = OverCrafted.getInstance();
+    private final SoundEffectsManager soundEffectsManager;
     private final ScoreManager scoreManager;
 
     private final List<Order> orderList = new ArrayList<>();
@@ -51,8 +53,9 @@ public class OrderManager {
     // -- [[ METHODS ]] --
 
     // -- PUBLIC --
-    public OrderManager(@NotNull List<Material> recipes, ScoreManager scoreManager) {
+    public OrderManager(@NotNull List<Material> recipes, SoundEffectsManager soundEffectsManager, ScoreManager scoreManager) {
         this.recipes = recipes;
+        this.soundEffectsManager = soundEffectsManager;
         this.scoreManager = scoreManager;
 
         RoundSettings settings = RoundSettings.getInstance();
@@ -79,8 +82,10 @@ public class OrderManager {
         if (this.orderList.isEmpty())
             this.newOrder();
 
-        if (lost)
+        if (lost) {
+            this.soundEffectsManager.playLostOrder();
             this.scoreManager.incrementLostOrder();
+        }
     }
 
     public boolean removeOrder(@NotNull Material recipe, boolean lost) {
@@ -97,8 +102,10 @@ public class OrderManager {
         if (this.orderList.isEmpty())
             this.newOrder();
 
-        if (lost)
+        if (lost) {
+            this.soundEffectsManager.playLostOrder();
             this.scoreManager.incrementLostOrder();
+        }
         else if (Functions.getRandomFloatNumber() <= this.bonusProbability) {
             this.scoreManager.addBonus(
                 OverCrafted.getInstance().getRecipesBonus().getBonusValue(
@@ -143,6 +150,7 @@ public class OrderManager {
     // -- PRIVATE --
     private void newOrder() {
         Messenger.msgToConsole("Creating new order");
+        this.soundEffectsManager.playOrderEntry();
         if (this.recipes.isEmpty())
             return;
         if (this.orderList.size() == this.orderStackLimit)
