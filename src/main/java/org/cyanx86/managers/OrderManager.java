@@ -86,6 +86,8 @@ public class OrderManager {
             this.soundEffectsManager.playLostOrder();
             this.scoreManager.incrementLostOrder();
         }
+
+        this.updateDisplayer();
     }
 
     public boolean removeOrder(@NotNull Material recipe, boolean lost) {

@@ -27,6 +27,8 @@ public class PlayerState {
     private final ItemStack[] prevInventory;
     private final int prevFoodLevel;
 
+    private boolean ableToMove = true;
+
     private int time;
     private BukkitTask task;
 
@@ -106,12 +108,14 @@ public class PlayerState {
     }
 
     public void immobilize() {
-        this.player.setWalkSpeed(0.0f);
+        this.ableToMove = false;
     }
 
     public void mobilize() {
-        this.player.setWalkSpeed(0.2f);
+        this.ableToMove = true;
     }
+
+    public boolean isAbleToMove() { return this.ableToMove; }
 
     public void setDisplayer(Scoreboard scoreboard) {
         this.player.setScoreboard(scoreboard);

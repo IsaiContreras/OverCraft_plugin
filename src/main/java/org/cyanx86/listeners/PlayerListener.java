@@ -46,9 +46,8 @@ public class PlayerListener implements Listener {
         if (this.isNotRoundPlayerRequisites(round, player))
             return;
 
-        // Si sale del GameArea regresar jugador a su SpawnPoint
-        if (!round.getGameArea().isPointInsideBoundaries(player.getLocation()))
-            round.spawnPlayer(player, true);
+        this.onPlayerGetsOutOfGameAreaBoundaries(player, round);
+        this.onPlayerMovesWhenImmobilized(event, player, round);
     }
 
     @EventHandler
@@ -150,8 +149,8 @@ public class PlayerListener implements Listener {
 
         event.setCancelled(true);
 
-        this.onPlayerDispenserIngredient(event);
-        this.onPlayerDeliverRecipe(event);
+        this.onPlayerDispenserIngredient(event.getPlayer(), block);
+        this.onPlayerDeliverRecipe(event.getPlayer(), round, block);
     }
 
     @EventHandler
@@ -188,8 +187,7 @@ public class PlayerListener implements Listener {
         );
     }
 
-    private void onPlayerDispenserIngredient(PlayerInteractEvent event) {
-        Block block = event.getClickedBlock();
+    private void onPlayerDispenserIngredient(Player player, Block block) {
         if (block == null)
             return;
 
@@ -204,14 +202,12 @@ public class PlayerListener implements Listener {
             }
         if (dropping == null)
             return;
-        Player player = event.getPlayer();
         ItemStack drop = new ItemStack(dropping);
 
         player.getInventory().addItem(drop);
     }
 
-    private void onPlayerDeliverRecipe(PlayerInteractEvent event) {
-        Block block = event.getClickedBlock();
+    private void onPlayerDeliverRecipe(Player player, GameRound round, Block block) {
         if (block == null)
             return;
 
@@ -227,8 +223,6 @@ public class PlayerListener implements Listener {
         if (!isGlowItemFrame)
             return;
 
-        Player player = event.getPlayer();
-        GameRound round = master.getGameRoundManager().getGameRound();
         ItemStack item = player.getInventory().getItem(EquipmentSlot.HAND);
         if (item == null)
             return;
@@ -241,6 +235,18 @@ public class PlayerListener implements Listener {
                     Objects.requireNonNull(player.getInventory().getItem(EquipmentSlot.HAND)).getAmount() - 1
                 );
         }
+    }
+
+    private void onPlayerGetsOutOfGameAreaBoundaries(Player player, GameRound round) {
+        // Si sale del GameArea regresar jugador a su SpawnPoint
+        if (!round.getGameArea().isPointInsideBoundaries(player.getLocation()))
+            round.spawnPlayer(player, true);
+    }
+
+    private void onPlayerMovesWhenImmobilized(PlayerMoveEvent event, Player player, GameRound round) {
+        if (round.isPlayerAbleToMove(player))
+            return;
+        event.setCancelled(true);
     }
 
     /* -- FURNACE INTERACTION MODIFICATION --

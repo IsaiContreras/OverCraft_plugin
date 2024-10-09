@@ -146,6 +146,14 @@ public class GameRound {
         return this.playersManager.anyPlayer(player);
     }
 
+    public boolean isPlayerAbleToMove(@NotNull Player player) {
+        PlayerState playerState = this.playersManager.getPlayerState(player);
+        if (playerState == null)
+            return false;
+
+        return playerState.isAbleToMove();
+    }
+
     // -- PRIVATE --
     private SpawnPoint getPlayerSpawn(@NotNull PlayerState playerState) {
         Optional<SpawnPoint> query = this.gameArea.getSpawnPoints().stream()

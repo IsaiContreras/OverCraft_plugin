@@ -37,8 +37,8 @@ public class Defaults {
         public static Sound finishSound = Sound.BLOCK_ANVIL_USE;
 
         public static Sound orderEntrySound = Sound.BLOCK_AMETHYST_CLUSTER_HIT;
-        public static Sound deliveredOrderSound = Sound.BLOCK_ENCHANTMENT_TABLE_USE;
-        public static Sound lostOrderSound = Sound.BLOCK_END_PORTAL_SPAWN;
+        public static Sound deliveredOrderSound = Sound.ENTITY_PLAYER_LEVELUP;
+        public static Sound lostOrderSound = Sound.BLOCK_ENCHANTMENT_TABLE_USE;
     }
 
 }
