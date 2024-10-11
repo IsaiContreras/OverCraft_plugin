@@ -49,16 +49,13 @@ public class ManagerPlayerListener implements Listener {
         Player player = event.getPlayer();
         if (master.getGameAreaPropertiesAssistantManager().eraseAssistant(player) == Enums.ListResult.NOT_FOUND)
             return;
-
         Messenger.msgToConsole(OverCrafted.prefix + player.getName() + " dispuso su asistente.");
     }
 
     @EventHandler
-    public void onManagerClicksBlockWithItem(PlayerInteractEvent event) {
-        Player player = event.getPlayer();
-        if (!player.hasPermission("overcrafted.manager"))
+    public void onManagerInteracts(PlayerInteractEvent event) {
+        if (!event.getPlayer().hasPermission("overcrafted.manager"))
             return;
-
         this.onManagerCreatesGameAreaCorner(event);
     }
 
@@ -67,10 +64,7 @@ public class ManagerPlayerListener implements Listener {
         Player player = event.getPlayer();
         GameRound round = master.getGameRoundManager().getGameRound();
 
-        if (
-            round == null ||
-            !round.isPlayerInGame(player)
-        )
+        if (round == null || !round.isPlayerInGame(player))
             return;
 
         round.removePlayer(player);
@@ -117,31 +111,5 @@ public class ManagerPlayerListener implements Listener {
                     ", z:" + blockLocat.getBlockZ()
         );
     }
-
-    /*
-    private void onManagerCreatesDeliverBar(PlayerInteractEvent event) {
-        Player player = event.getPlayer();
-        ItemStack item = event.getItem();
-        if (item == null)
-            return;
-
-        if (!(
-            event.getAction().equals(Action.RIGHT_CLICK_BLOCK) &&
-            Objects.equals(event.getHand(), EquipmentSlot.HAND) &&
-            item.getType() == Material.IRON_HOE
-        ))
-            return;
-
-        Block block = event.getClickedBlock();
-        if (block == null)
-            return;
-        BlockState blockState = block.getState();
-        if (!(blockState instanceof Chest))
-            return;
-        Inventory inventory = ((Chest)blockState).getInventory();
-        if (!(inventory instanceof DoubleChestInventory))
-            return;
-        DoubleChest dChest = (DoubleChest)inventory.getHolder();
-    } */
 
 }

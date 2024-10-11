@@ -2,10 +2,9 @@ package org.cyanx86.listeners;
 
 import org.bukkit.Material;
 import org.bukkit.block.Block;
-import org.bukkit.entity.Entity;
-import org.bukkit.entity.GlowItemFrame;
-import org.bukkit.entity.ItemFrame;
-import org.bukkit.entity.Player;
+import org.bukkit.block.Chest;
+import org.bukkit.block.Furnace;
+import org.bukkit.entity.*;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.block.Action;
@@ -17,6 +16,7 @@ import org.bukkit.event.entity.FoodLevelChangeEvent;
 import org.bukkit.event.hanging.HangingBreakByEntityEvent;
 import org.bukkit.event.player.*;
 import org.bukkit.inventory.EquipmentSlot;
+import org.bukkit.inventory.FurnaceInventory;
 import org.bukkit.inventory.ItemStack;
 
 import org.cyanx86.OverCrafted;
@@ -24,6 +24,9 @@ import org.cyanx86.classes.GameRound;
 
 import java.util.Map;
 import java.util.Objects;
+
+import org.cyanx86.utils.Functions;
+import org.jetbrains.annotations.NotNull;
 
 public class PlayerListener implements Listener {
 
@@ -42,41 +45,34 @@ public class PlayerListener implements Listener {
         Player player = event.getPlayer();
         GameRound round = master.getGameRoundManager().getGameRound();
 
-        // NA si la ronda no ha comenzado o si el jugador no está en el juego o si la ronda ha terminado.
-        if (this.isNotRoundPlayerRequisites(round, player))
+        if (this.isNotRoundPlayerRequisites(player))
             return;
 
-        this.onPlayerGetsOutOfGameAreaBoundaries(player, round);
-        this.onPlayerMovesWhenImmobilized(event, player, round);
+        if (!round.getGameArea().isPointInsideBoundaries(player.getLocation()))
+            round.spawnPlayer(player, true);
+
+        if (!round.isPlayerAbleToMove(player))
+            event.setCancelled(true);
     }
 
     @EventHandler
     public void onPlayerPlacesBlock(BlockPlaceEvent event) {
-        Player player = event.getPlayer();
-        GameRound round = master.getGameRoundManager().getGameRound();
-
-        // NA si la ronda no ha comenzado, si la ronda ha terminado o si el jugador no está jugando.
-        if (this.isNotRoundPlayerRequisites(round, player))
+        if (this.isNotRoundPlayerRequisites(event.getPlayer()))
             return;
-
         event.setCancelled(true);
     }
 
     @EventHandler
     public void onPlayerBreaksBlock(BlockBreakEvent event) {
         Player player = event.getPlayer();
-        GameRound round = master.getGameRoundManager().getGameRound();
-
-        // NA si la ronda no ha comenzado, si la ronda ha terminado o si el jugador no está jugando.
-        if (this.isNotRoundPlayerRequisites(round, player))
+        if (this.isNotRoundPlayerRequisites(player))
             return;
 
         Block block = event.getBlock();
         Map<Material, Material> materialMap = master.getOreBlocks().getOreMap();
-
         if (
             materialMap.containsKey(block.getType()) &&
-            round.getGameArea().isPointInsideBoundaries(block.getLocation())
+            master.getGameRoundManager().getGameRound().getGameArea().isPointInsideBoundaries(block.getLocation())
         ) {
             ItemStack deliver = new ItemStack(
                 materialMap.get(block.getType())
@@ -89,13 +85,9 @@ public class PlayerListener implements Listener {
 
     @EventHandler
     public void onPlayerDamageFrameOrPainting(HangingBreakByEntityEvent event) {
-        Entity remover = event.getRemover();
-        GameRound round = master.getGameRoundManager().getGameRound();
-
-        // NA si la ronda no ha comenzado, si la ronda ha terminado o si el jugador no está jugando.
         if (
-            remover instanceof Player player &&
-            this.isNotRoundPlayerRequisites(round, player)
+            event.getRemover() instanceof Player player &&
+            this.isNotRoundPlayerRequisites(player)
         )
             return;
 
@@ -104,11 +96,8 @@ public class PlayerListener implements Listener {
 
     @EventHandler
     public void onPlayerInteractItemFrame(PlayerInteractEntityEvent event) {
-        Player player = event.getPlayer();
-        GameRound round = master.getGameRoundManager().getGameRound();
-
         if (
-            this.isNotRoundPlayerRequisites(round, player) ||
+            this.isNotRoundPlayerRequisites(event.getPlayer()) ||
             !(event.getRightClicked() instanceof ItemFrame)
         )
             return;
@@ -118,13 +107,9 @@ public class PlayerListener implements Listener {
 
     @EventHandler
     public void onPlayerRemoveItemFrameContent(EntityDamageByEntityEvent event) {
-        Entity damager = event.getDamager();
-        GameRound round = master.getGameRoundManager().getGameRound();
-
-        // NA si la ronda no ha comenzado, si la ronda ha terminado o si el jugador no está jugando.
         if (
-            damager instanceof Player player &&
-            this.isNotRoundPlayerRequisites(round, player)
+            event.getDamager() instanceof Player player &&
+            this.isNotRoundPlayerRequisites(player)
         )
             return;
 
@@ -132,54 +117,31 @@ public class PlayerListener implements Listener {
     }
 
     @EventHandler
-    public void onPlayerInteractsWithChest(PlayerInteractEvent event) {
-        GameRound round = master.getGameRoundManager().getGameRound();
-        Block block = event.getClickedBlock();
-
-        // NA si la ronda no ha comenzado, si la ronda ha terminado o si el jugador no está jugando.
-        if (
-            this.isNotRoundPlayerRequisites(round, event.getPlayer()) ||
-            block == null ||
-            !(
-                block.getType().equals(Material.CHEST) &&
-                event.getAction().equals(Action.RIGHT_CLICK_BLOCK)
-            )
-        )
+    public void onPlayerInteracts(PlayerInteractEvent event) {
+        if (this.isNotRoundPlayerRequisites(event.getPlayer()))
             return;
 
-        event.setCancelled(true);
-
-        this.onPlayerDispenserIngredient(event.getPlayer(), block);
-        this.onPlayerDeliverRecipe(event.getPlayer(), round, block);
+        this.onPlayerInteractsWithChest(event);
+        this.onPlayerInsertItemInFurnace(event);
     }
 
     @EventHandler
     public void onPlayerGetsDamage(EntityDamageEvent event) {
-        if (!(event.getEntity() instanceof Player player))
+        if (!(event.getEntity() instanceof Player player) || this.isNotRoundPlayerRequisites(player))
             return;
-        GameRound round = master.getGameRoundManager().getGameRound();
-
-        // NA si la ronda no ha comenzado, si la ronda ha terminado o si el jugador no está jugando.
-        if (this.isNotRoundPlayerRequisites(round, player))
-            return;
-
         event.setCancelled(true);
     }
 
     @EventHandler
     public void onPlayerFoodLevelChange(FoodLevelChangeEvent event) {
-        if (!(event.getEntity() instanceof Player player))
+        if (!(event.getEntity() instanceof Player player) || this.isNotRoundPlayerRequisites(player))
             return;
-        GameRound round = master.getGameRoundManager().getGameRound();
-
-        if (this.isNotRoundPlayerRequisites(round, player))
-            return;
-
         event.setCancelled(true);
     }
 
     // -- PRIVATE --
-    private boolean isNotRoundPlayerRequisites(GameRound round, Player player) {
+    private boolean isNotRoundPlayerRequisites(Player player){
+        GameRound round = master.getGameRoundManager().getGameRound();
         return (
             round == null ||
             round.getCurrentRoundState() == GameRound.ROUNDSTATE.ENDED ||
@@ -187,35 +149,48 @@ public class PlayerListener implements Listener {
         );
     }
 
-    private void onPlayerDispenserIngredient(Player player, Block block) {
-        if (block == null)
+    // -- Chest interaction modifications
+    private void onPlayerInteractsWithChest(PlayerInteractEvent event) {
+        Block block = event.getClickedBlock();
+        if (
+            block == null ||
+            !(
+                block.getState() instanceof Chest &&
+                event.getAction().equals(Action.RIGHT_CLICK_BLOCK)
+            )
+        )
             return;
 
+        event.setCancelled(true);
+
+        this.onPlayerDispenserIngredient(event, block);
+        this.onPlayerDeliverRecipe(event, block);
+    }
+
+    private void onPlayerDispenserIngredient(PlayerInteractEvent event, @NotNull Block chest) {
         Material dropping = null;
-        for (Entity entity : block.getWorld().getNearbyEntities(block.getLocation(), 2, 2, 2))
+        for (Entity entity : chest.getWorld().getNearbyEntities(chest.getLocation(), 2, 2, 2))
             if (
                 entity instanceof ItemFrame itemframe &&
-                entity.getLocation().getBlock().getRelative(((ItemFrame)entity).getAttachedFace()).equals(block)
+                entity.getLocation().getBlock().getRelative(((ItemFrame)entity).getAttachedFace()).equals(chest)
             ) {
                 dropping = itemframe.getItem().getType();
                 break;
             }
         if (dropping == null)
             return;
+
         ItemStack drop = new ItemStack(dropping);
 
-        player.getInventory().addItem(drop);
+        event.getPlayer().getInventory().addItem(drop);
     }
 
-    private void onPlayerDeliverRecipe(Player player, GameRound round, Block block) {
-        if (block == null)
-            return;
-
+    private void onPlayerDeliverRecipe(PlayerInteractEvent event, @NotNull Block chest) {
         boolean isGlowItemFrame = false;
-        for (Entity entity : block.getWorld().getNearbyEntities(block.getLocation(), 2, 2, 2))
+        for (Entity entity : chest.getWorld().getNearbyEntities(chest.getLocation(), 2, 2, 2))
             if (
                 entity instanceof GlowItemFrame &&
-                entity.getLocation().getBlock().getRelative(((GlowItemFrame)entity).getAttachedFace()).equals(block)
+                entity.getLocation().getBlock().getRelative(((GlowItemFrame)entity).getAttachedFace()).equals(chest)
             ) {
                 isGlowItemFrame = true;
                 break;
@@ -223,52 +198,54 @@ public class PlayerListener implements Listener {
         if (!isGlowItemFrame)
             return;
 
+        Player player = event.getPlayer();
+
         ItemStack item = player.getInventory().getItem(EquipmentSlot.HAND);
         if (item == null)
             return;
 
-        if (round.dispatchOrder(item.getType())) {
-            if (Objects.requireNonNull(player.getInventory().getItem(EquipmentSlot.HAND)).getAmount() == 1)
+        if (master.getGameRoundManager().getGameRound().dispatchOrder(item.getType())) {
+            if (item.getAmount() == 1)
                 player.getInventory().setItem(EquipmentSlot.HAND, new ItemStack(Material.AIR));
             else
-                Objects.requireNonNull(player.getInventory().getItem(EquipmentSlot.HAND)).setAmount(
-                    Objects.requireNonNull(player.getInventory().getItem(EquipmentSlot.HAND)).getAmount() - 1
-                );
+                item.setAmount(item.getAmount() - 1);
         }
     }
 
-    private void onPlayerGetsOutOfGameAreaBoundaries(Player player, GameRound round) {
-        // Si sale del GameArea regresar jugador a su SpawnPoint
-        if (!round.getGameArea().isPointInsideBoundaries(player.getLocation()))
-            round.spawnPlayer(player, true);
-    }
-
-    private void onPlayerMovesWhenImmobilized(PlayerMoveEvent event, Player player, GameRound round) {
-        if (round.isPlayerAbleToMove(player))
-            return;
-        event.setCancelled(true);
-    }
-
-    /* -- FURNACE INTERACTION MODIFICATION --
-    public void onPlayerInteractsWithFurnace(PlayerInteractEvent event) {
-        Player player = event.getPlayer();
-        GameRound round = master.getGameRoundManager().getGameRound();
-
-        // NA si la ronda no ha comenzado, si la ronda ha terminado o si el jugador no está jugando.
-        if (round == null || round.getCurrentRoundState() == GameRound.ROUNDSTATE.ENDED || !round.isPlayerInGame(player))
-            return;
-
+    // -- Furnace interaction modifications
+    private void onPlayerInsertItemInFurnace(PlayerInteractEvent event) {
         Block block = event.getClickedBlock();
-        if (block == null)
-            return;
-
-        if (!(
-            block.getType().equals(Material.FURNACE) &&
-            event.getAction().equals(Action.RIGHT_CLICK_BLOCK)
-        ))
+        if (
+            block == null ||
+            !(
+                block.getState() instanceof Furnace furnace &&
+                event.getAction().equals(Action.RIGHT_CLICK_BLOCK) &&
+                Objects.equals(event.getHand(), EquipmentSlot.HAND)
+            )
+        )
             return;
 
         event.setCancelled(true);
-    } */
+
+        ItemStack item = event.getItem();
+        if (item == null)
+            return;
+
+        if (
+            item.getType().isFuel() &&
+            furnace.getBurnTime() == 0 &&
+            furnace.getInventory().getFuel() == null
+        )
+            furnace.getInventory().setFuel(new ItemStack(Material.COAL, 1));
+        else if (Functions.isSmeltable(item.getType()) && furnace.getInventory().getSmelting() == null)
+            furnace.getInventory().setSmelting(new ItemStack(item.getType(), 1));
+        else
+            return;
+
+        if (item.getAmount() == 1)
+            event.getPlayer().getInventory().setItem(EquipmentSlot.HAND, new ItemStack(Material.AIR));
+        else
+            item.setAmount(item.getAmount() - 1);
+    }
 
 }
