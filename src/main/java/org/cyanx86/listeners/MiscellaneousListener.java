@@ -68,7 +68,7 @@ public class MiscellaneousListener implements Listener {
             item
         );
 
-        furnace.getInventory().setSmelting(new ItemStack(Material.AIR));
+        furnace.getInventory().setResult(new ItemStack(Material.AIR));
     }
 
     // -- PRIVATE --

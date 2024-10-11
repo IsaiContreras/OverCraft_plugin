@@ -1,9 +1,7 @@
 package org.cyanx86.listeners;
 
 import org.bukkit.Material;
-import org.bukkit.block.Block;
-import org.bukkit.block.Chest;
-import org.bukkit.block.Furnace;
+import org.bukkit.block.*;
 import org.bukkit.entity.*;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
@@ -14,16 +12,18 @@ import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.event.entity.EntityDamageEvent;
 import org.bukkit.event.entity.FoodLevelChangeEvent;
 import org.bukkit.event.hanging.HangingBreakByEntityEvent;
+import org.bukkit.event.inventory.InventoryMoveItemEvent;
+import org.bukkit.event.inventory.InventoryPickupItemEvent;
 import org.bukkit.event.player.*;
-import org.bukkit.inventory.EquipmentSlot;
-import org.bukkit.inventory.FurnaceInventory;
-import org.bukkit.inventory.ItemStack;
+import org.bukkit.inventory.*;
 
 import org.cyanx86.OverCrafted;
 import org.cyanx86.classes.GameRound;
 
+import java.util.Arrays;
 import java.util.Map;
 import java.util.Objects;
+import java.util.function.Predicate;
 
 import org.cyanx86.utils.Functions;
 import org.jetbrains.annotations.NotNull;
@@ -139,6 +139,36 @@ public class PlayerListener implements Listener {
         event.setCancelled(true);
     }
 
+    @EventHandler
+    public void onPlayerInventoryPickUpEvent(InventoryPickupItemEvent event) {
+        Inventory inventory = event.getInventory();
+        if(!(inventory.getHolder() instanceof Player player) || this.isNotRoundPlayerRequisites(player))
+            return;
+
+        ItemStack picked = event.getItem().getItemStack();
+        if(Arrays.stream(inventory.getContents()).noneMatch(
+            item -> item.getType().equals(picked.getType())
+        ))
+            return;
+
+        event.setCancelled(true);
+    }
+
+    @EventHandler
+    public void onPlayerInventoryMoveItem(InventoryMoveItemEvent event) {
+        Inventory inventory = event.getDestination();
+        if (!(inventory.getHolder() instanceof  Player player) || this.isNotRoundPlayerRequisites(player))
+            return;
+
+        ItemStack moved = event.getItem();
+        if(Arrays.stream(inventory.getContents()).noneMatch(
+                item -> item.getType().equals(moved.getType())
+        ))
+            return;
+
+        event.setCancelled(true);
+    }
+
     // -- PRIVATE --
     private boolean isNotRoundPlayerRequisites(Player player){
         GameRound round = master.getGameRoundManager().getGameRound();
@@ -218,7 +248,7 @@ public class PlayerListener implements Listener {
         if (
             block == null ||
             !(
-                block.getState() instanceof Furnace furnace &&
+                (block.getState() instanceof Furnace furnace) &&
                 event.getAction().equals(Action.RIGHT_CLICK_BLOCK) &&
                 Objects.equals(event.getHand(), EquipmentSlot.HAND)
             )
@@ -237,7 +267,10 @@ public class PlayerListener implements Listener {
             furnace.getInventory().getFuel() == null
         )
             furnace.getInventory().setFuel(new ItemStack(Material.COAL, 1));
-        else if (Functions.isSmeltable(item.getType()) && furnace.getInventory().getSmelting() == null)
+        else if (
+            Functions.isSmeltable(item.getType(), furnace) &&
+            furnace.getInventory().getSmelting() == null
+        )
             furnace.getInventory().setSmelting(new ItemStack(item.getType(), 1));
         else
             return;

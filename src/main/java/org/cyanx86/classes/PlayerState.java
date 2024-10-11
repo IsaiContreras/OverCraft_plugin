@@ -49,6 +49,7 @@ public class PlayerState {
         this.immobilize();
         this.player.getInventory().clear();
         this.player.getInventory().addItem(stonePickaxe);
+        this.player.getInventory().setMaxStackSize(4);
         this.player.setGameMode(GameMode.SURVIVAL);
     }
 
@@ -95,6 +96,7 @@ public class PlayerState {
         if (this.task != null)
             this.task.cancel();
         this.player.teleport(this.prevLocation);
+        this.player.getInventory().setMaxStackSize(64);
         this.player.getInventory().clear();
         this.player.getInventory().setContents(prevInventory);
         this.player.setGameMode(this.prevGameMode);

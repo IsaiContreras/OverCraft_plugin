@@ -95,6 +95,7 @@ public class GameRound {
         String message = (reason != null ? reason : "&cLa ronda fue cancelada.");
 
         this.task.cancel();
+        this.orderManager.stopGenerator();
         this.endRound(message);
 
         Messenger.msgToConsole(
