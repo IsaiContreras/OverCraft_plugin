@@ -10,6 +10,7 @@ import org.bukkit.scoreboard.Scoreboard;
 import org.cyanx86.OverCrafted;
 import org.cyanx86.classes.Order;
 import org.cyanx86.classes.OrderDisplayer;
+import org.cyanx86.config.GeneralSettings;
 import org.cyanx86.utils.DataFormatting;
 import org.cyanx86.config.RoundSettings;
 import org.cyanx86.utils.Functions;
@@ -173,7 +174,7 @@ public class OrderManager {
 
         for(Order order : this.orderList) {
             String state = DataFormatting.repeate(orderNumber, "§r");
-            String object = DataFormatting.formatMaterialToString(order.getRecipe().name());
+            String object = GeneralSettings.getInstance().getLocale().getMatName(order.getRecipe());
 
             String name = state + object;
 

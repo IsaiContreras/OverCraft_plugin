@@ -23,7 +23,6 @@ import org.cyanx86.classes.GameRound;
 import java.util.Arrays;
 import java.util.Map;
 import java.util.Objects;
-import java.util.function.Predicate;
 
 import org.cyanx86.utils.Functions;
 import org.jetbrains.annotations.NotNull;
@@ -50,8 +49,7 @@ public class PlayerListener implements Listener {
 
         if (!round.getGameArea().isPointInsideBoundaries(player.getLocation()))
             round.spawnPlayer(player, true);
-
-        if (!round.isPlayerAbleToMove(player))
+        else if (!round.isPlayerAbleToMove(player))
             event.setCancelled(true);
     }
 
@@ -164,6 +162,17 @@ public class PlayerListener implements Listener {
         if(Arrays.stream(inventory.getContents()).noneMatch(
                 item -> item.getType().equals(moved.getType())
         ))
+            return;
+
+        event.setCancelled(true);
+    }
+
+    @EventHandler
+    public void onPlayerDropItem(PlayerDropItemEvent event) {
+        if (this.isNotRoundPlayerRequisites(event.getPlayer()))
+            return;
+
+        if (!(event.getItemDrop().getItemStack().getType().equals(Material.STONE_PICKAXE)))
             return;
 
         event.setCancelled(true);

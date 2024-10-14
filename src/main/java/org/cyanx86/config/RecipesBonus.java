@@ -23,8 +23,8 @@ public class RecipesBonus extends CustomConfigFile {
     // -- PUBLIC --
     public RecipesBonus() {
         super(
-            "recipesbonus.yml",
-            "ocf_settings",
+            "recipes_bonus.yml",
+            null,
             true
         );
         if (this.registerConfig())

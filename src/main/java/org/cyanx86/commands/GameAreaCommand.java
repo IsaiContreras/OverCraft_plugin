@@ -11,6 +11,8 @@ import org.cyanx86.OverCrafted;
 import org.cyanx86.classes.GameArea;
 import org.cyanx86.classes.GameAreaPropertiesAssistant;
 import org.cyanx86.classes.SpawnPoint;
+import org.cyanx86.config.GeneralSettings;
+import org.cyanx86.config.Locale;
 import org.cyanx86.utils.Enums;
 import org.cyanx86.utils.Functions;
 import org.cyanx86.utils.Messenger;
@@ -26,6 +28,7 @@ public class GameAreaCommand implements CommandExecutor {
 
     // -- PRIVATE --
     private final OverCrafted master = OverCrafted.getInstance();
+    private final Locale locale = GeneralSettings.getInstance().getLocale();
 
     // -- [[ METHODS ]] --
 
@@ -42,14 +45,14 @@ public class GameAreaCommand implements CommandExecutor {
         if (!(sender instanceof Player)) {
             Messenger.msgToSender(
                 sender,
-                OverCrafted.prefix + "&cEste comando no puede ejecutarse desde consola."    // TODO: No console command message.
+                OverCrafted.prefix + this.locale.getStr("common.console-command")
             );
             return;
         }
         if (!sender.hasPermission("overcrafted.manager")) {
             Messenger.msgToSender(
                 sender,
-                OverCrafted.prefix + "&cNo tienes permiso para usar este comando." // TODO: No permission message.
+                OverCrafted.prefix + this.locale.getStr("common.no-permissions")
             );
             return;
         }
@@ -99,7 +102,7 @@ public class GameAreaCommand implements CommandExecutor {
     private void scmHelp(@NotNull CommandSender sender) {
         // TODO: Language location of Help Page
         Messenger.msgToSender(sender, "&f&l------ OVERCRAFTED ------");
-        Messenger.msgToSender(sender, "&7 [[ Comando /gamearea ]]");
+        Messenger.msgToSender(sender, "&7 [[ " + this.locale.getStr("common.command") + " /gamearea ]]");
         Messenger.msgToSender(sender, "&7- /gamearea help");
         Messenger.msgToSender(sender, "&7- /gamearea create <nombre> <minPlayers> <maxPlayers>");
         Messenger.msgToSender(sender, "&7- /gamearea setspawn");
@@ -116,7 +119,7 @@ public class GameAreaCommand implements CommandExecutor {
         if (args.length != 4) {
             Messenger.msgToSender(
                 sender,
-                OverCrafted.prefix + "&cArgumentos incompletos."    // TODO: Invalid arguments message.
+                OverCrafted.prefix + this.locale.getStr("command.invalid-arguments")
             );
             return;
         }
@@ -126,7 +129,7 @@ public class GameAreaCommand implements CommandExecutor {
         if (gacAssistant == null) {
             Messenger.msgToSender(
                 sender,
-                OverCrafted.prefix + "&cNo hay asistente registrado."   // TODO: Invalid assistant message.
+                OverCrafted.prefix + this.locale.getStr("gamearea-command.no-assistant")
             );
             return;
         }
@@ -134,7 +137,7 @@ public class GameAreaCommand implements CommandExecutor {
         if (!gacAssistant.isDefinedCorners()) {
             Messenger.msgToSender(
                 sender,
-                OverCrafted.prefix + "&cFaltan esquinas por definir."   // TODO: Undefined GameArea corners message.
+                OverCrafted.prefix + this.locale.getStr("gamearea-command.undefined-corner")
             );
             return;
         }
@@ -148,7 +151,7 @@ public class GameAreaCommand implements CommandExecutor {
         } catch(NumberFormatException e) {
             Messenger.msgToSender(
                 sender,
-                OverCrafted.prefix + "&cEste argumento solo acepta valores numéricos."
+                OverCrafted.prefix + this.locale.getStr("common.numeric-argument")
             );
             return;
         }
@@ -165,14 +168,14 @@ public class GameAreaCommand implements CommandExecutor {
             case ALREADY_IN -> {
                 Messenger.msgToSender(
                     sender,
-                    OverCrafted.prefix + "&cYa hay un elemento con este nombre."    // TODO: GameArea already in list message.
+                    OverCrafted.prefix + this.locale.getStr("gamearea-command.name-used")
                 );
                 return;
             }
             case INVALID_ITEM -> {
                 Messenger.msgToSender(
                     sender,
-                    OverCrafted.prefix + "&cHay un GameArea ocupando parte de este espacio."    // TODO: GameArea overlapped.
+                    OverCrafted.prefix + this.locale.getStr("gamearea-command.gamearea-overlapped")
                 );
                 return;
             }
@@ -182,7 +185,9 @@ public class GameAreaCommand implements CommandExecutor {
 
         Messenger.msgToSender(
             sender,
-            OverCrafted.prefix + "&aSe ha creado el área de juego &r&o" + name + "&r&a."
+            OverCrafted.prefix +
+                    this.locale.getStr("gamearea-command.gamearea-created")
+                            .replace("%name%", name)
         );
     }
 
@@ -205,21 +210,22 @@ public class GameAreaCommand implements CommandExecutor {
             case NULL -> {
                 Messenger.msgToSender(
                     sender,
-                    OverCrafted.prefix + "&cSe intentó añadir un objeto vacío."
+                    OverCrafted.prefix + this.locale.getStr("gamearea-command.spawnpoint-null")
                 );
                 return;
             }
             case INVALID_ITEM -> {
                 Messenger.msgToSender(
                     sender,
-                    OverCrafted.prefix + "&cEl punto no se encuentra dentro de los límites del GameArea."
+                    OverCrafted.prefix +
+                            this.locale.getStr("gamearea-command.spawnpoint-outside-boundaries")
                 );
                 return;
             }
             case FULL_LIST -> {
                 Messenger.msgToSender(
                     sender,
-                    OverCrafted.prefix + "&cEste GameArea ya tiene suficientes SpawnPoints."
+                    OverCrafted.prefix + this.locale.getStr("gamearea-command.spawnpoint-full-list")
                 );
                 return;
             }
@@ -227,7 +233,9 @@ public class GameAreaCommand implements CommandExecutor {
 
         Messenger.msgToSender(
             sender,
-            OverCrafted.prefix + "&aSpawnPoint añadido al GameArea &r&o" + gamearea.getName() + "&r&a."
+            OverCrafted.prefix +
+                    this.locale.getStr("gamearea-command.spawnpoint-added")
+                            .replace("%name%", gamearea.getName())
         );
     }
 
@@ -235,7 +243,7 @@ public class GameAreaCommand implements CommandExecutor {
         if (args.length != 2) {
             Messenger.msgToSender(
                 sender,
-                OverCrafted.prefix + "&cArgumentos incompletos."    // TODO: Invalid arguments message.
+                OverCrafted.prefix + this.locale.getStr("common.invalid-arguments")
             );
             return;
         }
@@ -244,7 +252,7 @@ public class GameAreaCommand implements CommandExecutor {
         if (gamearea == null) {
             Messenger.msgToSender(
                 sender,
-                OverCrafted.prefix + "&cNo se encontró un GameArea con este nombre."
+                OverCrafted.prefix + this.locale.getStr("gamearea-command.gamearea-not-found")
             );
             return;
         }
@@ -253,7 +261,9 @@ public class GameAreaCommand implements CommandExecutor {
 
         Messenger.msgToSender(
             sender,
-            OverCrafted.prefix + "&aSe limpiaron los spawnpoints del GameArea &r&o" + gamearea.getName() + "&r&a."
+            OverCrafted.prefix +
+                    this.locale.getStr("gamearea-command.spawnpoint-cleared")
+                            .replace("%name%", gamearea.getName())
         );
     }
 
@@ -261,7 +271,7 @@ public class GameAreaCommand implements CommandExecutor {
         if (args.length != 3) {
             Messenger.msgToSender(
                 sender,
-                OverCrafted.prefix + "&cArgumentos incompletos."    // TODO: Invalid arguments message.
+                OverCrafted.prefix + this.locale.getStr("common.invalid-arguments")
             );
             return;
         }
@@ -270,7 +280,7 @@ public class GameAreaCommand implements CommandExecutor {
         if (gamearea == null) {
             Messenger.msgToSender(
                 sender,
-                OverCrafted.prefix + "&cNo se encontró un GameArea con este nombre."
+                OverCrafted.prefix + this.locale.getStr("gamearea-command.gamearea-not-found")
             );
             return;
         }
@@ -281,7 +291,7 @@ public class GameAreaCommand implements CommandExecutor {
         } catch (IllegalArgumentException e) {
             Messenger.msgToSender(
                 sender,
-                OverCrafted.prefix + "&cNo se encontró este Material."
+                OverCrafted.prefix + this.locale.getStr("gamearea-command.recipe-invalid-material")
             );
             return;
         }
@@ -289,15 +299,17 @@ public class GameAreaCommand implements CommandExecutor {
         if (gamearea.addRecipe(recipe) == Enums.ListResult.ALREADY_IN) {
             Messenger.msgToSender(
                 sender,
-                OverCrafted.prefix + "&cYa hay una receta en la lista del GameArea."
+                OverCrafted.prefix + this.locale.getStr("gamearea-command.recipe-already-listed")
             );
             return;
         }
 
         Messenger.msgToSender(
             sender,
-            OverCrafted.prefix + "&aSe añadió &r&o" + recipe.name() +
-                    " &r&acomo receta del GameArea &r&o" + gamearea.getName() + "&r&a."
+            OverCrafted.prefix +
+                    this.locale.getStr("gamearea-command.recipe-added")
+                            .replace("%recipe%", recipe.name())
+                            .replace("%name%", gamearea.getName())
         );
     }
 
@@ -305,7 +317,7 @@ public class GameAreaCommand implements CommandExecutor {
         if (args.length != 2) {
             Messenger.msgToSender(
                 sender,
-                OverCrafted.prefix + "&cArgumentos incompletos."    // TODO: Invalid arguments message.
+                OverCrafted.prefix + this.locale.getStr("common.invalid-argument")
             );
             return;
         }
@@ -314,7 +326,7 @@ public class GameAreaCommand implements CommandExecutor {
         if (gamearea == null) {
             Messenger.msgToSender(
                 sender,
-                OverCrafted.prefix + "&cNo se encontró un GameArea con este nombre."
+                OverCrafted.prefix + this.locale.getStr("gamearea-command.gamearea-not-found")
             );
             return;
         }
@@ -323,20 +335,22 @@ public class GameAreaCommand implements CommandExecutor {
 
         Messenger.msgToSender(
             sender,
-            OverCrafted.prefix + "&aSe limpiaron las recetas del GameArea &r&o" + gamearea.getName() + "&r&a."
+            OverCrafted.prefix +
+                    this.locale.getStr("gamearea-command.recipe-cleared")
+                            .replace("%name%", gamearea.getName())
         );
     }
 
     private void scmList(@NotNull CommandSender sender) {
         Messenger.msgToSender(sender, "&f&l------ OVERCRAFTED ------\n");
-        Messenger.msgToSender(sender, "&f&lÁreas de juego:");  // TODO: Language location.
+        Messenger.msgToSender(sender, this.locale.getStr("gamearea-command.show-gamearea-list.title"));
 
         List<GameArea> gameAreaList = master.getGameAreaManager().getGameAreas();
 
         if (gameAreaList.isEmpty()) {
             Messenger.msgToSender(
                 sender,
-                "&7&o** Vacío **"
+                this.locale.getStr("gamearea-command.show-gamearea-list.empty-list")
             );
             return;
         }
@@ -352,7 +366,7 @@ public class GameAreaCommand implements CommandExecutor {
         if (args.length != 2) {
             Messenger.msgToSender(
                 sender,
-                OverCrafted.prefix + "&cArgumentos incompletos."    // TODO: Invalid arguments message.
+                OverCrafted.prefix + this.locale.getStr("common.invalid-arguments")
             );
             return;
         }
@@ -361,14 +375,14 @@ public class GameAreaCommand implements CommandExecutor {
         if (gamearea == null) {
             Messenger.msgToSender(
                 sender,
-                OverCrafted.prefix + "&cNo se encontró el elemento con este nombre."    // TODO: Not found GameArea message.
+                OverCrafted.prefix + this.locale.getStr("gamearea-command.gamearea-not-found")
             );
             return;
         }
         if (!gamearea.isValidSetUp()) {
             Messenger.msgToSender(
                 sender,
-                OverCrafted.prefix + "&cFaltan definir SpawnPoints para este GameArea."    // TODO: Not found GameArea message.
+                OverCrafted.prefix + this.locale.getStr("gamearea-command.undefined-spawnpoints")
             );
             return;
         }
@@ -378,7 +392,8 @@ public class GameAreaCommand implements CommandExecutor {
         Messenger.msgToSender(
             sender,
             OverCrafted.prefix +
-            "&aEl GameArea &r&o" + gamearea.getName() + "&r&a fue seleccionado para el siguiente juego."
+                    this.locale.getStr("gamearea-command.gamearea-selected")
+                            .replace("%name%", gamearea.getName())
         );
     }
 
@@ -386,7 +401,7 @@ public class GameAreaCommand implements CommandExecutor {
         if (args.length != 2) {
             Messenger.msgToSender(
                 sender,
-                OverCrafted.prefix + "&cArgumentos incompletos."    // TODO: Invalid arguments message.
+                OverCrafted.prefix + this.locale.getStr("common.invalid-arguments")
             );
             return;
         }
@@ -395,7 +410,7 @@ public class GameAreaCommand implements CommandExecutor {
         if (gamearea == null) {
             Messenger.msgToSender(
                 sender,
-                OverCrafted.prefix + "&cNo existe un GameArea con este nombre."    // TODO: GameArea not found message.
+                OverCrafted.prefix + this.locale.getStr("gamearea-command.gamearea-not-found")
             );
             return;
         }
@@ -450,7 +465,7 @@ public class GameAreaCommand implements CommandExecutor {
         if (args.length != 2) {
             Messenger.msgToSender(
                 sender,
-                OverCrafted.prefix + "&cArgumentos incompletos."    // TODO: Invalid arguments message.
+                OverCrafted.prefix + this.locale.getStr("common.invalid-arguments")
             );
             return;
         }
@@ -460,14 +475,14 @@ public class GameAreaCommand implements CommandExecutor {
             case NOT_FOUND -> {
                 Messenger.msgToSender(
                     sender,
-                    OverCrafted.prefix + "&cNo se encontró el elemento con este nombre."    // TODO: Not found GameArea message.
+                    OverCrafted.prefix + this.locale.getStr("gamearea-command.gamearea-not-found")
                 );
                 return;
             }
             case EMPTY_LIST -> {
                 Messenger.msgToSender(
                     sender,
-                    OverCrafted.prefix + "&cLa lista está vacía"    // TODO: Emtpy list message.
+                    OverCrafted.prefix + this.locale.getStr("gamearea-command.gamearea-empty-list")
                 );
                 return;
             }
@@ -475,7 +490,9 @@ public class GameAreaCommand implements CommandExecutor {
 
         Messenger.msgToSender(
             sender,
-            OverCrafted.prefix + "&aSe ha eliminado el área de juego &r&o" + name + "&r&a."
+            OverCrafted.prefix +
+                    this.locale.getStr("gamearea-command.gamearea-deleted")
+                            .replace("%name%", name)
         );
     }
 

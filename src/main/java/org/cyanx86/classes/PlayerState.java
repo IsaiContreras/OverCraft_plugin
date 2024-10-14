@@ -8,8 +8,12 @@ import org.bukkit.scheduler.BukkitTask;
 import org.bukkit.scoreboard.Score;
 import org.bukkit.scoreboard.Scoreboard;
 import org.cyanx86.OverCrafted;
+import org.cyanx86.config.GeneralSettings;
+import org.cyanx86.config.Locale;
 import org.cyanx86.utils.Messenger;
 
+import java.util.Collections;
+import java.util.List;
 import java.util.Objects;
 import org.jetbrains.annotations.NotNull;
 
@@ -21,6 +25,7 @@ public class PlayerState {
 
     // -- PRIVATE --
     private final Player player;
+    private final Locale locale = GeneralSettings.getInstance().getLocale();
 
     private final Location prevLocation;
     private final GameMode prevGameMode;
@@ -117,7 +122,9 @@ public class PlayerState {
         this.ableToMove = true;
     }
 
-    public boolean isAbleToMove() { return this.ableToMove; }
+    public boolean isAbleToMove() {
+        return this.ableToMove;
+    }
 
     public void setDisplayer(Scoreboard scoreboard) {
         this.player.setScoreboard(scoreboard);
@@ -131,15 +138,17 @@ public class PlayerState {
     private void setImmobileTimer(int time) {
         this.time = time;
         this.task = Bukkit.getScheduler().runTaskTimer(OverCrafted.getInstance(), () -> {
-            if (this.time == 0) {
+            if (this.time <= 0) {
                 this.task.cancel();
                 this.mobilize();
             }
 
+            List<String> texts = this.locale.getStrArray("round-titles.player-immobilized");
+
             Messenger.titleToPlayer(
                 this.player,
-                "&c¡Te saliste del área!",
-                "&eTe recuperarás en: &a" + this.time,
+                texts.get(0),
+                texts.get(1).replace("%time%", String.valueOf(this.time)),
                 0,
                 20,
                 0

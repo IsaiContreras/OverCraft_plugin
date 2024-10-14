@@ -7,6 +7,8 @@ import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
 import org.cyanx86.OverCrafted;
+import org.cyanx86.config.GeneralSettings;
+import org.cyanx86.config.Locale;
 import org.cyanx86.utils.Messenger;
 
 import org.jetbrains.annotations.NotNull;
@@ -19,6 +21,7 @@ public class PlayerListCommand implements CommandExecutor {
 
     // -- PRIVATE --
     private final OverCrafted master = OverCrafted.getInstance();
+    private final Locale locale = GeneralSettings.getInstance().getLocale();
 
     // -- [[ METHODS ]] --
 
@@ -35,7 +38,7 @@ public class PlayerListCommand implements CommandExecutor {
         if(!sender.hasPermission("overcrafted.manager")) {
             Messenger.msgToSender(
                 sender,
-                OverCrafted.prefix + "&cNo tienes permiso para usar este comando."
+                OverCrafted.prefix + this.locale.getStr("common.no-permissions")
             );
             return;
         }
@@ -67,7 +70,7 @@ public class PlayerListCommand implements CommandExecutor {
     private void scmHelp(@NotNull CommandSender sender) {
         // TODO: Language location of Help Page
         Messenger.msgToSender(sender, "&f&l------ OVERCRAFTED ------\n");
-        Messenger.msgToSender(sender, "&7 [[ Comando /playerlist ]]");
+        Messenger.msgToSender(sender, "&7 [[ " + this.locale.getStr("common.command") + " /playerlist ]]");
         Messenger.msgToSender(sender, "&7- /playerlist help");
         Messenger.msgToSender(sender, "&7- /playerlist add <jugador>");
         Messenger.msgToSender(sender, "&7- /playerlist rm <jugador>");
@@ -79,7 +82,7 @@ public class PlayerListCommand implements CommandExecutor {
         if (args.length != 2) {
             Messenger.msgToSender(
                 sender,
-                OverCrafted.prefix + "&cArgumentos incompletos."    // TODO: Invalid arguments message.
+                OverCrafted.prefix + this.locale.getStr("common.invalid-arguments")
             );
             return;
         }
@@ -88,7 +91,9 @@ public class PlayerListCommand implements CommandExecutor {
         if (player == null) {
             Messenger.msgToSender(
                 sender,
-                OverCrafted.prefix + "&cEl jugador &r&o" + args[1] + "&r&c no se encontró."     // TODO: Player not found message.
+                OverCrafted.prefix +
+                        this.locale.getStr("playerlist-command.player-not-found")
+                                .replace("%player%", args[1])
             );
             return;
         }
@@ -97,21 +102,21 @@ public class PlayerListCommand implements CommandExecutor {
             case ERROR -> {
                 Messenger.msgToSender(
                     sender,
-                    OverCrafted.prefix + "&cSelecione un GameArea primero."
+                    OverCrafted.prefix + this.locale.getStr("playerlist-command.gamearea-not-selected")
                 );
                 return;
             }
             case FULL_LIST -> {
                 Messenger.msgToSender(
                     sender,
-                    OverCrafted.prefix + "&cLa lista está llena."   // TODO: Full list message.
+                    OverCrafted.prefix + this.locale.getStr("playerlist-command.full-list")
                 );
                 return;
             }
             case ALREADY_IN -> {
                 Messenger.msgToSender(
                     sender,
-                    OverCrafted.prefix + "&cEl jugador ya está en la lista."    // TODO: Already in message.
+                    OverCrafted.prefix + this.locale.getStr("playerlist-command.player-already-listed")
                 );
                 return;
             }
@@ -119,12 +124,14 @@ public class PlayerListCommand implements CommandExecutor {
 
         Messenger.msgToSender(
             sender,
-            OverCrafted.prefix + "&aSe añadió al jugador &r&o" + player.getName() + "&r&a."     // TODO: Player successfully added message.
+            OverCrafted.prefix +
+                    this.locale.getStr("playerlist-command.player-added.executor")
+                            .replace("%player%", player.getName())
         );
         if (sender != player)
             Messenger.msgToSender(
                 player,
-                OverCrafted.prefix + "&aFuiste añadido a una lista de jugadores."   // TODO: Player added to list advice message.
+                OverCrafted.prefix + this.locale.getStr("playerlist-command.player-added.player")
             );
     }
 
@@ -132,7 +139,7 @@ public class PlayerListCommand implements CommandExecutor {
         if (args.length != 2) {
             Messenger.msgToSender(
                 sender,
-                OverCrafted.prefix + "&cArgumentos incompletos."    // TODO: Invalid arguments message.
+                OverCrafted.prefix + this.locale.getStr("common.invalid-arguments")
             );
             return;
         }
@@ -141,7 +148,7 @@ public class PlayerListCommand implements CommandExecutor {
         if (player == null) {
             Messenger.msgToSender(
                 sender,
-                OverCrafted.prefix + "&cEl jugador &r&o" + args[1] + "&r&c no se encontró."     // TODO: Player not found message.
+                OverCrafted.prefix + this.locale.getStr("playerlist-command.player-not-found")
             );
             return;
         }
@@ -150,14 +157,16 @@ public class PlayerListCommand implements CommandExecutor {
             case EMPTY_LIST -> {
                 Messenger.msgToSender(
                     sender,
-                    OverCrafted.prefix + "&cLa lista está vacía."   // TODO: Empty list message;
+                    OverCrafted.prefix + this.locale.getStr("playerlist-command.empty-list")
                 );
                 return;
             }
             case NOT_FOUND -> {
                 Messenger.msgToSender(
                     sender,
-                    OverCrafted.prefix + "&cNo encontró al jugador &r&o" + player.getName() + "&r&a."
+                    OverCrafted.prefix +
+                            this.locale.getStr("playerlist-command.player-not-found-list")
+                                    .replace("%player%", player.getName())
                 );
                 return;
             }
@@ -165,29 +174,34 @@ public class PlayerListCommand implements CommandExecutor {
 
         Messenger.msgToSender(
             sender,
-            OverCrafted.prefix + "&aSe removió al jugador &r&o" + player.getName() + "&r&a."    // TODO: Player successfully removed message.
+            OverCrafted.prefix +
+                    this.locale.getStr("playerlist-command.player-removed.executor")
+                            .replace("%player%", player.getName())
         );
         if (sender != player)
             Messenger.msgToSender(
                 player,
-                OverCrafted.prefix + "&cFuiste retirado de la lista de jugadores."  // TODO: Player removed from list advide message.
+                OverCrafted.prefix + this.locale.getStr("playerlist-command.player-removed.player")
             );
     }
 
     private void scmShow(@NotNull CommandSender sender) {
         Messenger.msgToSender(sender, "&f&l------ OVERCRAFTED ------\n");
-        Messenger.msgToSender(sender, "&f&lJugadores actuales:");  // TODO: Language location.
+        Messenger.msgToSender(sender, this.locale.getStr("playerlist-command.show-player-list.title"));
 
         for(int i = 0; i < 4; i++) {
             Player current = null;
 
             try {
                 current = master.getGameRoundManager().getGamePlayers().get(i);
-            } catch (Exception ignored) {
-            }
+            } catch (Exception ignored) { }
 
             if (current == null) {
-                Messenger.msgToSender(sender, "&7" + (i + 1) + ".- " + "&o*** Vacío ***");
+                Messenger.msgToSender(
+                        sender,
+                        this.locale.getStr("playerlist-command.show-player-list.empty-slot")
+                                .replace("%index%", String.valueOf(i + 1))
+                );
             } else {
                 Messenger.msgToSender(sender, "&7" + (i + 1) + ".- " + "&o" + current.getName());
             }
@@ -199,14 +213,15 @@ public class PlayerListCommand implements CommandExecutor {
             case EMPTY_LIST -> {
                 Messenger.msgToSender(
                     sender,
-                    OverCrafted.prefix + "&cLa lista está vacía."   // TODO: Empty list message.
+                    OverCrafted.prefix +
+                            this.locale.getStr("playerlist-command.empty-list")
                 );
                 return;
             }
             case SUCCESS -> {
                 Messenger.msgToSender(
                     sender,
-                    OverCrafted.prefix + "&aLa lista fue vaciada."  // TODO: PlayerList successfully cleared message.
+                    OverCrafted.prefix + this.locale.getStr("playerlist-command.player-list-cleared")
                 );
                 return;
             }
@@ -223,7 +238,7 @@ public class PlayerListCommand implements CommandExecutor {
             if (sender != current) {
                 Messenger.msgToSender(
                     current,
-                    OverCrafted.prefix + "&cFuiste retirado de la lista de jugadores."  // TODO: Player removed from list advide message.
+                    OverCrafted.prefix + this.locale.getStr("playerlist-command.player-removed.player")
                 );
             }
         }

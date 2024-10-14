@@ -111,8 +111,8 @@ public class RoundSettings extends CustomConfigFile {
     // -- PRIVATE --
     private RoundSettings() {
         super(
-            "roundsettings.yml",
-            "ocf_settings",
+            "round_settings.yml",
+            null,
             true
         );
         this.loadDefault();

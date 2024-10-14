@@ -77,7 +77,7 @@ public class SoundSettings extends CustomConfigFile {
         } catch (ClassCastException ignored) { }
         try { if (config.get("round_starting.countdown_tone") != null)
             this.countDownTone = Functions.deserializeNote(
-                    (Map<String, Object>)config.get("round_starting.countdown_tone"));
+                (Map<String, Object>)config.get("round_starting.countdown_tone"));
         } catch (ClassCastException ignored) { }
         try { if (config.get("round_starting.start_tone") != null)
             this.startTone = Functions.deserializeNote((Map<String, Object>)config.get("round_starting.start_tone"));
@@ -128,8 +128,8 @@ public class SoundSettings extends CustomConfigFile {
     // -- PRIVATE --
     private SoundSettings() {
         super(
-            "soundsettings.yml",
-            "ocf_settings",
+            "sound_settings.yml",
+            null,
             true
         );
         this.loadDefault();

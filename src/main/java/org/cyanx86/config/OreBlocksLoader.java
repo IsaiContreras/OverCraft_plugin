@@ -22,8 +22,8 @@ public class OreBlocksLoader extends CustomConfigFile {
     // -- PUBLIC --
     public OreBlocksLoader() {
         super(
-            "oreblocks.yml",
-            "ocf_settings",
+            "ore_blocks.yml",
+            null,
             true
         );
         if (this.registerConfig())

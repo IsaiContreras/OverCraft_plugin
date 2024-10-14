@@ -49,6 +49,7 @@ public class OverCrafted extends JavaPlugin {
         gameAreaPropertiesAssistantManager = new GameAreaPropertiesAssistantManager();
         gameRoundManager = new GameRoundManager();
 
+        GeneralSettings.getInstance();
         RoundSettings.getInstance();
         SoundSettings.getInstance();
 

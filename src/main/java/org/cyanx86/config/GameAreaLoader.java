@@ -25,7 +25,7 @@ public class GameAreaLoader extends CustomConfigFile {
     public GameAreaLoader() {
         super(
             "gameareas.yml",
-            "ocf_settings",
+            null,
             true
         );
         if (this.registerConfig())

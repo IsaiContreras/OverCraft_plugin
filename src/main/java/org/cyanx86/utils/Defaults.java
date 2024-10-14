@@ -6,6 +6,11 @@ import org.bukkit.Sound;
 
 public class Defaults {
 
+    public static class GeneralSettings {
+        public static String language = "en-us";
+        public static String invalid_message_path = "No defined message in path '%path%.'";
+    }
+
     public static class RoundSettings {
 
         public static class GameRound {
