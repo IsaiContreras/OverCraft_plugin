@@ -1,10 +1,16 @@
 package org.cyanx86.utils;
 
-import org.bukkit.Location;
-import org.bukkit.Note;
+import org.bukkit.*;
+import org.bukkit.block.BlastFurnace;
 import org.bukkit.block.Block;
+import org.bukkit.block.Furnace;
+import org.bukkit.block.Smoker;
 import org.bukkit.entity.Entity;
 
+import org.bukkit.inventory.BlastingRecipe;
+import org.bukkit.inventory.FurnaceRecipe;
+import org.bukkit.inventory.Recipe;
+import org.bukkit.inventory.SmokingRecipe;
 import org.cyanx86.OverCrafted;
 import org.cyanx86.classes.GameArea;
 
@@ -63,6 +69,34 @@ public class Functions {
 
     static public float getRandomFloatNumber() {
         return new Random().nextFloat();
+    }
+
+    static public boolean isSmeltable(@NotNull Material itemMaterial, @NotNull Furnace furnace) {
+        for (Iterator<Recipe> it = Bukkit.recipeIterator(); it.hasNext(); ) {
+            if (furnace instanceof BlastFurnace) {
+                if (
+                    it.next() instanceof BlastingRecipe blastingRecipe &&
+                    blastingRecipe.getInput().getType().equals(itemMaterial)
+                )
+                    return true;
+            }
+            else if (furnace instanceof Smoker) {
+                if (
+                    it.next() instanceof SmokingRecipe smokingRecipe &&
+                    smokingRecipe.getInput().getType().equals(itemMaterial)
+                )
+                    return true;
+            }
+            else {
+                if (
+                    it.next() instanceof FurnaceRecipe furnaceRecipe &&
+                    furnaceRecipe.getInput().getType().equals(itemMaterial)
+                )
+                    return true;
+            }
+        }
+
+        return false;
     }
 
     static public Map<String, Object> serializeNote(@NotNull Note note) {
