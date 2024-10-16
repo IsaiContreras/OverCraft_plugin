@@ -10,6 +10,7 @@ import org.bukkit.event.block.BlockBreakEvent;
 import org.bukkit.event.block.BlockPlaceEvent;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.event.entity.EntityDamageEvent;
+import org.bukkit.event.entity.EntityPickupItemEvent;
 import org.bukkit.event.entity.FoodLevelChangeEvent;
 import org.bukkit.event.hanging.HangingBreakByEntityEvent;
 import org.bukkit.event.inventory.InventoryMoveItemEvent;
@@ -20,12 +21,14 @@ import org.bukkit.inventory.*;
 import org.cyanx86.OverCrafted;
 import org.cyanx86.classes.GameRound;
 
+import java.security.MessageDigest;
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.Map;
 import java.util.Objects;
-import java.util.function.Predicate;
 
 import org.cyanx86.utils.Functions;
+import org.cyanx86.utils.Messenger;
 import org.jetbrains.annotations.NotNull;
 
 public class PlayerListener implements Listener {
@@ -169,6 +172,20 @@ public class PlayerListener implements Listener {
         event.setCancelled(true);
     }
 
+    @EventHandler
+    public void onPlayerPickUpItem(EntityPickupItemEvent event) {
+        if (!(event.getEntity() instanceof Player player))
+            return;
+
+        HashMap<Material, Integer> contents = getPlayerInventoryMap(player);
+        ItemStack drop = event.getItem().getItemStack();
+
+        if ((!contents.containsKey(drop.getType()) && contents.size() + 1 < 6) || (contents.containsKey(drop.getType()) && contents.get(drop.getType()) < 16))
+            return;
+        else
+            event.setCancelled(true);
+    }
+
     // -- PRIVATE --
     private boolean isNotRoundPlayerRequisites(Player player){
         GameRound round = master.getGameRoundManager().getGameRound();
@@ -212,7 +229,11 @@ public class PlayerListener implements Listener {
 
         ItemStack drop = new ItemStack(dropping);
 
-        event.getPlayer().getInventory().addItem(drop);
+        HashMap<Material, Integer> contents = getPlayerInventoryMap(event.getPlayer());
+
+        if ((!contents.containsKey(drop.getType()) && contents.size() + 1 < 6) || (contents.containsKey(drop.getType()) && contents.get(drop.getType()) < 16))
+            event.getPlayer().getInventory().addItem(drop);
+
     }
 
     private void onPlayerDeliverRecipe(PlayerInteractEvent event, @NotNull Block chest) {
@@ -281,4 +302,17 @@ public class PlayerListener implements Listener {
             item.setAmount(item.getAmount() - 1);
     }
 
+    private HashMap<Material, Integer> getPlayerInventoryMap(Player player) {
+        HashMap<Material, Integer> contents = new HashMap<>();
+
+        for (ItemStack item : player.getInventory().getContents()) {
+            if (item != null){
+                if (!contents.containsKey(item.getType()))
+                    contents.put(item.getType(), item.getAmount());
+                else
+                    contents.put(item.getType(), contents.get(item.getType()) + item.getAmount());
+            }
+        }
+        return contents;
+    }
 }
