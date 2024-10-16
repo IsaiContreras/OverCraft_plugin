@@ -67,17 +67,14 @@ public class Order {
     private void stateUpdater() {
         this.state = Bukkit.getScheduler().runTaskTimer(OverCrafted.getInstance(), () -> {
             if (this.timeLeft > ((this.timeout/3)*2) && !this.color.equalsIgnoreCase("Green")) {
-                Messenger.msgToConsole("Updating order to green");
                 this.color = "Green";
                 this.father.updateState(this,"Green");
             }
             else if (this.timeLeft <= ((this.timeout/3)*2) && this.timeLeft > (this.timeout/3) && !this.color.equalsIgnoreCase("Yellow")) {
-                Messenger.msgToConsole("Updating order to yellow");
                 this.color = "Yellow";
                 this.father.updateState(this,"Yellow");
             }
             else if (this.timeLeft < (this.timeout/3) && !this.color.equalsIgnoreCase("Red")) {
-                Messenger.msgToConsole("Updating order to red");
                 this.color = "Red";
                 this.father.updateState(this,"Red");
             }

@@ -33,22 +33,18 @@ public class OrderDisplayer {
     }
 
     public void addLine(int rowNumber, String line, Order order) {
-        Messenger.msgToConsole("Adding order line");
         this.lines.put(line, order);
         Score score = this.objective.getScore(line);
         score.setScore(10-rowNumber);
 
         switch (order.getState()) {
             case "Green":
-                Messenger.msgToConsole("Adding to green");
                 this.green.addEntry(line);
                 break;
             case "Yellow":
-                Messenger.msgToConsole("Adding to yellow");
                 this.yellow.addEntry(line);
                 break;
             case "Red":
-                Messenger.msgToConsole("Adding to red");
                 this.red.addEntry(line);
                 break;
         }

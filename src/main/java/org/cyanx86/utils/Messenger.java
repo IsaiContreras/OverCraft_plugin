@@ -24,6 +24,12 @@ public class Messenger {
         );
     }
 
+    public static void msgToPlayer(@NotNull Player player, @NotNull String message) {
+        player.sendMessage(
+            coloredText(message)
+        );
+    }
+
     public static String coloredText(@NotNull String message) {
         return ChatColor.translateAlternateColorCodes('&', message);
     }

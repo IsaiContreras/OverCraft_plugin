@@ -152,7 +152,6 @@ public class OrderManager {
 
     // -- PRIVATE --
     private void newOrder() {
-        Messenger.msgToConsole("Creating new order");
         this.soundEffectsManager.playOrderEntry();
         if (this.recipes.isEmpty())
             return;
