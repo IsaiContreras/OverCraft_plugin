@@ -2,10 +2,9 @@ package org.cyanx86.config;
 
 import org.bukkit.configuration.file.FileConfiguration;
 
-import org.cyanx86.utils.CustomConfigFile;
 import org.cyanx86.utils.Defaults.RoundSettings.*;
 
-public class RoundSettings extends CustomConfigFile {
+public class RoundSettings {
 
     // -- [[ ATTRIBUTES ]] --
 
@@ -29,10 +28,8 @@ public class RoundSettings extends CustomConfigFile {
     // -- [[ METHODS ]] --
 
     // -- PUBLIC --
-    public static RoundSettings getInstance() {
-        if (instance == null)
-            instance = new RoundSettings();
-        return instance;
+    public RoundSettings() {
+        this.loadDefault();
     }
 
     public int getGRStartCountdown() { return this.grStartCountdown; }
@@ -48,10 +45,7 @@ public class RoundSettings extends CustomConfigFile {
     public float getOMBonusProbability() { return this.omBonusProbability; }
 
     // -- PROTECTED --
-    @Override
-    protected void load() {
-        FileConfiguration config = this.getConfig();
-
+    public void load(FileConfiguration config) {
         try { if (config.get("game_round.start_countdown") != null)
             this.grStartCountdown = (int)config.get("game_round.start_countdown");
         } catch (NullPointerException | ClassCastException ignored) { }
@@ -83,16 +77,7 @@ public class RoundSettings extends CustomConfigFile {
         } catch (NullPointerException | ClassCastException ignored) { }
     }
 
-    @Override
-    protected void reload() {
-        this.reloadConfig();
-        this.load();
-    }
-
-    @Override
-    protected void save() {
-        FileConfiguration config = this.getConfig();
-
+    public void save(FileConfiguration config) {
         config.set("game_round.start_countdown", this.grStartCountdown);
         config.set("game_round.round_time", this.grRoundTime);
         config.set("game_round.end_intermission", this.grEndIntermission);
@@ -104,22 +89,9 @@ public class RoundSettings extends CustomConfigFile {
         config.set("order_manager.order_timeout", this.omOrderTimeout);
         config.set("order_manager.order_stack_limit", this.omOrderStackLimit);
         config.set("order_manager.bonus_probability", this.omBonusProbability);
-
-        this.saveConfig();
     }
 
     // -- PRIVATE --
-    private RoundSettings() {
-        super(
-            "roundsettings.yml",
-            "ocf_settings",
-            true
-        );
-        this.loadDefault();
-        if (this.registerConfig())
-            this.load();
-        else this.save();
-    }
 
     private void loadDefault() {
         // Game Round Settings

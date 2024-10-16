@@ -53,8 +53,7 @@ public class PlayerListener implements Listener {
 
         if (!round.getGameArea().isPointInsideBoundaries(player.getLocation()))
             round.spawnPlayer(player, true);
-
-        if (!round.isPlayerAbleToMove(player))
+        else if (!round.isPlayerAbleToMove(player))
             event.setCancelled(true);
     }
 
@@ -87,11 +86,14 @@ public class PlayerListener implements Listener {
     }
 
     @EventHandler
-    public void onPlayerDamageFrameOrPainting(HangingBreakByEntityEvent event) {
-        if (
-            event.getRemover() instanceof Player player &&
-            this.isNotRoundPlayerRequisites(player)
-        )
+    public void onPlayerBreakFrameOrPainting(HangingBreakByEntityEvent event) {
+        Entity entity = event.getEntity();
+
+        if (!(
+            master.getGameRoundManager().getGameRound() != null &&
+            (entity instanceof ItemFrame || entity instanceof Painting) &&
+            Functions.entityBelongsGameArea(entity)
+        ))
             return;
 
         event.setCancelled(true);
@@ -110,10 +112,13 @@ public class PlayerListener implements Listener {
 
     @EventHandler
     public void onPlayerRemoveItemFrameContent(EntityDamageByEntityEvent event) {
-        if (
-            event.getDamager() instanceof Player player &&
-            this.isNotRoundPlayerRequisites(player)
-        )
+        Entity entity = event.getEntity();
+
+        if (!(
+            master.getGameRoundManager().getGameRound() != null &&
+            (entity instanceof ItemFrame || entity instanceof Painting) &&
+            Functions.entityBelongsGameArea(entity)
+        ))
             return;
 
         event.setCancelled(true);
@@ -172,6 +177,17 @@ public class PlayerListener implements Listener {
         event.setCancelled(true);
     }
 
+    @EventHandler
+    public void onPlayerDropItem(PlayerDropItemEvent event) {
+        if (this.isNotRoundPlayerRequisites(event.getPlayer()))
+            return;
+
+        if (!(event.getItemDrop().getItemStack().getType().equals(Material.STONE_PICKAXE)))
+            return;
+
+        event.setCancelled(true);
+    }
+  
     @EventHandler
     public void onPlayerPickUpItem(EntityPickupItemEvent event) {
         if (!(event.getEntity() instanceof Player player))

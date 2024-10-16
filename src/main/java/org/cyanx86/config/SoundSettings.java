@@ -4,13 +4,12 @@ import org.bukkit.Instrument;
 import org.bukkit.Note;
 import org.bukkit.Sound;
 import org.bukkit.configuration.file.FileConfiguration;
-import org.cyanx86.utils.CustomConfigFile;
 import org.cyanx86.utils.Defaults.RoundSounds;
 import org.cyanx86.utils.Functions;
 
 import java.util.Map;
 
-public class SoundSettings extends CustomConfigFile {
+public class SoundSettings {
 
 
     // -- [[ ATTRIBUTES ]] --
@@ -34,10 +33,8 @@ public class SoundSettings extends CustomConfigFile {
     // -- [[ METHODS ]] --
 
     // -- PUBLIC --
-    public static SoundSettings getInstance() {
-        if (instance == null)
-            instance = new SoundSettings();
-        return instance;
+    public SoundSettings() {
+        this.loadDefault();
     }
 
     public Instrument getCountDownInstrument() {
@@ -68,19 +65,20 @@ public class SoundSettings extends CustomConfigFile {
     }
 
     // -- PROTECTED --
-    @Override
-    protected void load() {
-        FileConfiguration config = this.getConfig();
-
+    protected void load(FileConfiguration config) {
         try { if (config.get("round_starting.countdown_instrument") != null)
-            this.countDownInstrument = Instrument.valueOf((String)config.get("round_starting.countdown_instrument"));
+            this.countDownInstrument = Instrument.valueOf(
+                (String)config.get("round_starting.countdown_instrument")
+            );
         } catch (ClassCastException ignored) { }
         try { if (config.get("round_starting.countdown_tone") != null)
             this.countDownTone = Functions.deserializeNote(
-                    (Map<String, Object>)config.get("round_starting.countdown_tone"));
+                (Map<String, Object>)config.get("round_starting.countdown_tone"));
         } catch (ClassCastException ignored) { }
         try { if (config.get("round_starting.start_tone") != null)
-            this.startTone = Functions.deserializeNote((Map<String, Object>)config.get("round_starting.start_tone"));
+            this.startTone = Functions.deserializeNote(
+                (Map<String, Object>)config.get("round_starting.start_tone")
+            );
         } catch (ClassCastException ignored) { }
 
         try { if (config.get("round_timer.time_running_out_sound") != null)
@@ -101,16 +99,7 @@ public class SoundSettings extends CustomConfigFile {
         } catch (ClassCastException ignored) { }
     }
 
-    @Override
-    protected void reload() {
-        this.reloadConfig();
-        this.load();
-    }
-
-    @Override
-    protected void save() {
-        FileConfiguration config = this.getConfig();
-
+    protected void save(FileConfiguration config) {
         config.set("round_starting.countdown_instrument", this.countDownInstrument.name());
         config.set("round_starting.countdown_tone", Functions.serializeNote(this.countDownTone));
         config.set("round_starting.start_tone", Functions.serializeNote(this.startTone));
@@ -121,22 +110,9 @@ public class SoundSettings extends CustomConfigFile {
         config.set("order_sounds.order_entry_sound", this.orderEntrySound.name());
         config.set("order_sounds.delivered_order_sound", this.deliveredOrderSound.name());
         config.set("order_sounds.lost_order_sound", this.lostOrderSound.name());
-
-        this.saveConfig();
     }
 
     // -- PRIVATE --
-    private SoundSettings() {
-        super(
-            "soundsettings.yml",
-            "ocf_settings",
-            true
-        );
-        this.loadDefault();
-        if (this.registerConfig())
-            this.load();
-        else this.save();
-    }
 
     private void loadDefault() {
         // RoundStart sounds

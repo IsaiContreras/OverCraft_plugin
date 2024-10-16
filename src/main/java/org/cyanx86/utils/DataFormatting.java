@@ -16,8 +16,7 @@ public class DataFormatting {
     }
 
     public static String formatMaterialToString(String mat) {
-        String modString = mat.toLowerCase();
-
+        String modString = mat.toUpperCase();
         return modString.replace("_", " ");
     }
 

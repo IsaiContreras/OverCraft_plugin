@@ -7,6 +7,8 @@ import org.bukkit.scheduler.BukkitTask;
 import org.bukkit.scoreboard.Score;
 import org.bukkit.scoreboard.Scoreboard;
 import org.cyanx86.OverCrafted;
+import org.cyanx86.config.GeneralSettings;
+import org.cyanx86.config.Locale;
 import org.cyanx86.config.RoundSettings;
 import org.cyanx86.managers.GamePlayersManager;
 import org.cyanx86.managers.OrderManager;
@@ -38,6 +40,8 @@ public class GameRound {
     private final ScoreManager scoreManager;
     private final SoundEffectsManager soundEffectsManager;
 
+    private final Locale locale = GeneralSettings.getInstance().getLocale();
+
     private ROUNDSTATE currentState = ROUNDSTATE.COUNTDOWN;
 
     private final int startCountdownTime;
@@ -59,7 +63,7 @@ public class GameRound {
         this.soundEffectsManager = new SoundEffectsManager(this.playersManager);
         this.orderManager = new OrderManager(this.gameArea.getRecipes(), this.soundEffectsManager, this.scoreManager);
 
-        RoundSettings settings = RoundSettings.getInstance();
+        RoundSettings settings = GeneralSettings.getInstance().getRoundSettings();
         this.startCountdownTime = settings.getGRStartCountdown();
         this.roundTime = settings.getGRTime();
         this.endIntermissionTime = settings.getGRIntermissionTime();
@@ -92,14 +96,16 @@ public class GameRound {
     public boolean terminateRound(String reason) {
         if (this.currentState == ROUNDSTATE.ENDED) return false;
 
-        String message = (reason != null ? reason : "&cLa ronda fue cancelada.");
+        String message = (reason != null ? reason : this.locale.getStr("round-events.round-cancelled"));
 
         this.task.cancel();
         this.orderManager.stopGenerator();
         this.endRound(message);
 
         Messenger.msgToConsole(
-            OverCrafted.prefix + "Ronda terminada por: " + message
+            OverCrafted.prefix +
+            this.locale.getStr("round-events.round-terminated")
+                    .replace("%reason%", message)
         );
 
         return true;
@@ -126,14 +132,9 @@ public class GameRound {
         ListResult result = this.playersManager.removePlayer(player);
 
         if (this.playersManager.getPlayerStates().isEmpty())
-            this.terminateRound("&cTodos los jugadores se eliminaron o desconectaron.");
+            this.terminateRound(this.locale.getStr("round-events.all-players-disconnected"));
 
         return result;
-    }
-
-    // Orders
-    public List<Order> getCurrentOrders() {
-        return new ArrayList<>(this.orderManager.getOrderList());
     }
 
     public boolean dispatchOrder(@NotNull Material recipe) {
@@ -165,18 +166,20 @@ public class GameRound {
 
     // Actions
     private void startCountdown() {
-        this.playersManager.sendMessageToPlayers("&aLa ronda ha comenzado.");
+        this.playersManager.sendMessageToPlayers(
+            this.locale.getStr("round-events.round-started")
+        );
         this.time = this.startCountdownTime;
 
         this.task = Bukkit.getScheduler().runTaskTimer(OverCrafted.getInstance(), () -> {
-            if (this.time == 0) {
+            if (this.time <= 0) {
                 this.task.cancel();
                 this.startRoundTimer();
                 return;
             }
 
             this.playersManager.sendTitleToPlayers(
-                "&eComienza en",
+                this.locale.getStr("round-titles.round-starts-in"),
                 "&a" + this.time,
                 0,
                 20,
@@ -190,7 +193,7 @@ public class GameRound {
 
     private void startRoundTimer() {
         this.playersManager.sendTitleToPlayers(
-            "&a¡A CRAFTEAR!",
+            this.locale.getStr("round-titles.round-go"),
             "",
             0,
             20,
@@ -212,7 +215,7 @@ public class GameRound {
             if (this.time == 30)
                 this.soundEffectsManager.playTimeRunningOut();
 
-            if (this.time == 0) {
+            if (this.time <= 0) {
                 this.task.cancel();
                 this.intermissionTime();
                 return;
@@ -225,7 +228,7 @@ public class GameRound {
 
     private void intermissionTime() {
         this.playersManager.sendTitleToPlayers(
-            "&a¡TIEMPO!",
+            this.locale.getStr("round-titles.round-timeout"),
             "",
             0,
             this.endIntermissionTime * 20,
@@ -240,7 +243,7 @@ public class GameRound {
 
         this.time = this.endIntermissionTime;
         this.task = Bukkit.getScheduler().runTaskTimer(OverCrafted.getInstance(), () -> {
-            if (this.time == 0) {
+            if (this.time <= 0) {
                 this.task.cancel();
                 this.endRound(null);
                 return;
@@ -251,7 +254,7 @@ public class GameRound {
 
     private void endRound(String reason) {
         this.playersManager.sendMessageToPlayers(
-            reason != null ? reason : "&a¡Buen juego! La ronda ha terminado."
+            reason != null ? reason : this.locale.getStr("round-events.round-finished")
         );
 
         this.currentState = ROUNDSTATE.ENDED;

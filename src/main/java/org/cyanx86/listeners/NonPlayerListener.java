@@ -1,6 +1,8 @@
 package org.cyanx86.listeners;
 
 import org.bukkit.entity.Entity;
+import org.bukkit.entity.ItemFrame;
+import org.bukkit.entity.Painting;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
@@ -12,6 +14,8 @@ import org.bukkit.event.player.PlayerInteractEntityEvent;
 
 import org.cyanx86.OverCrafted;
 import org.cyanx86.classes.GameRound;
+import org.cyanx86.config.GeneralSettings;
+import org.cyanx86.config.Locale;
 import org.cyanx86.utils.Functions;
 import org.cyanx86.utils.Messenger;
 
@@ -23,6 +27,7 @@ public class NonPlayerListener implements Listener {
 
     // -- PRIVATE --
     private final OverCrafted master = OverCrafted.getInstance();
+    private final Locale locale = GeneralSettings.getInstance().getLocale();
 
     // -- [[ METHODS ]] --
 
@@ -41,7 +46,7 @@ public class NonPlayerListener implements Listener {
 
         Messenger.msgToSender(
             event.getPlayer(),
-            OverCrafted.prefix + "&cNo puedes poner bloques en un GameArea"
+            OverCrafted.prefix + this.locale.getStr("non-player-listener.block-place")
         );
     }
 
@@ -59,12 +64,12 @@ public class NonPlayerListener implements Listener {
 
         Messenger.msgToSender(
             event.getPlayer(),
-            OverCrafted.prefix + "&cNo puedes romper bloques de un GameArea"
+            OverCrafted.prefix + this.locale.getStr("non-player-listener.block-break")
         );
     }
 
     @EventHandler
-    public void onNonPlayerDamageFrameOrPainting(HangingBreakByEntityEvent event) {
+    public void onNonPlayerBreakFrameOrPainting(HangingBreakByEntityEvent event) {
         Entity remover = event.getRemover();
         if (
             remover == null ||
@@ -78,7 +83,28 @@ public class NonPlayerListener implements Listener {
 
         Messenger.msgToSender(
             remover,
-            OverCrafted.prefix + "&cNo puedes romper bloques de un GameArea"
+            OverCrafted.prefix + this.locale.getStr("non-player-listener.block-break")
+        );
+    }
+
+    @EventHandler
+    public void onNonPlayerRemoveItemFrameContent(EntityDamageByEntityEvent event) {
+        Entity damager = event.getDamager();
+        Entity entity = event.getEntity();
+
+        if (
+            !(entity instanceof ItemFrame || entity instanceof Painting) ||
+            !Functions.entityBelongsGameArea(event.getEntity()) ||
+            damager instanceof Player player && this.isRoundOff(player) ||
+            damager instanceof Player && damager.hasPermission("overcrafted.manager")
+        )
+            return;
+
+        event.setCancelled(true);
+
+        Messenger.msgToSender(
+            damager,
+            OverCrafted.prefix + this.locale.getStr("non-player-listener.block-break")
         );
     }
 
@@ -96,25 +122,7 @@ public class NonPlayerListener implements Listener {
 
         Messenger.msgToSender(
             player,
-            OverCrafted.prefix + "&cNo puedes manipular bloques de un GameArea"
-        );
-    }
-
-    @EventHandler
-    public void onNonPlayerRemoveItemFrameContent(EntityDamageByEntityEvent event) {
-        Entity damager = event.getDamager();
-        if (
-            !Functions.entityBelongsGameArea(event.getEntity()) ||
-            damager instanceof Player player && this.isRoundOff(player) ||
-            damager instanceof Player && damager.hasPermission("overcrafted.manager")
-        )
-            return;
-
-        event.setCancelled(true);
-
-        Messenger.msgToSender(
-            damager,
-            OverCrafted.prefix + "&cNo puedes romper bloques de un GameArea"
+            OverCrafted.prefix + this.locale.getStr("non-player-listener.block-interact")
         );
     }
 
