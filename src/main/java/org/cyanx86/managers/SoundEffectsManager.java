@@ -3,6 +3,7 @@ package org.cyanx86.managers;
 import org.bukkit.Instrument;
 import org.bukkit.Note;
 import org.bukkit.Sound;
+import org.cyanx86.config.GeneralSettings;
 import org.cyanx86.config.SoundSettings;
 
 public class SoundEffectsManager {
@@ -31,7 +32,7 @@ public class SoundEffectsManager {
     public SoundEffectsManager(GamePlayersManager playersManager) {
         this.playersManager = playersManager;
 
-        SoundSettings settings = SoundSettings.getInstance();
+        SoundSettings settings = GeneralSettings.getInstance().getSoundSettings();
         this.countDownInstrument = settings.getCountDownInstrument();
         this.countDownTone = settings.getCountDownTone();
         this.startTone = settings.getStartTone();

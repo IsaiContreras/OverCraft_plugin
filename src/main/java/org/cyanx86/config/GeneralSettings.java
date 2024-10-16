@@ -13,12 +13,12 @@ public class GeneralSettings extends CustomConfigFile {
     // -- PRIVATE --
     private static GeneralSettings instance;
 
-    private Locale locale;
-
     private String language;
     private String invalid_message_path;
 
-
+    private final Locale locale;
+    private final RoundSettings roundSettings;
+    private final SoundSettings soundSettings;
 
     // -- [[ METHODS ]] --
 
@@ -41,6 +41,14 @@ public class GeneralSettings extends CustomConfigFile {
         return this. invalid_message_path;
     }
 
+    public RoundSettings getRoundSettings() {
+        return this.roundSettings;
+    }
+
+    public SoundSettings getSoundSettings() {
+        return this.soundSettings;
+    }
+
     // -- PROTECTED --
     @Override
     protected void load() {
@@ -52,6 +60,9 @@ public class GeneralSettings extends CustomConfigFile {
         try { if (config.get("invalid-message-path") != null)
             this.invalid_message_path = (String)config.get("invalid-message-path");
         } catch (NullPointerException | ClassCastException ignored) { }
+
+        this.roundSettings.load(config);
+        this.soundSettings.load(config);
     }
 
     @Override
@@ -67,6 +78,9 @@ public class GeneralSettings extends CustomConfigFile {
         config.set("language", this.language);
         config.set("invalid-message-path", this.invalid_message_path);
 
+        this.roundSettings.save(config);
+        this.soundSettings.save(config);
+
         this.saveConfig();
     }
 
@@ -78,6 +92,9 @@ public class GeneralSettings extends CustomConfigFile {
             true
         );
         this.loadDefault();
+        this.roundSettings = new RoundSettings();
+        this.soundSettings = new SoundSettings();
+
         if (this.registerConfig())
             this.load();
         else this.save();

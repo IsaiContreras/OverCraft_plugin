@@ -50,8 +50,6 @@ public class OverCrafted extends JavaPlugin {
         gameRoundManager = new GameRoundManager();
 
         GeneralSettings.getInstance();
-        RoundSettings.getInstance();
-        SoundSettings.getInstance();
 
         this.setupCommands();
         this.setupEvents();

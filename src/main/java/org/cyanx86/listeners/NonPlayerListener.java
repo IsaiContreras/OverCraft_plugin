@@ -1,6 +1,8 @@
 package org.cyanx86.listeners;
 
 import org.bukkit.entity.Entity;
+import org.bukkit.entity.ItemFrame;
+import org.bukkit.entity.Painting;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
@@ -67,7 +69,7 @@ public class NonPlayerListener implements Listener {
     }
 
     @EventHandler
-    public void onNonPlayerDamageFrameOrPainting(HangingBreakByEntityEvent event) {
+    public void onNonPlayerBreakFrameOrPainting(HangingBreakByEntityEvent event) {
         Entity remover = event.getRemover();
         if (
             remover == null ||
@@ -81,6 +83,27 @@ public class NonPlayerListener implements Listener {
 
         Messenger.msgToSender(
             remover,
+            OverCrafted.prefix + this.locale.getStr("non-player-listener.block-break")
+        );
+    }
+
+    @EventHandler
+    public void onNonPlayerRemoveItemFrameContent(EntityDamageByEntityEvent event) {
+        Entity damager = event.getDamager();
+        Entity entity = event.getEntity();
+
+        if (
+            !(entity instanceof ItemFrame || entity instanceof Painting) ||
+            !Functions.entityBelongsGameArea(event.getEntity()) ||
+            damager instanceof Player player && this.isRoundOff(player) ||
+            damager instanceof Player && damager.hasPermission("overcrafted.manager")
+        )
+            return;
+
+        event.setCancelled(true);
+
+        Messenger.msgToSender(
+            damager,
             OverCrafted.prefix + this.locale.getStr("non-player-listener.block-break")
         );
     }
@@ -100,24 +123,6 @@ public class NonPlayerListener implements Listener {
         Messenger.msgToSender(
             player,
             OverCrafted.prefix + this.locale.getStr("non-player-listener.block-interact")
-        );
-    }
-
-    @EventHandler
-    public void onNonPlayerRemoveItemFrameContent(EntityDamageByEntityEvent event) {
-        Entity damager = event.getDamager();
-        if (
-            !Functions.entityBelongsGameArea(event.getEntity()) ||
-            damager instanceof Player player && this.isRoundOff(player) ||
-            damager instanceof Player && damager.hasPermission("overcrafted.manager")
-        )
-            return;
-
-        event.setCancelled(true);
-
-        Messenger.msgToSender(
-            damager,
-            OverCrafted.prefix + this.locale.getStr("non-player-listener.block-break")
         );
     }
 

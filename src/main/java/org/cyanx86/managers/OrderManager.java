@@ -59,7 +59,7 @@ public class OrderManager {
         this.soundEffectsManager = soundEffectsManager;
         this.scoreManager = scoreManager;
 
-        RoundSettings settings = RoundSettings.getInstance();
+        RoundSettings settings = GeneralSettings.getInstance().getRoundSettings();
         this.timeForNextOrder = settings.getOMTimeForNextOrder();
         this.orderTimeOut = settings.getOMOrderTimeout();
         this.orderStackLimit = settings.getOMOrderStackLimit();

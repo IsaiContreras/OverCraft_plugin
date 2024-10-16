@@ -82,11 +82,14 @@ public class PlayerListener implements Listener {
     }
 
     @EventHandler
-    public void onPlayerDamageFrameOrPainting(HangingBreakByEntityEvent event) {
-        if (
-            event.getRemover() instanceof Player player &&
-            this.isNotRoundPlayerRequisites(player)
-        )
+    public void onPlayerBreakFrameOrPainting(HangingBreakByEntityEvent event) {
+        Entity entity = event.getEntity();
+
+        if (!(
+            master.getGameRoundManager().getGameRound() != null &&
+            (entity instanceof ItemFrame || entity instanceof Painting) &&
+            Functions.entityBelongsGameArea(entity)
+        ))
             return;
 
         event.setCancelled(true);
@@ -105,10 +108,13 @@ public class PlayerListener implements Listener {
 
     @EventHandler
     public void onPlayerRemoveItemFrameContent(EntityDamageByEntityEvent event) {
-        if (
-            event.getDamager() instanceof Player player &&
-            this.isNotRoundPlayerRequisites(player)
-        )
+        Entity entity = event.getEntity();
+
+        if (!(
+            master.getGameRoundManager().getGameRound() != null &&
+            (entity instanceof ItemFrame || entity instanceof Painting) &&
+            Functions.entityBelongsGameArea(entity)
+        ))
             return;
 
         event.setCancelled(true);

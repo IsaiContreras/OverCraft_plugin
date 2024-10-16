@@ -63,7 +63,7 @@ public class GameRound {
         this.soundEffectsManager = new SoundEffectsManager(this.playersManager);
         this.orderManager = new OrderManager(this.gameArea.getRecipes(), this.soundEffectsManager, this.scoreManager);
 
-        RoundSettings settings = RoundSettings.getInstance();
+        RoundSettings settings = GeneralSettings.getInstance().getRoundSettings();
         this.startCountdownTime = settings.getGRStartCountdown();
         this.roundTime = settings.getGRTime();
         this.endIntermissionTime = settings.getGRIntermissionTime();

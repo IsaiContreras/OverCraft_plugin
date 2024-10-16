@@ -1,6 +1,7 @@
 package org.cyanx86.managers;
 
 import org.bukkit.scoreboard.Score;
+import org.cyanx86.config.GeneralSettings;
 import org.cyanx86.config.RoundSettings;
 
 public class ScoreManager {
@@ -21,7 +22,7 @@ public class ScoreManager {
 
     // -- PUBLIC --
     public ScoreManager() {
-        this.valuePerOrder = RoundSettings.getInstance().getSMValuePerOrder();
+        this.valuePerOrder = GeneralSettings.getInstance().getRoundSettings().getSMValuePerOrder();
     }
 
     public void incrementDeliveredOrder() {

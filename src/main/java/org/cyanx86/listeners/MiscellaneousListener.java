@@ -1,6 +1,5 @@
 package org.cyanx86.listeners;
 
-import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.block.Block;
 import org.bukkit.block.Furnace;
@@ -11,12 +10,16 @@ import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
+import org.bukkit.event.entity.EntityExplodeEvent;
 import org.bukkit.event.hanging.HangingBreakByEntityEvent;
 
 import org.bukkit.event.inventory.FurnaceSmeltEvent;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.util.Vector;
 import org.cyanx86.utils.Functions;
+
+import java.util.ArrayList;
+import java.util.List;
 
 public class MiscellaneousListener implements Listener {
 
@@ -32,11 +35,11 @@ public class MiscellaneousListener implements Listener {
     @EventHandler
     public void onEntityBreakGameAreaItemFrameOrPainting(HangingBreakByEntityEvent event) {
         Entity entity = event.getEntity();
-        if (
-            !(entity instanceof ItemFrame || entity instanceof Painting) ||
-            event.getRemover() instanceof Player ||
-            !Functions.entityBelongsGameArea(entity)
-        )
+        if (!(
+            (entity instanceof ItemFrame || entity instanceof Painting) &&
+            Functions.entityBelongsGameArea(entity) &&
+            !(event.getRemover() instanceof Player)
+        ))
             return;
 
         event.setCancelled(true);
@@ -45,14 +48,31 @@ public class MiscellaneousListener implements Listener {
     @EventHandler
     public void onEntityDamageGameAreaItemFrameOrPainting(EntityDamageByEntityEvent event) {
         Entity entity = event.getEntity();
-        if (
-            !(entity instanceof ItemFrame || entity instanceof Painting) ||
-            event.getDamager() instanceof Player ||
-            !Functions.entityBelongsGameArea(entity)
-        )
+        if (!(
+            (entity instanceof ItemFrame || entity instanceof Painting) &&
+            Functions.entityBelongsGameArea(entity) &&
+            !(event.getDamager() instanceof Player)
+        ))
             return;
 
         event.setCancelled(true);
+    }
+
+    @EventHandler
+    public void onExplosionBreaksBlocks(EntityExplodeEvent event) {
+        if (Functions.getGameAreaFromLocation(event.getLocation()) == null)
+            return;
+
+        List<Block> eventBlocks = event.blockList();
+        List<Block> gmaBlocks = new ArrayList<>();
+
+        for (Block block : eventBlocks) {
+            if (Functions.blockBelongsGameArea(block))
+                gmaBlocks.add(block);
+        }
+
+        for (Block block : gmaBlocks)
+            eventBlocks.remove(block);
     }
 
     @EventHandler
