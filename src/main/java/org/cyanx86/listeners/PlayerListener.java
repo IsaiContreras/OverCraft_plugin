@@ -21,14 +21,12 @@ import org.bukkit.inventory.*;
 import org.cyanx86.OverCrafted;
 import org.cyanx86.classes.GameRound;
 
-import java.security.MessageDigest;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Objects;
 
 import org.cyanx86.utils.Functions;
-import org.cyanx86.utils.Messenger;
 import org.jetbrains.annotations.NotNull;
 
 public class PlayerListener implements Listener {
@@ -51,7 +49,7 @@ public class PlayerListener implements Listener {
         if (this.isNotRoundPlayerRequisites(player))
             return;
 
-        if (!round.getGameArea().isPointInsideBoundaries(player.getLocation()))
+        if (!round.getKitchenArea().isPointInsideBoundaries(player.getLocation()))
             round.spawnPlayer(player, true);
         else if (!round.isPlayerAbleToMove(player))
             event.setCancelled(true);
@@ -74,7 +72,7 @@ public class PlayerListener implements Listener {
         Map<Material, Material> materialMap = master.getOreBlocks().getOreMap();
         if (
             materialMap.containsKey(block.getType()) &&
-            master.getGameRoundManager().getGameRound().getGameArea().isPointInsideBoundaries(block.getLocation())
+            master.getGameRoundManager().getGameRound().getKitchenArea().isPointInsideBoundaries(block.getLocation())
         ) {
             ItemStack deliver = new ItemStack(
                 materialMap.get(block.getType())
@@ -92,7 +90,7 @@ public class PlayerListener implements Listener {
         if (!(
             master.getGameRoundManager().getGameRound() != null &&
             (entity instanceof ItemFrame || entity instanceof Painting) &&
-            Functions.entityBelongsGameArea(entity)
+            Functions.entityBelongsKitchenArea(entity)
         ))
             return;
 
@@ -117,7 +115,7 @@ public class PlayerListener implements Listener {
         if (!(
             master.getGameRoundManager().getGameRound() != null &&
             (entity instanceof ItemFrame || entity instanceof Painting) &&
-            Functions.entityBelongsGameArea(entity)
+            Functions.entityBelongsKitchenArea(entity)
         ))
             return;
 
@@ -254,10 +252,11 @@ public class PlayerListener implements Listener {
 
     private void onPlayerDeliverRecipe(PlayerInteractEvent event, @NotNull Block chest) {
         boolean isGlowItemFrame = false;
-        for (Entity entity : chest.getWorld().getNearbyEntities(chest.getLocation(), 2, 2, 2))
+        for (Entity entityItem : chest.getWorld().getNearbyEntities(chest.getLocation(), 2, 2, 2))
             if (
-                entity instanceof GlowItemFrame &&
-                entity.getLocation().getBlock().getRelative(((GlowItemFrame)entity).getAttachedFace()).equals(chest)
+                entityItem instanceof GlowItemFrame &&
+                entityItem.getLocation().getBlock()
+                        .getRelative(((GlowItemFrame)entityItem).getAttachedFace()).equals(chest)
             ) {
                 isGlowItemFrame = true;
                 break;
@@ -331,4 +330,5 @@ public class PlayerListener implements Listener {
         }
         return contents;
     }
+
 }

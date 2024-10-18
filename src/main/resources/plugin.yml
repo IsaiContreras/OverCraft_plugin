@@ -5,21 +5,21 @@ author: CYANx86
 api-version: 1.20
 
 commands:
-
-  overcrafted:
-    description: "Comando principal."
+  round:
+    decription: "Round controls."
     aliases:
-      - ocf
-
-  playerlist:
-    description: "Administra los jugadores."
+      - rnd
+      - ro
+  kitchen:
+    description: "Manage kitchens."
     aliases:
-      - pyl
-
-  gamearea:
-    description: "Administra GameAreas."
+      - ktc
+      - kt
+  recipes:
+    description: "Manage kitchen recipes."
     aliases:
-      - gma
+      - rcp
+      - rp
 
 permissions:
   overcrafted.*:

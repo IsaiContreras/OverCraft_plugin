@@ -2,15 +2,15 @@ package org.cyanx86;
 
 import org.bukkit.plugin.java.JavaPlugin;
 
-import org.cyanx86.commands.GameAreaCommand;
-import org.cyanx86.commands.MainCommand;
-import org.cyanx86.commands.PlayerListCommand;
+import org.cyanx86.commands.KitchenCommand;
+import org.cyanx86.commands.RecipesCommand;
+import org.cyanx86.commands.RoundCommand;
 import org.cyanx86.config.*;
 import org.cyanx86.listeners.ManagerPlayerListener;
 import org.cyanx86.listeners.MiscellaneousListener;
 import org.cyanx86.listeners.NonPlayerListener;
 import org.cyanx86.listeners.PlayerListener;
-import org.cyanx86.managers.GameAreaPropertiesAssistantManager;
+import org.cyanx86.managers.KitchenAreaCreatorAssistantManager;
 import org.cyanx86.managers.GameRoundManager;
 import org.cyanx86.utils.Messenger;
 
@@ -27,11 +27,11 @@ public class OverCrafted extends JavaPlugin {
     private static OverCrafted instance;
     private final String version = getDescription().getVersion();
 
-    private GameAreaLoader gameAreaManager;
+    private KitchenAreaLoader kitchenAreaLoader;
     private OreBlocksLoader oreBlocks;
     private RecipesBonus recipesBonus;
 
-    private GameAreaPropertiesAssistantManager gameAreaPropertiesAssistantManager;
+    private KitchenAreaCreatorAssistantManager kitchenAreaCreatorAssistantManager;
     private GameRoundManager gameRoundManager;
 
     // -- [[ METHODS ]] --
@@ -42,12 +42,12 @@ public class OverCrafted extends JavaPlugin {
     public void onEnable() {
         instance = this;
 
-        gameAreaManager = new GameAreaLoader();
-        oreBlocks = new OreBlocksLoader();
-        recipesBonus = new RecipesBonus();
+        this.kitchenAreaLoader = new KitchenAreaLoader();
+        this.oreBlocks = new OreBlocksLoader();
+        this.recipesBonus = new RecipesBonus();
 
-        gameAreaPropertiesAssistantManager = new GameAreaPropertiesAssistantManager();
-        gameRoundManager = new GameRoundManager();
+        this.kitchenAreaCreatorAssistantManager = new KitchenAreaCreatorAssistantManager();
+        this.gameRoundManager = new GameRoundManager();
 
         GeneralSettings.getInstance();
 
@@ -60,19 +60,19 @@ public class OverCrafted extends JavaPlugin {
     }
 
     public void onDisable() {
-        gameAreaManager.save();
+        this.kitchenAreaLoader.save();
         Messenger.msgToConsole(
             prefix + "ePlugin desactivado."
         );
     }
 
     // GameArea managing
-    public GameAreaPropertiesAssistantManager getGameAreaPropertiesAssistantManager() {
-        return this.gameAreaPropertiesAssistantManager;
+    public KitchenAreaCreatorAssistantManager getKitchenAreaCreatorAssistantManager() {
+        return this.kitchenAreaCreatorAssistantManager;
     }
 
-    public GameAreaLoader getGameAreaManager() {
-        return this.gameAreaManager;
+    public KitchenAreaLoader getKitchenAreaLoader() {
+        return this.kitchenAreaLoader;
     }
 
     public GameRoundManager getGameRoundManager() {
@@ -91,9 +91,9 @@ public class OverCrafted extends JavaPlugin {
 
     // -- PRIVATE --
     private void setupCommands() {
-        Objects.requireNonNull(this.getCommand("overcrafted")).setExecutor(new MainCommand());
-        Objects.requireNonNull(this.getCommand("playerlist")).setExecutor(new PlayerListCommand());
-        Objects.requireNonNull(this.getCommand("gamearea")).setExecutor(new GameAreaCommand());
+        Objects.requireNonNull(this.getCommand("round")).setExecutor(new RoundCommand());
+        Objects.requireNonNull(this.getCommand("kitchen")).setExecutor(new KitchenCommand());
+        Objects.requireNonNull(this.getCommand("recipes")).setExecutor(new RecipesCommand());
     }
 
     private void setupEvents() {

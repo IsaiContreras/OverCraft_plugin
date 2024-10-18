@@ -3,7 +3,7 @@ package org.cyanx86.managers;
 import org.bukkit.entity.Player;
 
 import org.cyanx86.OverCrafted;
-import org.cyanx86.classes.GameAreaPropertiesAssistant;
+import org.cyanx86.classes.KitchenAreaCreatorAssistant;
 import org.cyanx86.utils.Enums.ListResult;
 
 import java.util.HashMap;
@@ -11,16 +11,14 @@ import java.util.Map;
 import java.util.UUID;
 import org.jetbrains.annotations.NotNull;
 
-public class GameAreaPropertiesAssistantManager {
+public class KitchenAreaCreatorAssistantManager {
 
     // -- [[ ATTRIBUTES ]] --
 
     // -- PUBLIC --
 
     // -- PRIVATE --
-    private final OverCrafted master = OverCrafted.getInstance();
-
-    private final Map<UUID, GameAreaPropertiesAssistant> assistants = new HashMap<>();
+    private final Map<UUID, KitchenAreaCreatorAssistant> assistants = new HashMap<>();
     private final Map<String, UUID> playerUUIDs = new HashMap<>();
 
     // -- [[ METHODS ]] --
@@ -31,7 +29,7 @@ public class GameAreaPropertiesAssistantManager {
         if (this.assistants.containsKey(player.getUniqueId()))
             return ListResult.ALREADY_IN;
 
-        this.assistants.put(player.getUniqueId(), new GameAreaPropertiesAssistant());
+        this.assistants.put(player.getUniqueId(), new KitchenAreaCreatorAssistant());
         this.playerUUIDs.put(player.getName(), player.getUniqueId());
 
         return ListResult.SUCCESS;
@@ -48,7 +46,7 @@ public class GameAreaPropertiesAssistantManager {
         return ListResult.SUCCESS;
     }
 
-    public GameAreaPropertiesAssistant getAssistantByName(@NotNull String name) {
+    public KitchenAreaCreatorAssistant getAssistantByName(@NotNull String name) {
         UUID playerUUID = this.playerUUIDs.get(name);
         if (playerUUID == null)
             return null;

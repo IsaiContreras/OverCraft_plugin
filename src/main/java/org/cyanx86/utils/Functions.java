@@ -12,7 +12,7 @@ import org.bukkit.inventory.FurnaceRecipe;
 import org.bukkit.inventory.Recipe;
 import org.bukkit.inventory.SmokingRecipe;
 import org.cyanx86.OverCrafted;
-import org.cyanx86.classes.GameArea;
+import org.cyanx86.classes.KitchenArea;
 
 import java.util.*;
 
@@ -22,41 +22,41 @@ public class Functions {
 
     static final private OverCrafted master = OverCrafted.getInstance();
 
-    static public boolean blockBelongsGameArea(@NotNull Block block) {
-        for (GameArea gmaItem : master.getGameAreaManager().getGameAreas()) {
-            if (!Objects.equals(gmaItem.getWorld(), block.getWorld().getName()))
+    static public boolean blockBelongsKitchenArea(@NotNull Block block) {
+        for (KitchenArea ktcItem : master.getKitchenAreaLoader().getKitchenAreas()) {
+            if (!Objects.equals(ktcItem.getWorld(), block.getWorld().getName()))
                 continue;
-            if (gmaItem.isPointInsideBoundaries(block.getLocation())) {
+            if (ktcItem.isPointInsideBoundaries(block.getLocation())) {
                 return true;
             }
         }
         return false;
     }
 
-    static public boolean entityBelongsGameArea(@NotNull Entity entity) {
-        for (GameArea gmaItem : master.getGameAreaManager().getGameAreas()) {
-            if (!Objects.equals(gmaItem.getWorld(), entity.getWorld().getName()))
+    static public boolean entityBelongsKitchenArea(@NotNull Entity entity) {
+        for (KitchenArea ktcItem : master.getKitchenAreaLoader().getKitchenAreas()) {
+            if (!Objects.equals(ktcItem.getWorld(), entity.getWorld().getName()))
                 continue;
-            if (gmaItem.isPointInsideBoundaries(entity.getLocation())) {
+            if (ktcItem.isPointInsideBoundaries(entity.getLocation())) {
                 return true;
             }
         }
         return false;
     }
 
-    static public GameArea getGameAreaFromLocation(@NotNull Location location) {
-        for (GameArea gmaItem : master.getGameAreaManager().getGameAreas())
+    static public KitchenArea getKitchenAreaFromLocation(@NotNull Location location) {
+        for (KitchenArea ktcItem : master.getKitchenAreaLoader().getKitchenAreas())
             if (
-                gmaItem.getWorld().equals(Objects.requireNonNull(location.getWorld()).getName()) &&
-                gmaItem.isPointInsideBoundaries(location)
+                ktcItem.getWorld().equals(Objects.requireNonNull(location.getWorld()).getName()) &&
+                ktcItem.isPointInsideBoundaries(location)
             )
-                return gmaItem;
+                return ktcItem;
         return null;
     }
 
-    static public GameArea getGameAreaByName(@NotNull String name) {
-        Optional<GameArea> query = master.getGameAreaManager()
-                .getGameAreas()
+    static public KitchenArea getKitchenAreaByName(@NotNull String name) {
+        Optional<KitchenArea> query = master.getKitchenAreaLoader()
+                .getKitchenAreas()
                 .stream()
                 .filter(item -> item.getName().equals(name))
                 .findFirst();

@@ -4,7 +4,6 @@ import org.bukkit.*;
 import org.bukkit.entity.Player;
 import org.bukkit.scheduler.BukkitTask;
 
-import org.bukkit.scoreboard.Score;
 import org.bukkit.scoreboard.Scoreboard;
 import org.cyanx86.OverCrafted;
 import org.cyanx86.config.GeneralSettings;
@@ -34,7 +33,7 @@ public class GameRound {
     }
 
     // -- PRIVATE --
-    private final GameArea gameArea;
+    private final KitchenArea kitchenArea;
     private final GamePlayersManager playersManager;
     private final OrderManager orderManager;
     private final ScoreManager scoreManager;
@@ -56,12 +55,14 @@ public class GameRound {
     // -- [[ METHODS ]] --
 
     // -- PUBLIC --
-    public GameRound(@NotNull GameArea gameArea, @NotNull List<Player> players) {
-        this.gameArea = gameArea;
+    public GameRound(@NotNull KitchenArea kitchenArea, @NotNull List<Player> players) {
+        this.kitchenArea = kitchenArea;
         this.playersManager = new GamePlayersManager(players);
         this.scoreManager = new ScoreManager();
         this.soundEffectsManager = new SoundEffectsManager(this.playersManager);
-        this.orderManager = new OrderManager(this.gameArea.getRecipes(), this.soundEffectsManager, this.scoreManager);
+        this.orderManager = new OrderManager(
+            this.kitchenArea.getRecipes(), this.soundEffectsManager, this.scoreManager
+        );
 
         RoundSettings settings = GeneralSettings.getInstance().getRoundSettings();
         this.startCountdownTime = settings.getGRStartCountdown();
@@ -78,10 +79,13 @@ public class GameRound {
     public ROUNDSTATE getCurrentRoundState() {
         return this.currentState;
     }
-    public GameArea getGameArea() {
-        return this.gameArea;
+    public KitchenArea getKitchenArea() {
+        return this.kitchenArea;
     }
     public Map<String, Object> getScores() {
+        if (this.currentState != ROUNDSTATE.ENDED)
+            return null;
+
         Map<String, Object> results = new HashMap<>();
 
         results.put("delivered", this.scoreManager.getDeliveredOrders());
@@ -158,7 +162,7 @@ public class GameRound {
 
     // -- PRIVATE --
     private SpawnPoint getPlayerSpawn(@NotNull PlayerState playerState) {
-        Optional<SpawnPoint> query = this.gameArea.getSpawnPoints().stream()
+        Optional<SpawnPoint> query = this.kitchenArea.getSpawnPoints().stream()
                 .filter(item -> item.getPlayerIndex() == this.playersManager.getPlayerIndex(playerState))
                 .findFirst();
         return query.orElse(null);

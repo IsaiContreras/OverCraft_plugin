@@ -5,7 +5,7 @@ import org.bukkit.Location;
 import java.util.Arrays;
 import org.jetbrains.annotations.NotNull;
 
-public class GameAreaPropertiesAssistant {
+public class KitchenAreaCreatorAssistant {
 
     // -- [[ ATTRIBUTES ]] --
 
@@ -18,7 +18,7 @@ public class GameAreaPropertiesAssistant {
     // -- [[ METHODS ]] --
 
     // -- PUBLIC --
-    public GameAreaPropertiesAssistant() {
+    public KitchenAreaCreatorAssistant() {
         this.resetCorners();
     }
 

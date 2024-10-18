@@ -4,13 +4,12 @@ import org.bukkit.Location;
 import org.bukkit.Material;
 
 import org.cyanx86.utils.Enums.ListResult;
-import org.cyanx86.utils.Messenger;
 import org.cyanx86.utils.Primitives.Cube;
 
 import java.util.*;
 import org.jetbrains.annotations.NotNull;
 
-public class GameArea {
+public class KitchenArea {
 
     // -- [[ ATTRIBUTES ]] --
 
@@ -31,7 +30,7 @@ public class GameArea {
     // -- [[ METHODS ]] --
 
     // -- PUBLIC --
-    public GameArea(@NotNull String name, @NotNull Location corner1, @NotNull Location corner2, int minPlayers, int maxPlayers) {
+    public KitchenArea(@NotNull String name, @NotNull Location corner1, @NotNull Location corner2, int minPlayers, int maxPlayers) {
         this.name = name;
         this.world = corner1.getWorld() != null ? corner1.getWorld().getName() : null;
         this.minPlayers = minPlayers;
@@ -40,7 +39,7 @@ public class GameArea {
         this.corners[1] = corner2;
         this.cubeArea = new Cube(corner1, corner2);
     }
-    public GameArea(
+    public KitchenArea(
             @NotNull String name,
             @NotNull String world,
             @NotNull Location corner1,
@@ -99,8 +98,11 @@ public class GameArea {
         return this.spawnPoints.size();
     }
 
-    public void clearSpawnPointList() {
+    public ListResult clearSpawnPointList() {
+        if (this.spawnPoints.isEmpty())
+            return ListResult.EMPTY_LIST;
         this.spawnPoints.clear();
+        return ListResult.SUCCESS;
     }
 
     // Recipes
@@ -120,8 +122,29 @@ public class GameArea {
         return new ArrayList<>(this.recipes);
     }
 
-    public void clearRecipes() {
+    public ListResult deleteRecipe(@NotNull String material) {
+        Material recipe;
+        try {
+            recipe = Material.valueOf(material);
+        } catch (IllegalArgumentException ignored) {
+            recipe = null;
+        }
+
+        if (recipe == null)
+            return ListResult.INVALID_ITEM;
+
+        if (!this.recipes.contains(recipe))
+            return ListResult.NOT_FOUND;
+
+        this.recipes.remove(recipe);
+        return ListResult.SUCCESS;
+    }
+
+    public ListResult clearRecipes() {
+        if (this.recipes.isEmpty())
+            return ListResult.EMPTY_LIST;
         this.recipes.clear();
+        return ListResult.SUCCESS;
     }
 
     // Validators
@@ -133,7 +156,7 @@ public class GameArea {
         );
     }
 
-    public boolean isRegionOverlapping(@NotNull GameArea other) {
+    public boolean isRegionOverlapping(@NotNull KitchenArea other) {
         if (!this.world.equals(other.getWorld()))
             return false;
 
@@ -173,7 +196,7 @@ public class GameArea {
         return data;
     }
 
-    public static GameArea deserialize(@NotNull Map<String, Object> args) {
+    public static KitchenArea deserialize(@NotNull Map<String, Object> args) {
         List<SpawnPoint> spawnPointsList = new ArrayList<>();
         List<Material> recipeList = new ArrayList<>();
         List<Map<String, Object>> sppMapList;
@@ -196,7 +219,7 @@ public class GameArea {
         for (String rcpItem : rcpList)
             recipeList.add(Material.valueOf(rcpItem));
 
-        return new GameArea(
+        return new KitchenArea(
             (String)args.get("name"),
             (String)args.get("world"),
             Location.deserialize(corner1LocSerial),

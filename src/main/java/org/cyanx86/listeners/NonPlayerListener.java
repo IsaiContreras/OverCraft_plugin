@@ -38,7 +38,7 @@ public class NonPlayerListener implements Listener {
         if (
             player.hasPermission("overcrafted.manager") ||
             this.isRoundOff(player) ||
-            !Functions.blockBelongsGameArea(event.getBlock())
+            !Functions.blockBelongsKitchenArea(event.getBlock())
         )
             return;
 
@@ -56,7 +56,7 @@ public class NonPlayerListener implements Listener {
         if (
             player.hasPermission("overcrafted.manager") ||
             this.isRoundOff(player) ||
-            !Functions.blockBelongsGameArea(event.getBlock())
+            !Functions.blockBelongsKitchenArea(event.getBlock())
         )
             return;
 
@@ -75,7 +75,7 @@ public class NonPlayerListener implements Listener {
             remover == null ||
             remover instanceof Player && remover.hasPermission("overcrafted.manager") ||
             remover instanceof Player player && this.isRoundOff(player) ||
-            !Functions.entityBelongsGameArea(event.getEntity())
+            !Functions.entityBelongsKitchenArea(event.getEntity())
         )
             return;
 
@@ -94,7 +94,7 @@ public class NonPlayerListener implements Listener {
 
         if (
             !(entity instanceof ItemFrame || entity instanceof Painting) ||
-            !Functions.entityBelongsGameArea(event.getEntity()) ||
+            !Functions.entityBelongsKitchenArea(event.getEntity()) ||
             damager instanceof Player player && this.isRoundOff(player) ||
             damager instanceof Player && damager.hasPermission("overcrafted.manager")
         )
@@ -114,7 +114,7 @@ public class NonPlayerListener implements Listener {
         if (
             player.hasPermission("overcrafted.manager") ||
             this.isRoundOff(player) ||
-            !Functions.entityBelongsGameArea(event.getRightClicked())
+            !Functions.entityBelongsKitchenArea(event.getRightClicked())
         )
             return;
 

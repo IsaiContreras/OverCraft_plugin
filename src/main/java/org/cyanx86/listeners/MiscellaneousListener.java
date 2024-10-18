@@ -37,7 +37,7 @@ public class MiscellaneousListener implements Listener {
         Entity entity = event.getEntity();
         if (!(
             (entity instanceof ItemFrame || entity instanceof Painting) &&
-            Functions.entityBelongsGameArea(entity) &&
+            Functions.entityBelongsKitchenArea(entity) &&
             !(event.getRemover() instanceof Player)
         ))
             return;
@@ -50,7 +50,7 @@ public class MiscellaneousListener implements Listener {
         Entity entity = event.getEntity();
         if (!(
             (entity instanceof ItemFrame || entity instanceof Painting) &&
-            Functions.entityBelongsGameArea(entity) &&
+            Functions.entityBelongsKitchenArea(entity) &&
             !(event.getDamager() instanceof Player)
         ))
             return;
@@ -60,25 +60,25 @@ public class MiscellaneousListener implements Listener {
 
     @EventHandler
     public void onExplosionBreaksBlocks(EntityExplodeEvent event) {
-        if (Functions.getGameAreaFromLocation(event.getLocation()) == null)
+        if (Functions.getKitchenAreaFromLocation(event.getLocation()) == null)
             return;
 
         List<Block> eventBlocks = event.blockList();
-        List<Block> gmaBlocks = new ArrayList<>();
+        List<Block> ktcBlocks = new ArrayList<>();
 
-        for (Block block : eventBlocks) {
-            if (Functions.blockBelongsGameArea(block))
-                gmaBlocks.add(block);
+        for (Block blockItem : eventBlocks) {
+            if (Functions.blockBelongsKitchenArea(blockItem))
+                ktcBlocks.add(blockItem);
         }
 
-        for (Block block : gmaBlocks)
-            eventBlocks.remove(block);
+        for (Block blockItem : ktcBlocks)
+            eventBlocks.remove(blockItem);
     }
 
     @EventHandler
     public void onFurnaceSmelt(FurnaceSmeltEvent event) {
         Furnace furnace = (Furnace)event.getBlock().getState();
-        if (!Functions.blockBelongsGameArea(event.getBlock()))
+        if (!Functions.blockBelongsKitchenArea(event.getBlock()))
             return;
 
         ItemStack item = event.getResult();

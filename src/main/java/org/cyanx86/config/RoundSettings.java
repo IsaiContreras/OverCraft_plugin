@@ -11,8 +11,6 @@ public class RoundSettings {
     // -- PUBLIC --
 
     // -- PRIVATE --
-    private static RoundSettings instance;
-
     private int grStartCountdown;
     private int grRoundTime;
     private int grEndIntermission;

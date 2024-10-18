@@ -15,7 +15,6 @@ public class OrderDisplayer {
     // -- PUBLIC --
 
     // -- PRIVATE --
-
     private final HashMap<String, Order> lines = new HashMap<>();
 
     private Objective objective;
@@ -27,7 +26,6 @@ public class OrderDisplayer {
     // -- [[ METHODS ]] --
 
     // -- PUBLIC --
-
     public OrderDisplayer() {
         InitializeDisplayer();
     }
@@ -66,8 +64,8 @@ public class OrderDisplayer {
             }
         }
     }
-    // -- PRIVATE --
 
+    // -- PRIVATE --
     private void InitializeDisplayer() {
         ScoreboardManager sbm = Bukkit.getScoreboardManager();
 
@@ -90,4 +88,5 @@ public class OrderDisplayer {
     public Scoreboard getScoreboard() {
         return this.scoreboard;
     }
+
 }

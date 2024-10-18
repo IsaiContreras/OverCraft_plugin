@@ -142,16 +142,23 @@ public class PlayerState {
                 this.mobilize();
             }
 
-            List<String> texts = this.locale.getStrArray("round-titles.player-immobilized");
-
-            Messenger.titleToPlayer(
-                this.player,
-                texts.get(0),
-                texts.get(1).replace("%time%", String.valueOf(this.time)),
-                0,
-                20,
-                0
-            );
+            List<String> texts = this.locale.getStrArray("round-titles.player-out-of-kitchen");
+            if (texts == null)
+                Messenger.msgToSender(
+                    this.player,
+                    OverCrafted.prefix +
+                            GeneralSettings.getInstance().getInvalidMessagePath()
+                                    .replace("%path%", "round-titles.player-out-of-kitchen")
+                );
+            else
+                Messenger.titleToPlayer(
+                    this.player,
+                    texts.get(0),
+                    texts.get(1).replace("%time%", String.valueOf(this.time)),
+                    0,
+                    20,
+                    0
+                );
 
             this.time--;
         }, 20, 20);

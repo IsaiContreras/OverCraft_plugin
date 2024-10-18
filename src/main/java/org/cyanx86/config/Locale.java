@@ -37,20 +37,23 @@ public class Locale extends CustomConfigFile {
 
         try {
             message = (String)config.get(path);
-        } catch(NullPointerException | ClassCastException e) {
+        } catch(ClassCastException e) {
             message = GeneralSettings.getInstance().getInvalidMessagePath().replace("%path%", path);
         }
+
+        if (message == null)
+            message = GeneralSettings.getInstance().getInvalidMessagePath().replace("%path%", path);
 
         return message;
     }
 
     public List<String> getStrArray(String path) {
         FileConfiguration config = this.getConfig();
-        List<String> array = new ArrayList<>();
+        List<String> array;
 
         try {
             array = (List<String>)config.get(path);
-        } catch(NullPointerException | ClassCastException ignored) {
+        } catch(ClassCastException ignored) {
             return null;
         }
 

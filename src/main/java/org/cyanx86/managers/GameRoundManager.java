@@ -2,10 +2,8 @@ package org.cyanx86.managers;
 
 import org.bukkit.entity.Player;
 
-import org.cyanx86.OverCrafted;
-import org.cyanx86.classes.GameArea;
+import org.cyanx86.classes.KitchenArea;
 import org.cyanx86.classes.GameRound;
-import org.cyanx86.classes.OrderDisplayer;
 import org.cyanx86.utils.Enums.ListResult;
 
 import java.util.ArrayList;
@@ -19,11 +17,9 @@ public class GameRoundManager {
     // -- PUBLIC --
 
     // -- PRIVATE --
-    private final OverCrafted master = OverCrafted.getInstance();
-
     private GameRound gameround;
 
-    private GameArea gamearea;
+    private KitchenArea kitchenArea;
     private final List<Player> gamePlayers = new ArrayList<>();
 
     // -- [[ METHODS ]] --
@@ -32,16 +28,16 @@ public class GameRoundManager {
 
     // Round
     public boolean startRound() {
-        if (this.gamearea == null)
+        if (this.kitchenArea == null)
             return false;
         if (this.gamePlayers.isEmpty())
             return false;
 
         this.gameround = new GameRound(
-                this.gamearea,
-                this.gamePlayers
+            this.kitchenArea,
+            this.gamePlayers
         );
-        this.gamearea = null;
+        this.kitchenArea = null;
         this.gamePlayers.clear();
 
         return true;
@@ -56,19 +52,15 @@ public class GameRoundManager {
     }
 
     // GameArea managing
-    public void setGameArea(@NotNull GameArea gamearea) {
-        this.gamearea = gamearea;
-    }
-
-    public GameArea getGameArea() {
-        return this.gamearea;
+    public void setKitchenArea(@NotNull KitchenArea kitchenArea) {
+        this.kitchenArea = kitchenArea;
     }
 
     // Player managing
     public ListResult addPlayer(@NotNull Player player) {
-        if (this.gamearea == null)
+        if (this.kitchenArea == null)
             return ListResult.ERROR;
-        if (this.gamePlayers.size() == this.gamearea.getMaxPlayers())
+        if (this.gamePlayers.size() == this.kitchenArea.getMaxPlayers())
             return ListResult.FULL_LIST;
         if (this.gamePlayers.contains(player))
             return ListResult.ALREADY_IN;
