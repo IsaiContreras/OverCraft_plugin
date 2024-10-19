@@ -1,0 +1,107 @@
+common-messages:
+  command: "Comando"
+  no-permissions: "&cNo tienes permiso para usar este comando."
+  invalid-arguments: "&cArgumentos incompletos."
+  console-command: "&cEste comando no puede ejecutarse desde consola."
+  numeric-argument: "&cEste argumento solo acepta valores numéricos."
+
+round-messages:
+  requirements-needed: "&cDebe seleccionar una cocina y los jugadores para la ronda."
+  unable-cancel: "&cNo se pudo cancelar la ronda. Aún no ha iniciado o ya ha acabado."
+  cancelled: "&aRonda cancelada."
+  no-finished-round: "&cAún no hay ronda finalizada."
+  results:
+    title: "&f&lResultados:"
+    delivered: "&7Ordenes entregadas: &o%delivered%"
+    lost: "&7Ordenes perdidas: &o%lost%"
+    score: "&7Puntaje: &o%score%"
+    bonus: "&7Bono: &o%bonus%"
+    total: "&7Puntos totales: &o%total%"
+
+playerlist-messages:
+  player-not-found: "&cEl jugador &r&o%player%&r&c no se encontró."
+  player-not-found-list: "&cEl jugador &r&o%player%&r&a no está en la lista de jugadores."
+  full-list: "&cLa lista de jugadores está llena."
+  empty-list: "&cLa lista de jugadores está vacía."
+  already-listed: "&cEl jugador ya está en la lista."
+  player-added:
+    executor: "&aSe añadió al jugador &r&o%player%&r&a."
+    player: "&aFuiste añadido a la lista de jugadores."
+  player-removed:
+    executor: "&aSe retiró al jugador &r&o%player%&r&a."
+    player: "&cFuiste retirado de la lista de jugadores."
+  show-player-list:
+    title: "&f&lJugadores actuales:"
+    empty-slot: "&7%index%.- &o*** Vacío ***"
+  player-list-cleared: "&aLa lista de jugadores fue vaciada."
+
+kitchen-messages:
+  no-assistant: "&cNo hay asistente registrado."
+  undefined-corner: "&cFaltan esquinas por definir."
+  requirements-needed: "&cFaltan definir SpawnPoints o recetas para esta cocina."
+  not-in-kitchen: "&cNo te encuentras dentro de un área de cocina."
+  name-used: "&cYa hay un elemento con este nombre."
+  kitchen-not-found: "&cNo se encontró una cocina con este nombre."
+  kitchen-overlapped: "&cHay una cocina ocupando parte de este espacio."
+  kitchen-selected: "&aLa cocina &r&o%kitchen%&r&a fue seleccionada para el siguiente juego."
+  kitchen-not-selected: "&cSeleccione una cocina primero."
+  kitchen-created: "&aSe ha creado el área de cocina &r&o%kitchen%&r&a."
+  kitchen-deleted: "&aSe ha eliminado la cocina &r&o%kitchen%&r&a."
+  show-kitchen-list:
+    title: "&f&lCocinas:"
+    empty-list: "&7&o** Vacío **"
+  kitchen-empty-list: "&cLa lista de cocinas está vacía."
+  spawnpoint-outside-boundaries: "&cEl punto no se encuentra dentro de los límites de la cocina."
+  spawnpoint-full-list: "&cEsta cocina ya tiene suficientes SpawnPoints."
+  spawnpoint-empty-list: "&cEsta cocina no tiene SpawnPoints."
+  spawnpoint-added: "&aSapwnPoint&e(&c%x%, &a%y%, &b%z%&e)&a añadido al cocina &r&o%kitchen%&r&a."
+  spawnpoint-cleared: "&aSe limpiaron los SpawnPoints de la cocina &r&o%kitchen%&r&a."
+  recipe-invalid-material: "&cNo se encontró este Material."
+  recipe-already-listed: "&cEsta receta ya está en la lista de la cocina."
+  recipe-not-found: "&cEsta receta no esta en la lista de esta cocina."
+  recipe-added: "&aSe añadió &r&o%recipe%&r&a como receta de la cocina &r&o%kitchen%&r&a."
+  recipe-cleared: "&aSe limpiaron las recetas de la cocina &r&o%kitchen%&r&a."
+  recipe-deleted: "&aSe a quitado la receta &r&o%recipe%&r&a de la cocina &r&o%kitchen%&r&a."
+  recipe-empty-list: "&cEsta cocina no tiene recetas."
+  recipe-show-list: "&7Recetas de la cocina &o%kitchen%:"
+
+reload-settings-messages:
+  reloaded-general: "&aConfiguraciones Generales recargadas."
+  reloaded-kitchen: "&aLista de Cocinas recargada."
+  reloaded-recipes: "&aBonificaciones de recetas recargadas."
+  reloaded-oreblocks: "&aLista de Minerales recargada."
+  not-reloaded-general: "&cRecarga de configuraciones Generales fallida."
+  not-reloaded-kitchen: "&cRecarga de Cocinas fallida."
+  not-reloaded-recipes: "&cRecarga de Bonificaciones de recetes fallida."
+  not-reloaded-oreblocks: "&cRecarga de Minerales fallida."
+
+manager-player-listener:
+  kitchen-assistant-registered: "%player% registró su asistente."
+  kitchen-assistant-dispose: "%player% dispuso su asistente."
+  no-assistant-instance: "&cNo hay instancia de Asistente iniciada."
+  corner-set: "&aEsquina %index% asignada en x:%x%, y:%y%, z:%z%"
+
+non-player-listener:
+  block-place: "&cNo puedes poner bloques en una cocina."
+  block-break: "&cNo puedes romper bloques de una cocina."
+  block-interact: "&cNo puedes manipular bloques de una cocina."
+
+round-events:
+  round-terminated: "Ronda terminada por: %reason%"
+  round-cancelled: "&cLa ronda fue cancelada."
+  round-started: "&aLa ronda ha comenzado."
+  round-finished: "&a¡Buen juego! La ronda ha terminado."
+  all-players-disconnected: "&cTodos los jugadores se eliminaron o desconectaron."
+
+round-titles:
+  round-starts-in: "&eComienza en"
+  round-go: "&a¡A CRAFTEAR!"
+  round-timeout: "&a¡TIEMPO!"
+  player-out-of-kitchen:
+    - "&c¡Te saliste del área!"
+    - "&eTe recuperarás en: &a%time%"
+
+item-materials:
+  GOLDEN_CARROT: "Zanahoria dorada"
+  BAKED_POTATO: "Papa asada"
+  RABBIT_STEW: "Sopa de conejo"

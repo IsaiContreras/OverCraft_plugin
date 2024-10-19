@@ -30,7 +30,7 @@ public class RecipesCommand implements CommandExecutor {
     @Override
     public boolean onCommand(@NotNull CommandSender sender, @NotNull Command command, @NotNull String s, @NotNull String[] args) {
         this.handleSubcommands(sender, args);
-        return false;
+        return true;
     }
 
     // -- PRIVATE --

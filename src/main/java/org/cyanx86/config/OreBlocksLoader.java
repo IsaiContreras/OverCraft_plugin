@@ -59,9 +59,11 @@ public class OreBlocksLoader extends CustomConfigFile {
     }
 
     @Override
-    public void reload() {
-        this.reloadConfig();
+    public boolean reload() {
+        if(!this.reloadConfig())
+            return false;
         this.load();
+        return true;
     }
 
     @Override

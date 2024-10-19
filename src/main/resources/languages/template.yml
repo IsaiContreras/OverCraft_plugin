@@ -1,0 +1,105 @@
+common-messages: #SEPARATOR
+  command:                            # Command word
+  no-permissions:                     # No permission to execute command message.
+  invalid-arguments:                  # Incomplete arguments for command.
+  console-command:                    # Console-executable only.
+  numeric-argument:                   # Numeric argument, no text accepted.
+
+round-messages: #SEPARATOR
+  requirements-needed:                # Round requires GameArea and Players to be called.
+  unable-cancel:                      # Round cannot be cancelled.
+  cancelled:                          # Round cancelled
+  no-finished-round:                  # There is no finished round yet.
+  round-results: #sub-separator
+    title:                            # Title for results prompt.
+    delivered:                        # Amount of delivered orders.
+    lost:                             # Amount of lost orders.
+    score:                            # Bare score result.
+    bonus:                            # Bonus points.
+    total:                            # Total score (score + bonus).
+
+playerlist-messages: #SEPARATOR
+  player-not-found:                   # Player not found in server.
+  player-not-found-list:              # Player not found in playerlist.
+  full-list:                          # Playerlist is full.
+  empty-list:                         # Playerlist is empty.
+  already-listed:              # Player is already in the list.
+  player-added: #sub-separator
+    executor:                         # Player <playername> has been added to playerlist.
+    player:                           # You have been added to playerlist.
+  player-removed: #sub-separator
+    executor:                         # Player <playername> has been removed from playerlist.
+    player:                           # You were removed from playerlist.
+  show-player-list: #sub-separator
+    title:                            # Title for playerlist prompt.
+    empty-slot:                       # Empty slot display.
+  player-list-cleared:                # Playerlist has been cleared.
+
+kitchen-messages: #SEPARATOR
+  no-assistant:                       # No Kitchen corner asistant registered for manager player.
+  undefined-corner:                   # No enough defined corner for a Kitchen.
+  requirements-needed:                # Not enough defined spawnpoints or recipes for a Kitchen.
+  not-in-kitchen:                     # Player is not in Kitchen for a process.
+  name-used:                          # Name already usted for a Kitchen.
+  kitchen-not-found:                  # Kitchen with specific name not found.
+  kitchen-overlapped:                 # Kitchen spaces overlapped.
+  kitchen-selected:                   # The Kitchen named <name> has been selected.
+  kitchen-not-selected:               # Must select a Kitchen first.
+  kitchen-created:                    # A Kitchen named <name> has been created.
+  kitchen-deleted:                    # The Kitchen named <name> has been deleted.
+  show-kitchen-list: # sub-separator
+    title:                            # Title for Kitchen list prompt.
+    empty-list:                       # Display if Kitchen list is empty.
+  kitchen-empty-list:                 # Kitchen list is empty.
+  spawnpoint-outside-boundaries:      # SpawnPoint not inside a Kitchen boundaries.
+  spawnpoint-full-list:               # SpawnPoint list of a Kitchen is full.
+  spawnpoint-empty-list:              # SpawPoint list of Kitchen is empty.
+  spawnpoint-added:                   # SpawnPoint added to Kitchen named <name>.
+  spawnpoint-cleared:                 # SpawnPoint list of Kitchen named <name> has been cleared.
+  recipe-invalid-material:            # Invalid item for a Recipe.
+  recipe-already-listed:              # Recipe already in recipe list of a Kitchen.
+  recipe-not-found:                   # Recipe not found in Kitchen list.
+  recipe-added:                       # Recipe added to Kitchen named <name>.
+  recipe-cleared:                     # Recipe list of Kitchen named <name> has been cleared.
+  recipe-deleted:                     # Recipe removed from Kitchen named <name>.
+  recipe-empty-list:                  # Kitchen has no recipes.
+  recipe-show-list:                   # Show recipes of Kitchen <name>.
+
+reload-settings-messages: # SEPARATOR
+  reloaded-general:                   # General settings reloaded.
+  reloaded-kitchen:                   # Kitchen list reloaded.
+  reloaded-recipes:                   # Recipes bonus reloaded.
+  reloaded-oreblocks:                 # Oreblocks reloaded.
+  not-reloaded-general:               # General settings reload failed.
+  not-reloaded-kitchen:               # Kitchen list reload failed.
+  not-reloaded-recipes:               # Recipes bonus reload failed.
+  not-reloaded-oreblocks:             # Oreblocks reload failed.
+
+manager-player-listener: # SEPARATOR
+  kitchen-assistant-registered:       # Kitchen corner assistant registered for player <playername>.
+  kitchen-assistant-dispose:          # <playername>'s assistant disposed.
+  no-assistant-instance:              # No Kitchen corner assistant registered for this player.
+  corner-set:                         # Corner <index> set in location <x, y, z>.
+
+non-player-listener: # SEPARATOR
+  block-place:                        # You cannot place a block in Kitchen.
+  block-break:                        # You cannot break a block of Kitchen.
+  block-interact:                     # You cannot tamper a block of Kitchen.
+
+round-events: # SEPARATOR
+  round-terminated:                   # Round terminated for <reason>.
+  round-cancelled:                    # Round cancelled.
+  round-started:                      # Round is about to start.
+  round-finished:                     # Round has finished.
+  all-players-disconnected:           # All players were removed or disconnected.
+
+round-titles: # SEPARATOR
+  round-starts-in:                    # Title: Round starts in...
+  round-go:                           # Title: CRAFT!
+  round-timeout:                      # Title: FINISHED!
+  player-out-of-kitchen: #sub-separator
+    -                                 # You got out from the Kitchen.
+    -                                 # Respawning in...
+
+item-materials: # SEPARATOR
+  # <MATERIAL_NAME>: <Name for material in your language>

@@ -80,7 +80,7 @@ public abstract class CustomConfigFile {
         return fileConfig;
     }
 
-    protected void reloadConfig() {
+    protected boolean reloadConfig() {
         if (fileConfig == null) {
             if (foldername != null)
                 file = new File(master.getDataFolder() + File.separator + foldername, filename);
@@ -92,11 +92,14 @@ public abstract class CustomConfigFile {
         if (file != null) {
             YamlConfiguration defConfig = YamlConfiguration.loadConfiguration(file);
             fileConfig.setDefaults(defConfig);
+            return true;
         }
+        else
+            return false;
     }
 
     protected abstract void load();
-    protected abstract void reload();
+    protected abstract boolean reload();
     protected abstract void save();
 
 }

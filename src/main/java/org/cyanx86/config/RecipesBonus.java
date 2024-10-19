@@ -58,9 +58,11 @@ public class RecipesBonus extends CustomConfigFile {
     }
 
     @Override
-    protected void reload() {
-        this.reloadConfig();
+    public boolean reload() {
+        if(!this.reloadConfig())
+            return false;
         this.load();
+        return true;
     }
 
     @Override

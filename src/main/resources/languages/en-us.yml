@@ -1,0 +1,104 @@
+common-messages:
+  command: "Command"
+  no-permissions: "&cYou don't have permission to use this command."
+  invalid-arguments: "&cIncomplete arguments."
+  console-command: "&cThis command is console executable only."
+  numeric-argument: "&cThis argument is for numeric values only."
+
+round-messages:
+  requirements-needed: "&cMust select a GameArea and set players for next games."
+  unable-cancel: "&cCannot cancell round. Not started yet or is finished."
+  cancelled: "&aCancelled round."
+  no-finished-round: "&cThere is no finished round yet."
+  round-results:
+    title: "&f&lResults:"
+    delivered: "&7Delivered: &o%delivered%"
+    lost: "&7Lost: &o%lost%"
+    score: "&7Score: &o%score%"
+    bonus: "&7Bonus: &o%bonus%"
+    total: "&7Total score: &o%total%"
+
+playerlist-messages:
+  player-not-found: "&cPlayer &r&o%player%&r&c not found."
+  player-not-found-list: "&cPlayer &r&o%player%&r&a is not in player list."
+  full-list: "&cFull player list"
+  empty-list: "&cEmpty player list."
+  already-listed: "&cThis player is already in list."
+  player-added:
+    executor: "&aPlayer &r&o%player%&r&a added."
+    player: "&aYou were added to player list."
+  player-removed:
+    executor: "&aPlayer &r&o%player%&r&a removed."
+    player: "&cYou were removed from player list."
+  show-player-list:
+    title: "&f&lCurrent players:"
+    empty-slot: "&7%index%.- &o*** Empty ***"
+  player-list-cleared: "&aPlayer list cleared."
+
+kitchen-messages:
+  no-assistant: "&cNo assistant registered."
+  undefined-corner: "&cThere are corners to define."
+  requirements-needed: "&cThere are SpawnPoints or Recipes to define for this Kitchen."
+  not-in-kitchen: "&cYou are not in a Kitchen."
+  name-used: "&cThere is already a Kitchen with this name."
+  kitchen-not-found: "&cThere is no Kitchen with this name."
+  kitchen-overlapped: "&cThere is a Kitchen using this space."
+  kitchen-selected: "&Kitchen &r&o%kitchen%&r&a selected for next game."
+  kitchen-not-selected: "&cSelect a Kitchen first."
+  kitchen-created: "&Kitchen &r&o%kitchen%&r&a created."
+  kitchen-deleted: "&Kitchen &r&o%kitchen%&r&a deleted."
+  show-kitchen-list:
+    title: "&f&Kitchen Areas:"
+    empty-list: "&7&o** Empty **"
+  kitchen-empty-list: "&Kitchen list is empty."
+  spawnpoint-outside-boundaries: "&cThis point is outside Kitchen boundaries."
+  spawnpoint-full-list: "&cThis Kitchen has already enough SpawnPoints."
+  spawnpoint-empty-list: "&cThis Kitchen has no SpawnPoints."
+  spawnpoint-added: "&aSapwnPoint&e(&c%x%, &a%y%, &b%z%&e)&a added to Kitchen &r&o%kitchen%&r&a."
+  spawnpoint-cleared: "&aSpawnPoints of Kitchen &r&o%kitchen%&r&a cleared."
+  recipe-invalid-material: "&Material not found."
+  recipe-already-listed: "&cThis recipe is already in Kitchen recipe list."
+  recipe-not-found: "&cThis recipe is not in Kitchen list."
+  recipe-added: "&aRecipe &r&o%recipe%&r&a added to Kitchen &r&o%kitchen&r&a."
+  recipe-cleared: "&aRecipes of Kitchen &r&o%kitchen%&r&a cleared."
+  recipe-deleted: "&aRecipe &r&o%recipe%&r&a removed from Kitchen &r&o%kitchen%&r&a."
+  recipe-empty-list: "&cThis Kitchen has no recipes."
+  recipe-show-list: "&7Recipes of Kitchen &o%kitchen%:"
+
+reload-settings-messages:
+  reloaded-general: "&aGeneral configurations reloaded."
+  reloaded-kitchen: "&aKitchen list reloaded."
+  reloaded-recipes: "&aRecipes bonus values reloaded."
+  reloaded-oreblocks: "&aOre blocks drop values reloaded."
+  not-reloaded-general: "&cFailed to reload General configurations."
+  not-reloaded-kitchen: "&cFailed to reload Kitchen list."
+  not-reloaded-recipes: "&cFailed to reload Recipes bonus."
+  not-reloaded-oreblocks: "&cFailes to reload Ore blocks."
+
+manager-player-listener:
+  kitchen-assistant-registered: "%player% registered it's assistant."
+  kitchen-assistant-dispose: "%player% disposed it's assistant."
+  no-assistant-instance: "&cNo assistant instance initialized."
+  corner-set: "&aCorner %index% assigned at x:%x%, y:%y%, z:%z%"
+
+non-player-listener:
+  block-place: "&cYou can't place blocks inside a Kitchen."
+  block-break: "&cYou can't break blocks of a Kitchen."
+  block-interact: "&cYou can't handle a Kitchen block."
+
+round-events:
+  round-terminated: "Round terminated for: %reason%"
+  round-cancelled: "&cRound has been cancelled."
+  round-started: "&aRound is about to start."
+  round-finished: "&aGood game! Round has ended."
+  all-players-disconnected: "&cAll players disconnected or removed."
+
+round-titles:
+  round-starts-in: "&eStarting in:"
+  round-go: "&aLET'S CRAFT!"
+  round-timeout: "&aTIME!"
+  player-out-of-kitchen:
+    - "&cYou got out of Kitchen!"
+    - "&eRespawning in: &a%time%"
+
+item-materials:

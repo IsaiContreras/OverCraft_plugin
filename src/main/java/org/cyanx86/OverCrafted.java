@@ -4,6 +4,7 @@ import org.bukkit.plugin.java.JavaPlugin;
 
 import org.cyanx86.commands.KitchenCommand;
 import org.cyanx86.commands.RecipesCommand;
+import org.cyanx86.commands.ReloadSettingsCommand;
 import org.cyanx86.commands.RoundCommand;
 import org.cyanx86.config.*;
 import org.cyanx86.listeners.ManagerPlayerListener;
@@ -48,6 +49,8 @@ public class OverCrafted extends JavaPlugin {
 
         this.kitchenAreaCreatorAssistantManager = new KitchenAreaCreatorAssistantManager();
         this.gameRoundManager = new GameRoundManager();
+
+        this.saveResource("languages/template.yml", false);
 
         GeneralSettings.getInstance();
 
@@ -94,6 +97,7 @@ public class OverCrafted extends JavaPlugin {
         Objects.requireNonNull(this.getCommand("round")).setExecutor(new RoundCommand());
         Objects.requireNonNull(this.getCommand("kitchen")).setExecutor(new KitchenCommand());
         Objects.requireNonNull(this.getCommand("recipes")).setExecutor(new RecipesCommand());
+        Objects.requireNonNull(this.getCommand("reloadsettings")).setExecutor(new ReloadSettingsCommand());
     }
 
     private void setupEvents() {

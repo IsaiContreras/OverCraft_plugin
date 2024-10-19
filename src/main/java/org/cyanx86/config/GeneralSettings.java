@@ -66,9 +66,11 @@ public class GeneralSettings extends CustomConfigFile {
     }
 
     @Override
-    protected void reload() {
-        this.reloadConfig();
+    public boolean reload() {
+        if (!this.reloadConfig())
+            return false;
         this.load();
+        return true;
     }
 
     @Override
@@ -87,9 +89,9 @@ public class GeneralSettings extends CustomConfigFile {
     // -- PRIVATE --
     private GeneralSettings() {
         super(
-            "general_settings.yml",
+            "config.yml",
             null,
-            true
+            false
         );
         this.loadDefault();
         this.roundSettings = new RoundSettings();

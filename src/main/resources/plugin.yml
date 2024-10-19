@@ -21,6 +21,12 @@ commands:
       - rcp
       - rp
 
+  reloadsettings:
+    description: "Reload settings files."
+    aliases:
+      - rls
+      - -rs
+
 permissions:
   overcrafted.*:
     description: "Permiso general."
