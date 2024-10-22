@@ -2,6 +2,9 @@ package org.cyanx86.listeners;
 
 import org.bukkit.Material;
 import org.bukkit.block.*;
+import org.bukkit.block.data.type.Door;
+import org.bukkit.block.data.type.Gate;
+import org.bukkit.block.data.type.TrapDoor;
 import org.bukkit.entity.*;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
@@ -129,6 +132,7 @@ public class PlayerListener implements Listener {
 
         this.onPlayerInteractsWithChest(event);
         this.onPlayerInsertItemInFurnace(event);
+        this.onPlayerOpensDoor(event);
     }
 
     @EventHandler
@@ -208,6 +212,18 @@ public class PlayerListener implements Listener {
             round.getCurrentRoundState() == GameRound.ROUNDSTATE.ENDED ||
             !round.isPlayerInGame(player)
         );
+    }
+
+    private void onPlayerOpensDoor(PlayerInteractEvent event) {
+        Block block = event.getClickedBlock();
+
+        if (
+            block == null ||
+            !((block instanceof Door) && event.getAction().equals(Action.RIGHT_CLICK_BLOCK))
+        )
+            return;
+
+        event.setCancelled(true);
     }
 
     // -- Chest interaction modifications
