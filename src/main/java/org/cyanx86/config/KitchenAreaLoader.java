@@ -87,6 +87,7 @@ public class KitchenAreaLoader extends CustomConfigFile {
                 return ListResult.INVALID_ITEM;
 
         this.kitchenAreas.add(kitchenArea);
+        this.save();
         return ListResult.SUCCESS;
     }
 
@@ -100,6 +101,7 @@ public class KitchenAreaLoader extends CustomConfigFile {
             return ListResult.NOT_FOUND;
 
         this.kitchenAreas.remove(kitchenArea);
+        this.save();
         return ListResult.SUCCESS;
     }
 

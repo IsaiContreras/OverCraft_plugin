@@ -1,8 +1,10 @@
 package org.cyanx86.classes;
 
+import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.Material;
 
+import org.bukkit.block.Block;
 import org.cyanx86.utils.Enums.ListResult;
 import org.cyanx86.utils.Primitives.Cube;
 
@@ -75,6 +77,41 @@ public class KitchenArea {
     }
     public int getMaxPlayers() {
         return this.maxPlayers;
+    }
+
+    public Location getCenterPoint() {
+        return new Location(
+            Bukkit.getWorld(this.world),
+            ((corners[1].getX() + corners[0].getX()) / 2),
+            ((corners[1].getY() + corners[0].getY()) / 2),
+            ((corners[1].getZ() + corners[0].getZ()) / 2)
+        );
+    }
+    public double getWidth() {
+        return this.cubeArea.getWidth();
+    }
+    public double getHeight() {
+        return this.cubeArea.getHeight();
+    }
+    public double getDepth() {
+        return this.cubeArea.getDepth();
+    }
+
+    public List<Block> getBlocks() {
+        List<Block> blocks = new ArrayList<>();
+        for (int x = (int)this.cubeArea.left; x < this.cubeArea.right; x++)
+            for (int y = (int)this.cubeArea.bottom; y < this.cubeArea.top; y++)
+                for (int z = (int)this.cubeArea.back; z < this.cubeArea.front; z++) {
+                    Block block = new Location(Bukkit.getWorld(this.world), x, y, z)
+                            .getBlock();
+
+                    if (block.getType().equals(Material.AIR))
+                        continue;
+
+                    blocks.add(block);
+                }
+
+        return blocks;
     }
 
     // SpawnPoints

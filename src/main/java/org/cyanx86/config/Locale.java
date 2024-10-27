@@ -66,9 +66,11 @@ public class Locale extends CustomConfigFile {
 
         try {
             name = (String)config.get("item-materials." + material.name());
-        } catch (NullPointerException | ClassCastException e) {
-            name = DataFormatting.formatMaterialToString(material.name());
+        } catch (ClassCastException e) {
+            return DataFormatting.formatMaterialToString(material.name());
         }
+        if (name == null)
+            return DataFormatting.formatMaterialToString(material.name());
 
         return name;
     }

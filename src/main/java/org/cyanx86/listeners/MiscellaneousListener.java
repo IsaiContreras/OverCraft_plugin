@@ -1,5 +1,6 @@
 package org.cyanx86.listeners;
 
+import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.block.Block;
 import org.bukkit.block.Furnace;
@@ -15,8 +16,12 @@ import org.bukkit.event.hanging.HangingBreakByEntityEvent;
 
 import org.bukkit.event.inventory.FurnaceSmeltEvent;
 import org.bukkit.inventory.ItemStack;
+import org.bukkit.scheduler.BukkitTask;
 import org.bukkit.util.Vector;
+import org.cyanx86.OverCrafted;
+import org.cyanx86.classes.GameRound;
 import org.cyanx86.utils.Functions;
+import org.cyanx86.utils.Messenger;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -28,6 +33,7 @@ public class MiscellaneousListener implements Listener {
     // -- PUBLIC --
 
     // -- PRIVATE --
+    private final OverCrafted master = OverCrafted.getInstance();
 
     // -- [[ METHODS ]] --
 
@@ -77,18 +83,26 @@ public class MiscellaneousListener implements Listener {
 
     @EventHandler
     public void onFurnaceSmelt(FurnaceSmeltEvent event) {
-        Furnace furnace = (Furnace)event.getBlock().getState();
-        if (!Functions.blockBelongsKitchenArea(event.getBlock()))
+        GameRound round = master.getGameRoundManager().getGameRound();
+        if (
+            !Functions.blockBelongsKitchenArea(event.getBlock()) ||
+            !(round == null || round.getCurrentRoundState() != GameRound.ROUNDSTATE.ENDED)
+        )
             return;
 
+        Furnace furnace = (Furnace)event.getBlock().getState();
         ItemStack item = event.getResult();
 
         furnace.getWorld().dropItem(
             furnace.getLocation().add(new Vector(0, 1, 0)),
-            item
+            new ItemStack(item.getType())
         );
 
-        furnace.getInventory().setResult(new ItemStack(Material.AIR));
+        Bukkit.getScheduler().runTaskLater(OverCrafted.getInstance(), () -> {
+            furnace.getInventory().setItem(2, new ItemStack(Material.AIR));
+        }, 1);
+
+        Messenger.msgToConsole("Furnace smelted and cleaned!");
     }
 
     // -- PRIVATE --

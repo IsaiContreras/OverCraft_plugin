@@ -16,7 +16,7 @@ public class GeneralSettings extends CustomConfigFile {
     private String language;
     private String invalid_message_path;
 
-    private final Locale locale;
+    private Locale locale;
     private final RoundSettings roundSettings;
     private final SoundSettings soundSettings;
 
@@ -70,6 +70,7 @@ public class GeneralSettings extends CustomConfigFile {
         if (!this.reloadConfig())
             return false;
         this.load();
+        this.locale = new Locale(this.getLanguage());
         return true;
     }
 

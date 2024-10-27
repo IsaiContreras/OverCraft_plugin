@@ -86,6 +86,15 @@ non-player-listener:
   block-break: "&cYou can't break blocks of a Kitchen."
   block-interact: "&cYou can't handle a Kitchen block."
 
+player-listener:
+  furnace-burning: "&cThis furnace is already on."
+  furnace-fueled: "&cThis furnace has fuel already."
+  furnace-refueled: "&aYou put fuel in the furnace."
+  furnace-smelting-inside: "&cThere's already an item in the furnace."
+  furnace-smeltable-inserted: "&aYou put &e&o%item%&r&a in the furnace."
+  not-smeltable: "&cThis item is not smeltable."
+  full-inventory: "&cInventory is full."
+
 round-events:
   round-terminated: "Round terminated for: %reason%"
   round-cancelled: "&cRound has been cancelled."

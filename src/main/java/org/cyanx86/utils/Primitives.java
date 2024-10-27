@@ -24,6 +24,12 @@ public class Primitives {
             front = Math.max(corner1.getBlockZ(), corner2.getBlockZ());
         }
 
+        public double getWidth() {
+            return (right - left);
+        }
+        public double getHeight() { return (top - bottom); }
+        public double getDepth() { return (front - back); }
+
     }
 
 }

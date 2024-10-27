@@ -1,7 +1,13 @@
 package org.cyanx86.classes;
 
 import org.bukkit.*;
+import org.bukkit.block.Block;
+import org.bukkit.block.Furnace;
+import org.bukkit.entity.Entity;
+import org.bukkit.entity.EntityType;
+import org.bukkit.entity.Item;
 import org.bukkit.entity.Player;
+import org.bukkit.inventory.ItemStack;
 import org.bukkit.scheduler.BukkitTask;
 
 import org.bukkit.scoreboard.Scoreboard;
@@ -142,9 +148,16 @@ public class GameRound {
     }
 
     public boolean dispatchOrder(@NotNull Material recipe) {
+        if (!this.orderManager.removeOrder(recipe, false))
+            return false;
+
         this.scoreManager.incrementDeliveredOrder();
         this.soundEffectsManager.playDeliveredOrder();
-        return this.orderManager.removeOrder(recipe, false);
+        return true;
+    }
+
+    public void sendActionBarMessageToPlayer(@NotNull Player player, @NotNull String message, int time) {
+        this.playersManager.sendActionBarToPlayerByTime(player, message, time);
     }
 
     // Validators
@@ -263,6 +276,9 @@ public class GameRound {
 
         this.currentState = ROUNDSTATE.ENDED;
         this.restorePlayerProperties();
+
+        this.cleanFurnacesInventory();
+        this.cleanDroppedItems();
     }
 
     // Players
@@ -283,6 +299,35 @@ public class GameRound {
     private void restorePlayerProperties() {
         for (PlayerState playerState : this.playersManager.getPlayerStates())
             playerState.restorePlayer();
+    }
+
+    // World
+    private void cleanDroppedItems() {
+        World world = Bukkit.getWorld(this.kitchenArea.getWorld());
+        if (world == null)
+            return;
+
+        for (Entity entityItem : world.getNearbyEntities(
+                this.kitchenArea.getCenterPoint(),
+                this.kitchenArea.getWidth() / 2,
+                this.kitchenArea.getHeight() / 2,
+                this.kitchenArea.getDepth() / 2
+        )) {
+            if (entityItem.getType().equals(EntityType.DROPPED_ITEM))
+                entityItem.remove();
+        }
+    }
+
+    private void cleanFurnacesInventory() {
+        for (Block block : this.kitchenArea.getBlocks()) {
+            if (!(block.getState() instanceof Furnace furnace))
+                continue;
+
+            furnace.setBurnTime((short)-1);
+            furnace.getInventory().setFuel(null);
+            furnace.getInventory().setSmelting(null);
+            furnace.getInventory().setResult(null);
+        }
     }
 
 }

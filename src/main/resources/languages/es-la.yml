@@ -86,6 +86,15 @@ non-player-listener:
   block-break: "&cNo puedes romper bloques de una cocina."
   block-interact: "&cNo puedes manipular bloques de una cocina."
 
+player-listener:
+  furnace-burning: "&cEl horno ya está encendido."
+  furnace-fueled: "&cEl horno ya contiene combustible."
+  furnace-refueled: "&aPusiste combustible en el horno."
+  furnace-smelting-inside: "&cYa hay un objeto en el horno."
+  furnace-smeltable-inserted: "&aPusiste &e&o%item%&r&a en el horno."
+  not-smeltable: "&cEste objeto no se puede cocinar."
+  full-inventory: "&cEl inventario está lleno."
+
 round-events:
   round-terminated: "Ronda terminada por: %reason%"
   round-cancelled: "&cLa ronda fue cancelada."

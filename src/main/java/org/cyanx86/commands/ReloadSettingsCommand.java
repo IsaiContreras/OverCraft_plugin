@@ -123,12 +123,12 @@ public class ReloadSettingsCommand implements CommandExecutor {
         if (!master.getKitchenAreaLoader().reload())
             Messenger.msgToSender(
                 sender,
-                OverCrafted.prefix + this.locale.getStr("reload-settings-messages-not-reloaded-kitchen")
+                OverCrafted.prefix + this.locale.getStr("reload-settings-messages.not-reloaded-kitchen")
             );
         else
             Messenger.msgToSender(
                 sender,
-                OverCrafted.prefix + this.locale.getStr("reload-settings-messages-reloaded-kitchen")
+                OverCrafted.prefix + this.locale.getStr("reload-settings-messages.reloaded-kitchen")
             );
     }
 

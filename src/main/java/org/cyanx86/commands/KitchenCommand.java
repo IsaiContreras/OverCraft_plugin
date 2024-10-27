@@ -4,6 +4,7 @@ import org.bukkit.Material;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
+import org.bukkit.command.TabExecutor;
 import org.bukkit.entity.Player;
 
 import org.cyanx86.OverCrafted;
@@ -18,8 +19,9 @@ import org.cyanx86.utils.Messenger;
 
 import java.util.List;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
-public class KitchenCommand implements CommandExecutor {
+public class KitchenCommand implements CommandExecutor, TabExecutor {
 
     // -- [[ ATRIBUTES ]] --
 
@@ -34,9 +36,25 @@ public class KitchenCommand implements CommandExecutor {
     // -- PUBLIC --
 
     @Override
-    public boolean onCommand(@NotNull CommandSender sender, @NotNull Command command, @NotNull String s, String[] args) {
+    public boolean onCommand(
+            @NotNull CommandSender sender,
+            @NotNull Command command,
+            @NotNull String s,
+            String[] args
+    ) {
         this.handleSubcommands(sender, args);
         return true;
+    }
+
+    @Nullable
+    @Override
+    public List<String> onTabComplete(
+            @NotNull CommandSender sender,
+            @NotNull Command command,
+            @NotNull String s,
+            @NotNull String[] args
+    ) {
+        return List.of();
     }
 
     // -- PRIVATE --

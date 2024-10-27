@@ -37,6 +37,9 @@ public class PlayerState {
     private int time;
     private BukkitTask task;
 
+    private boolean blockActionBar = false;
+    private BukkitTask actionBarBlockTask;
+
     // -- [[ METHODS ]] --
 
     // -- PUBLIC --
@@ -73,6 +76,17 @@ public class PlayerState {
     }
 
     public void sendActionBarToPlayer(@NotNull String message) {
+        if (blockActionBar) return;
+        Messenger.actionBarToPlayer(
+            this.player,
+            message
+        );
+    }
+
+    public void sendActionBarToPlayerForTime(@NotNull String message, int timeSeconds) {
+        if (this.actionBarBlockTask != null)
+            this.cancelActionBarBlockTimer();
+        this.setActionBarBlockTimer(timeSeconds);
         Messenger.actionBarToPlayer(
             this.player,
             message
@@ -162,6 +176,20 @@ public class PlayerState {
 
             this.time--;
         }, 20, 20);
+    }
+
+    private void setActionBarBlockTimer(int time) {
+        this.blockActionBar = true;
+        this.actionBarBlockTask = Bukkit.getScheduler().runTaskLater(
+            OverCrafted.getInstance(),
+            this::cancelActionBarBlockTimer,
+            (time * 20L)
+        );
+    }
+
+    private void cancelActionBarBlockTimer() {
+        this.blockActionBar = false;
+        this.actionBarBlockTask.cancel();
     }
 
 }

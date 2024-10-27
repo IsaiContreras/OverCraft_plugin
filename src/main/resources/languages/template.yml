@@ -86,6 +86,15 @@ non-player-listener: # SEPARATOR
   block-break:                        # You cannot break a block of Kitchen.
   block-interact:                     # You cannot tamper a block of Kitchen.
 
+player-listener:
+  furnace-burning:                    # Furnace is on.
+  furnace-fueled:                     # Furnace has fuel.
+  furnace-refueled:                   # Player put fuel in furnace.
+  furnace-smelting-inside:            # Furnace has a smeltable item inside.
+  furnace-smeltable-inserted:         # Player put smeltable item in furnace.
+  not-smeltable:                      # Item is not smeltable.
+  full-inventory:                     # Player inventory is full.
+
 round-events: # SEPARATOR
   round-terminated:                   # Round terminated for <reason>.
   round-cancelled:                    # Round cancelled.

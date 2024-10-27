@@ -75,6 +75,14 @@ public class GamePlayersManager {
             playerState.sendActionBarToPlayer(message);
     }
 
+    public void sendActionBarToPlayerByTime(@NotNull Player player, @NotNull String message, int time) {
+        PlayerState playerState = this.getPlayerState(player);
+        if (playerState == null)
+            return;
+
+        playerState.sendActionBarToPlayerForTime(message, time);
+    }
+
     public void sendSoundToPlayer(@NotNull Sound sound, float volume, float pitch) {
         for (PlayerState playerState : this.players)
             playerState.sendSoundToPlayer(

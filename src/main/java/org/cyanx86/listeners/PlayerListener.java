@@ -3,8 +3,6 @@ package org.cyanx86.listeners;
 import org.bukkit.Material;
 import org.bukkit.block.*;
 import org.bukkit.block.data.type.Door;
-import org.bukkit.block.data.type.Gate;
-import org.bukkit.block.data.type.TrapDoor;
 import org.bukkit.entity.*;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
@@ -29,6 +27,8 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Objects;
 
+import org.cyanx86.config.GeneralSettings;
+import org.cyanx86.config.Locale;
 import org.cyanx86.utils.Functions;
 import org.jetbrains.annotations.NotNull;
 
@@ -40,6 +40,7 @@ public class PlayerListener implements Listener {
 
     // -- PRIVATE --
     private final OverCrafted master = OverCrafted.getInstance();
+    private final Locale locale = GeneralSettings.getInstance().getLocale();
 
     // -- [[ METHODS ]] --
 
@@ -192,7 +193,7 @@ public class PlayerListener implements Listener {
   
     @EventHandler
     public void onPlayerPickUpItem(EntityPickupItemEvent event) {
-        if (!(event.getEntity() instanceof Player player))
+        if (!(event.getEntity() instanceof Player player) || this.isNotRoundPlayerRequisites(player))
             return;
 
         HashMap<Material, Integer> contents = getPlayerInventoryMap(player);
@@ -200,8 +201,14 @@ public class PlayerListener implements Listener {
 
         if ((!contents.containsKey(drop.getType()) && contents.size() + 1 < 6) || (contents.containsKey(drop.getType()) && contents.get(drop.getType()) < 16))
             return;
-        else
+        else {
+            master.getGameRoundManager().getGameRound().sendActionBarMessageToPlayer(
+                player,
+                locale.getStr("player-listener.full-inventory"),
+                1
+            );
             event.setCancelled(true);
+        }
     }
 
     // -- PRIVATE --
@@ -263,7 +270,6 @@ public class PlayerListener implements Listener {
 
         if ((!contents.containsKey(drop.getType()) && contents.size() + 1 < 6) || (contents.containsKey(drop.getType()) && contents.get(drop.getType()) < 16))
             event.getPlayer().getInventory().addItem(drop);
-
     }
 
     private void onPlayerDeliverRecipe(PlayerInteractEvent event, @NotNull Block chest) {
@@ -313,18 +319,30 @@ public class PlayerListener implements Listener {
         if (item == null)
             return;
 
-        if (
-            item.getType().isFuel() &&
-            furnace.getBurnTime() == 0 &&
-            furnace.getInventory().getFuel() == null
-        )
-            furnace.getInventory().setFuel(new ItemStack(Material.COAL, 1));
-        else if (
-            Functions.isSmeltable(item.getType(), furnace) &&
-            furnace.getInventory().getSmelting() == null
-        )
-            furnace.getInventory().setSmelting(new ItemStack(item.getType(), 1));
-        else
+        boolean insertedItem = false;
+        if (item.getType().isFuel()) {
+            insertedItem = this.playerRefuelFurnace(
+                furnace,
+                item,
+                event.getPlayer()
+            );
+        }
+        else if (Functions.isSmeltable(item.getType(), furnace))
+            insertedItem = this.playerInsertSmeltableToFurnace(
+                furnace,
+                item,
+                event.getPlayer()
+            );
+        else {
+            master.getGameRoundManager().getGameRound().sendActionBarMessageToPlayer(
+                event.getPlayer(),
+                locale.getStr("player-listener.not-smeltable"),
+                1
+            );
+            return;
+        }
+
+        if (!insertedItem)
             return;
 
         if (item.getAmount() == 1)
@@ -333,6 +351,58 @@ public class PlayerListener implements Listener {
             item.setAmount(item.getAmount() - 1);
     }
 
+    private boolean playerRefuelFurnace(Furnace furnace, ItemStack item, Player player) {
+        GameRound round = master.getGameRoundManager().getGameRound();
+
+        if (furnace.getBurnTime() > 0) {
+            round.sendActionBarMessageToPlayer(
+                player,
+                locale.getStr("player-listener.furnace-burning"),
+                2
+            );
+            return false;
+        }
+        else if (furnace.getInventory().getFuel() != null) {
+            round.sendActionBarMessageToPlayer(
+                player,
+                locale.getStr("player-listener.furnace-fueled"),
+                2
+            );
+            return false;
+        }
+
+        furnace.getInventory().setFuel(new ItemStack(Material.COAL, 1));
+        round.sendActionBarMessageToPlayer(
+            player,
+            locale.getStr("player-listener.furnace-refueled"),
+            2
+        );
+        return true;
+    }
+
+    private boolean playerInsertSmeltableToFurnace(Furnace furnace, ItemStack item, Player player) {
+        GameRound round = master.getGameRoundManager().getGameRound();
+
+        if (furnace.getInventory().getSmelting() != null) {
+            round.sendActionBarMessageToPlayer(
+                player,
+                locale.getStr("player-listener.furnace-smelting-inside"),
+                2
+            );
+            return false;
+        }
+
+        furnace.getInventory().setSmelting(new ItemStack(item.getType(), 1));
+        round.sendActionBarMessageToPlayer(
+            player,
+            locale.getStr("player-listener.furnace-smeltable-inserted")
+                    .replace("%item%", locale.getMatName(item.getType())),
+            2
+        );
+        return true;
+    }
+
+    // -- Other utils
     private HashMap<Material, Integer> getPlayerInventoryMap(Player player) {
         HashMap<Material, Integer> contents = new HashMap<>();
 
