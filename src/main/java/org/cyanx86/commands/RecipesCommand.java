@@ -4,6 +4,7 @@ import org.bukkit.Material;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
+import org.bukkit.command.TabExecutor;
 import org.bukkit.entity.Player;
 import org.cyanx86.OverCrafted;
 import org.cyanx86.classes.KitchenArea;
@@ -13,8 +14,13 @@ import org.cyanx86.utils.Enums;
 import org.cyanx86.utils.Functions;
 import org.cyanx86.utils.Messenger;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
-public class RecipesCommand implements CommandExecutor {
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
+
+public class RecipesCommand implements CommandExecutor, TabExecutor {
 
 
     // -- [[ ATTRIBUTES ]] --
@@ -22,6 +28,7 @@ public class RecipesCommand implements CommandExecutor {
     // -- PUBLIC --
 
     // -- PRIVATE --
+    private final OverCrafted master = OverCrafted.getInstance();
     private final Locale locale = GeneralSettings.getInstance().getLocale();
 
     // -- [[ METHODS ]] --
@@ -31,6 +38,28 @@ public class RecipesCommand implements CommandExecutor {
     public boolean onCommand(@NotNull CommandSender sender, @NotNull Command command, @NotNull String s, @NotNull String[] args) {
         this.handleSubcommands(sender, args);
         return true;
+    }
+
+    @Nullable @Override
+    public List<String> onTabComplete(
+            @NotNull CommandSender sender, @NotNull Command command, @NotNull String s, @NotNull String[] args
+    ) {
+        List<String> completions = new ArrayList<>();
+        String input = args[0].toLowerCase();
+
+        if (args.length == 1) {
+            List<String> subcommands = List.of("add", "delete", "of");
+
+            for (String sub : subcommands) {
+                if (sub.startsWith(input))
+                    completions.add(sub);
+            }
+        } else if (args.length == 2) {
+            this.cmpKitchenAreas(sender, completions, args[1].toLowerCase());
+        }
+
+        Collections.sort(completions);
+        return completions;
     }
 
     // -- PRIVATE --
@@ -326,6 +355,23 @@ public class RecipesCommand implements CommandExecutor {
                             .replace("%recipe%", recipe)
                             .replace("%kitchen%", kitchenArea.getName())
         );
+    }
+
+    // Completions
+    private void cmpKitchenAreas(
+            @NotNull CommandSender sender, @NotNull List<String> completions, @NotNull String input
+    ) {
+        List<String> availableKitchenAreas = new ArrayList<>();
+        for (KitchenArea ktcItem : master.getKitchenAreaLoader().getKitchenAreas()) {
+            if (!((Player)sender).getWorld().getName().equals(ktcItem.getWorld()))
+                continue;
+            availableKitchenAreas.add(ktcItem.getName());
+        }
+
+        for (String kitchenAraName : availableKitchenAreas) {
+            if (kitchenAraName.startsWith(input))
+                completions.add(kitchenAraName);
+        }
     }
 
 }

@@ -4,14 +4,20 @@ import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
 
+import org.bukkit.command.TabExecutor;
 import org.cyanx86.OverCrafted;
 import org.cyanx86.config.GeneralSettings;
 import org.cyanx86.config.Locale;
 import org.cyanx86.utils.Messenger;
 
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
-public class ReloadSettingsCommand implements CommandExecutor {
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
+
+public class ReloadSettingsCommand implements CommandExecutor, TabExecutor {
 
     // -- [[ ATTRIBUTES ]] --
 
@@ -25,9 +31,31 @@ public class ReloadSettingsCommand implements CommandExecutor {
 
     // -- PUBLIC --
     @Override
-    public boolean onCommand(@NotNull CommandSender sender, @NotNull Command command, @NotNull String s, @NotNull String[] args) {
+    public boolean onCommand(
+            @NotNull CommandSender sender, @NotNull Command command, @NotNull String s, @NotNull String[] args
+    ) {
         this.handleSubcommands(sender, args);
         return true;
+    }
+
+    @Nullable @Override
+    public List<String> onTabComplete(
+            @NotNull CommandSender sender, @NotNull Command command, @NotNull String s, @NotNull String[] args
+    ) {
+        List<String> completions = new ArrayList<>();
+        String input = args[0].toLowerCase();
+
+        if (args.length == 1) {
+            List<String> subcommands = List.of("all", "general", "kitchen", "recipes", "oreblocks");
+
+            for (String sub : subcommands) {
+                if (sub.startsWith(input))
+                    completions.add(sub);
+            }
+        }
+
+        Collections.sort(completions);
+        return completions;
     }
 
     // -- PRIVATE --

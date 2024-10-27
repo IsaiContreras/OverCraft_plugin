@@ -17,6 +17,8 @@ import org.cyanx86.utils.Enums;
 import org.cyanx86.utils.Functions;
 import org.cyanx86.utils.Messenger;
 
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -37,24 +39,37 @@ public class KitchenCommand implements CommandExecutor, TabExecutor {
 
     @Override
     public boolean onCommand(
-            @NotNull CommandSender sender,
-            @NotNull Command command,
-            @NotNull String s,
-            String[] args
+            @NotNull CommandSender sender, @NotNull Command command, @NotNull String s, String[] args
     ) {
         this.handleSubcommands(sender, args);
         return true;
     }
 
-    @Nullable
-    @Override
+    @Nullable @Override
     public List<String> onTabComplete(
-            @NotNull CommandSender sender,
-            @NotNull Command command,
-            @NotNull String s,
-            @NotNull String[] args
+            @NotNull CommandSender sender, @NotNull Command command, @NotNull String s, @NotNull String[] args
     ) {
-        return List.of();
+        List<String> completions = new ArrayList<>();
+        String input = args[0].toLowerCase();
+
+        if (args.length == 1) {
+            List<String> subcommands = List.of("create", "delete", "resetspawns", "list", "info");
+
+            for (String sub : subcommands) {
+                if (sub.startsWith(input))
+                    completions.add(sub);
+            }
+        } else if (args.length == 2) {
+            if (
+                args[0].equalsIgnoreCase("delete") ||
+                args[0].equalsIgnoreCase("resetspawns") ||
+                args[0].equalsIgnoreCase("info")
+            )
+                this.cmpKitchenAreas(sender, completions, args);
+        }
+
+        Collections.sort(completions);
+        return completions;
     }
 
     // -- PRIVATE --
@@ -347,6 +362,27 @@ public class KitchenCommand implements CommandExecutor, TabExecutor {
                     this.locale.getStr("kitchen-messages.kitchen-deleted")
                             .replace("%kitchen%", name)
         );
+    }
+
+    // Completions
+    private void cmpKitchenAreas(
+            @NotNull CommandSender sender, @NotNull List<String> completions, @NotNull String[] args
+    ) {
+        if (args.length < 2)
+            return;
+
+        List<String> availableKitchenAreas = new ArrayList<>();
+        for (KitchenArea ktcItem : master.getKitchenAreaLoader().getKitchenAreas()) {
+            if (!((Player)sender).getWorld().getName().equals(ktcItem.getWorld()))
+                continue;
+            availableKitchenAreas.add(ktcItem.getName());
+        }
+
+        String input = args[1].toLowerCase();
+        for (String kitchenAraName : availableKitchenAreas) {
+            if (kitchenAraName.startsWith(input))
+                completions.add(kitchenAraName);
+        }
     }
 
 }

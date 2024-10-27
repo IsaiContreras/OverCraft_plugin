@@ -5,6 +5,7 @@ import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
 
+import org.bukkit.command.TabExecutor;
 import org.bukkit.entity.Player;
 import org.cyanx86.OverCrafted;
 import org.cyanx86.classes.GameRound;
@@ -13,11 +14,12 @@ import org.cyanx86.config.GeneralSettings;
 import org.cyanx86.config.Locale;
 import org.cyanx86.utils.Messenger;
 
-import java.util.Map;
+import java.util.*;
 
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
-public class RoundCommand implements CommandExecutor {
+public class RoundCommand implements CommandExecutor, TabExecutor {
 
     // -- [[ ATTRIBUTES ]] --
 
@@ -31,9 +33,41 @@ public class RoundCommand implements CommandExecutor {
 
     // -- PUBLIC --
     @Override
-    public boolean onCommand(@NotNull CommandSender sender, @NotNull Command command, @NotNull String s, String[] args) {
+    public boolean onCommand(
+            @NotNull CommandSender sender, @NotNull Command command, @NotNull String s, String[] args
+    ) {
         this.handleSubcommands(sender, args);
         return true;
+    }
+
+    @Nullable @Override
+    public List<String> onTabComplete(
+            @NotNull CommandSender sender, @NotNull Command command, @NotNull String s, @NotNull String[] args
+    ) {
+        List<String> completions = new ArrayList<>();
+        String input = args[0].toLowerCase();
+
+        if (args.length == 1) {
+            List<String> subcommands = List.of(
+                    "start", "terminate", "results", "kitchen", "addplayer", "remplayer", "players", "resetplayers"
+            );
+
+            for (String sub : subcommands) {
+                if (sub.startsWith(input))
+                    completions.add(sub);
+            }
+        } else if (args.length == 2) {
+            if (args[0].equalsIgnoreCase("kitchen"))
+                this.cmpKitchenAreas(sender, completions, args[1].toLowerCase());
+            else if (
+                args[0].equalsIgnoreCase("addplayer") ||
+                args[0].equalsIgnoreCase("remplayer")
+            )
+                this.cmpPlayers(sender, completions, args[1].toLowerCase());
+        }
+
+        Collections.sort(completions);
+        return completions;
     }
 
     // -- PRIVATE --
@@ -383,6 +417,35 @@ public class RoundCommand implements CommandExecutor {
                     OverCrafted.prefix + this.locale.getStr("playerlist-messages.player-removed.player")
                 );
             }
+        }
+    }
+
+    // Completions
+    private void cmpKitchenAreas(
+            @NotNull CommandSender sender, @NotNull List<String> completions, @NotNull String input
+    ) {
+        List<String> availableKitchenAreas = new ArrayList<>();
+        for (KitchenArea ktcItem : master.getKitchenAreaLoader().getKitchenAreas()) {
+            if (!((Player)sender).getWorld().getName().equals(ktcItem.getWorld()))
+                continue;
+            availableKitchenAreas.add(ktcItem.getName());
+        }
+
+        for (String kitchenAraName : availableKitchenAreas) {
+            if (kitchenAraName.startsWith(input))
+                completions.add(kitchenAraName);
+        }
+    }
+
+    private void cmpPlayers(
+        @NotNull CommandSender sender, @NotNull List<String> completions, @NotNull String input
+    ) {
+        for (Player playerItem : Bukkit.getOnlinePlayers()) {
+            if (!((Player)sender).getWorld().getName().equals(playerItem.getWorld().getName()))
+                continue;
+
+            if (playerItem.getName().startsWith(input))
+                completions.add(playerItem.getName());
         }
     }
 
