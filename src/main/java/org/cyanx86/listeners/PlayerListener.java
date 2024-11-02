@@ -78,10 +78,10 @@ public class PlayerListener implements Listener {
             materialMap.containsKey(block.getType()) &&
             master.getGameRoundManager().getGameRound().getKitchenArea().isPointInsideBoundaries(block.getLocation())
         ) {
-            ItemStack deliver = new ItemStack(
-                materialMap.get(block.getType())
+            block.getWorld().dropItem(
+                block.getLocation().add(0, 1, 0),
+                new ItemStack(materialMap.get(block.getType()))
             );
-            player.getInventory().addItem(deliver);
         }
 
         event.setCancelled(true);
@@ -261,15 +261,19 @@ public class PlayerListener implements Listener {
                 dropping = itemframe.getItem().getType();
                 break;
             }
-        if (dropping == null)
+        if (dropping == null || dropping.equals(Material.AIR))
             return;
 
-        ItemStack drop = new ItemStack(dropping);
-
+        chest.getWorld().dropItem(
+            chest.getLocation().add(0, 1, 0),
+            new ItemStack(dropping)
+        );
+        /*
         HashMap<Material, Integer> contents = getPlayerInventoryMap(event.getPlayer());
 
         if ((!contents.containsKey(drop.getType()) && contents.size() + 1 < 6) || (contents.containsKey(drop.getType()) && contents.get(drop.getType()) < 16))
             event.getPlayer().getInventory().addItem(drop);
+         */
     }
 
     private void onPlayerDeliverRecipe(PlayerInteractEvent event, @NotNull Block chest) {

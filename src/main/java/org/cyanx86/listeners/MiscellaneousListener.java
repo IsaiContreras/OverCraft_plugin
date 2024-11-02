@@ -16,8 +16,6 @@ import org.bukkit.event.hanging.HangingBreakByEntityEvent;
 
 import org.bukkit.event.inventory.FurnaceSmeltEvent;
 import org.bukkit.inventory.ItemStack;
-import org.bukkit.scheduler.BukkitTask;
-import org.bukkit.util.Vector;
 import org.cyanx86.OverCrafted;
 import org.cyanx86.classes.GameRound;
 import org.cyanx86.utils.Functions;
@@ -94,7 +92,7 @@ public class MiscellaneousListener implements Listener {
         ItemStack item = event.getResult();
 
         furnace.getWorld().dropItem(
-            furnace.getLocation().add(new Vector(0, 1, 0)),
+            furnace.getLocation().add(0, 1, 0),
             new ItemStack(item.getType())
         );
 
