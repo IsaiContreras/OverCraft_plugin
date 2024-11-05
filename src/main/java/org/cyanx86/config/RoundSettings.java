@@ -15,6 +15,7 @@ public class RoundSettings {
     private int grRoundTime;
     private int grEndIntermission;
     private int grPlayerImmobilizationTime;
+    private boolean grChestDrop;
 
     private int smValuePerOrder;
 
@@ -34,6 +35,7 @@ public class RoundSettings {
     public int getGRTime() { return this.grRoundTime; }
     public int getGRIntermissionTime() { return this.grEndIntermission; }
     public int getGRPlayerImmobilizationTime() { return this.grPlayerImmobilizationTime; }
+    public boolean getGRChestDrop() { return this.grChestDrop; }
 
     public int getSMValuePerOrder() { return this.smValuePerOrder; }
 
@@ -44,49 +46,53 @@ public class RoundSettings {
 
     // -- PROTECTED --
     public void load(FileConfiguration config) {
-        try { if (config.get("game_round.start_countdown") != null)
-            this.grStartCountdown = (int)config.get("game_round.start_countdown");
+        try { if (config.get("game-round.start-countdown") != null)
+            this.grStartCountdown = (int)config.get("game-round.start-countdown");
         } catch (NullPointerException | ClassCastException ignored) { }
-        try { if (config.get("game_round.round_time") != null)
-            this.grRoundTime = (int)config.get("game_round.round_time");
+        try { if (config.get("game-round.round-time") != null)
+            this.grRoundTime = (int)config.get("game-round.round-time");
         } catch (NullPointerException | ClassCastException ignored) { }
-        try { if (config.get("game_round.end_intermission") != null)
-            this.grEndIntermission = (int)config.get("game_round.end_intermission");
+        try { if (config.get("game-round.end-intermission") != null)
+            this.grEndIntermission = (int)config.get("game-round.end-intermission");
         } catch (NullPointerException | ClassCastException ignored) { }
-        try { if (config.get("game_round.player_immobilization") != null)
-            this.grPlayerImmobilizationTime = (int)config.get("game_round.player_immobilization");
+        try { if (config.get("game-round.player-immobilization") != null)
+            this.grPlayerImmobilizationTime = (int)config.get("game-round.player-immobilization");
+        } catch (NullPointerException | ClassCastException ignored) { }
+        try { if (config.get("game-round.chest-drop") != null)
+            this.grChestDrop = (boolean)config.get("game-round.chest-drop");
         } catch (NullPointerException | ClassCastException ignored) { }
 
-        try { if (config.get("score_manager.value_per_order") != null)
-            this.smValuePerOrder = (int)config.get("score_manager.value_per_order");
+        try { if (config.get("score-manager.value-per-order") != null)
+            this.smValuePerOrder = (int)config.get("score-manager.value-per-order");
         } catch (NullPointerException | ClassCastException ignored) { }
 
-        try { if (config.get("order_manager.time_for_next_order") != null)
-            this.omTimeForNextOrder = (int)config.get("order_manager.time_for_next_order");
+        try { if (config.get("order-manager.time-for-next-order") != null)
+            this.omTimeForNextOrder = (int)config.get("order-manager.time-for-next-order");
         } catch (NullPointerException | ClassCastException ignored) { }
-        try { if (config.get("order_manager.order_timeout") != null)
-            this.omOrderTimeout = (int)config.get("order_manager.order_timeout");
+        try { if (config.get("order-manager.order-timeout") != null)
+            this.omOrderTimeout = (int)config.get("order-manager.order-timeout");
         } catch (NullPointerException | ClassCastException ignored) { }
-        try { if (config.get("order_manager.order_stack_limit") != null)
-            this.omOrderStackLimit = (int)config.get("order_manager.order_stack_limit");
+        try { if (config.get("order-manager.order-stack-limit") != null)
+            this.omOrderStackLimit = (int)config.get("order-manager.order-stack-limit");
         } catch (NullPointerException | ClassCastException ignored) { }
-        try { if (config.get("order_manager.bonus_probability") != null)
-            this.omBonusProbability = (float)((double)config.get("order_manager.bonus_probability"));
+        try { if (config.get("order-manager.bonus-probability") != null)
+            this.omBonusProbability = (float)((double)config.get("order-manager.bonus-probability"));
         } catch (NullPointerException | ClassCastException ignored) { }
     }
 
     public void save(FileConfiguration config) {
-        config.set("game_round.start_countdown", this.grStartCountdown);
-        config.set("game_round.round_time", this.grRoundTime);
-        config.set("game_round.end_intermission", this.grEndIntermission);
-        config.set("game_round.player_immobilization", this.grPlayerImmobilizationTime);
+        config.set("game-round.start-countdown", this.grStartCountdown);
+        config.set("game-round.round-time", this.grRoundTime);
+        config.set("game-round.end-intermission", this.grEndIntermission);
+        config.set("game-round.player-immobilization", this.grPlayerImmobilizationTime);
+        config.set("game-round.chest-drop", this.grChestDrop);
 
-        config.set("score_manager.value_per_order", this.smValuePerOrder);
+        config.set("score-manager.value-per-order", this.smValuePerOrder);
 
-        config.set("order_manager.time_for_next_order", this.omTimeForNextOrder);
-        config.set("order_manager.order_timeout", this.omOrderTimeout);
-        config.set("order_manager.order_stack_limit", this.omOrderStackLimit);
-        config.set("order_manager.bonus_probability", this.omBonusProbability);
+        config.set("order-manager.time-for-next-order", this.omTimeForNextOrder);
+        config.set("order-manager.order-timeout", this.omOrderTimeout);
+        config.set("order-manager.order-stack-limit", this.omOrderStackLimit);
+        config.set("order-manager.bonus-probability", this.omBonusProbability);
     }
 
     // -- PRIVATE --
@@ -97,6 +103,7 @@ public class RoundSettings {
         this.grRoundTime = GameRound.roundTime;
         this.grEndIntermission = GameRound.endIntermission;
         this.grPlayerImmobilizationTime = GameRound.playerImmobilization;
+        this.grChestDrop = GameRound.chestDrop;
         // Score Manager Settings
         this.smValuePerOrder = ScoreManager.valuePerOrder;
         // Order Manager Settings

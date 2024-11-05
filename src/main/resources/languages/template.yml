@@ -111,4 +111,4 @@ round-titles: # SEPARATOR
     -                                 # Respawning in...
 
 item-materials: # SEPARATOR
-  # <MATERIAL_NAME>: <Name for material in your language>
+# <MATERIAL_NAME>: <Name for material in your language>

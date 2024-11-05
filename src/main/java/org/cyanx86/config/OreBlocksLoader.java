@@ -37,7 +37,7 @@ public class OreBlocksLoader extends CustomConfigFile {
         Map<String, Object> read;
         try {
              read = Objects.requireNonNull(
-                config.getConfigurationSection("ore_blocks")
+                config.getConfigurationSection("ore-blocks")
             ).getValues(false);
         } catch (NullPointerException e) {
             return;

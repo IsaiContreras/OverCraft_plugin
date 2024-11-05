@@ -66,50 +66,50 @@ public class SoundSettings {
 
     // -- PROTECTED --
     protected void load(FileConfiguration config) {
-        try { if (config.get("round_starting.countdown_instrument") != null)
+        try { if (config.get("round-starting.countdown-instrument") != null)
             this.countDownInstrument = Instrument.valueOf(
-                (String)config.get("round_starting.countdown_instrument")
+                (String)config.get("round-starting.countdown-instrument")
             );
         } catch (ClassCastException ignored) { }
-        try { if (config.get("round_starting.countdown_tone") != null)
+        try { if (config.get("round-starting.countdown-tone") != null)
             this.countDownTone = Functions.deserializeNote(
-                (Map<String, Object>)config.get("round_starting.countdown_tone"));
+                (Map<String, Object>)config.get("round-starting.countdown-tone"));
         } catch (ClassCastException ignored) { }
-        try { if (config.get("round_starting.start_tone") != null)
+        try { if (config.get("round-starting.start-tone") != null)
             this.startTone = Functions.deserializeNote(
-                (Map<String, Object>)config.get("round_starting.start_tone")
+                (Map<String, Object>)config.get("round-starting.start-tone")
             );
         } catch (ClassCastException ignored) { }
 
-        try { if (config.get("round_timer.time_running_out_sound") != null)
-            this.timeRunningOutSound = Sound.valueOf((String)config.get("round_timer.time_running_out_sound"));
+        try { if (config.get("round-timer.time-running-out-sound") != null)
+            this.timeRunningOutSound = Sound.valueOf((String)config.get("round-timer.time-running-out-sound"));
         } catch (ClassCastException ignored) { }
-        try { if (config.get("round_timer.finish_sound") != null)
-            this.finishSound = Sound.valueOf((String)config.get("round_timer.finish_sound"));
+        try { if (config.get("round-timer.finish-sound") != null)
+            this.finishSound = Sound.valueOf((String)config.get("round-timer.finish-sound"));
         } catch (ClassCastException ignored) { }
 
-        try { if (config.get("order_sounds.order_entry_sound") != null)
-            this.orderEntrySound = Sound.valueOf((String)config.get("order_sounds.order_entry_sound"));
+        try { if (config.get("order-sounds.order-entry-sound") != null)
+            this.orderEntrySound = Sound.valueOf((String)config.get("order-sounds.order-entry-sound"));
         } catch (ClassCastException ignored) { }
-        try { if (config.get("order_sounds.delivered_order_sound") != null)
-            this.deliveredOrderSound = Sound.valueOf((String)config.get("order_sounds.delivered_order_sound"));
+        try { if (config.get("order-sounds.delivered-order-sound") != null)
+            this.deliveredOrderSound = Sound.valueOf((String)config.get("order-sounds.delivered-order-sound"));
         } catch (ClassCastException ignored) { }
-        try { if (config.get("order_sounds.lost_order_sound") != null)
-            this.lostOrderSound = Sound.valueOf((String)config.get("order_sounds.lost_order_sound"));
+        try { if (config.get("order-sounds.lost-order-sound") != null)
+            this.lostOrderSound = Sound.valueOf((String)config.get("order-sounds.lost-order-sound"));
         } catch (ClassCastException ignored) { }
     }
 
     protected void save(FileConfiguration config) {
-        config.set("round_starting.countdown_instrument", this.countDownInstrument.name());
-        config.set("round_starting.countdown_tone", Functions.serializeNote(this.countDownTone));
-        config.set("round_starting.start_tone", Functions.serializeNote(this.startTone));
+        config.set("round-starting.countdown-instrument", this.countDownInstrument.name());
+        config.set("round-starting.countdown-tone", Functions.serializeNote(this.countDownTone));
+        config.set("round-starting.start-tone", Functions.serializeNote(this.startTone));
 
-        config.set("round_timer.time_running_out_sound", this.timeRunningOutSound.name());
-        config.set("round_timer.finish_sound", this.finishSound.name());
+        config.set("round-timer.time-running-out-sound", this.timeRunningOutSound.name());
+        config.set("round-timer.finish-sound", this.finishSound.name());
 
-        config.set("order_sounds.order_entry_sound", this.orderEntrySound.name());
-        config.set("order_sounds.delivered_order_sound", this.deliveredOrderSound.name());
-        config.set("order_sounds.lost_order_sound", this.lostOrderSound.name());
+        config.set("order-sounds.order-entry-sound", this.orderEntrySound.name());
+        config.set("order-sounds.delivered-order-sound", this.deliveredOrderSound.name());
+        config.set("order-sounds.lost-order-sound", this.lostOrderSound.name());
     }
 
     // -- PRIVATE --

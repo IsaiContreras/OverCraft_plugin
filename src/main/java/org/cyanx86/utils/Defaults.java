@@ -18,6 +18,7 @@ public class Defaults {
             public static int roundTime = 270;
             public static int endIntermission = 3;
             public static int playerImmobilization = 3;
+            public static boolean chestDrop = false;
         }
 
         public static class ScoreManager {

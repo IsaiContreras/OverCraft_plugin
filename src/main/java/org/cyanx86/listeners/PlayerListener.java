@@ -68,23 +68,43 @@ public class PlayerListener implements Listener {
 
     @EventHandler
     public void onPlayerBreaksBlock(BlockBreakEvent event) {
+        GameRound round = master.getGameRoundManager().getGameRound();
         Player player = event.getPlayer();
+        Block block = event.getBlock();
         if (this.isNotRoundPlayerRequisites(player))
             return;
 
-        Block block = event.getBlock();
-        Map<Material, Material> materialMap = master.getOreBlocks().getOreMap();
-        if (
-            materialMap.containsKey(block.getType()) &&
-            master.getGameRoundManager().getGameRound().getKitchenArea().isPointInsideBoundaries(block.getLocation())
-        ) {
-            block.getWorld().dropItem(
-                block.getLocation().add(0, 1, 0),
-                new ItemStack(materialMap.get(block.getType()))
+        event.setCancelled(true);
+
+        if (Functions.distanceBetweenLocations(player.getLocation(), block.getLocation()) >= 1.0) {
+            round.sendActionBarMessageToPlayer(
+                player, this.locale.getStr("player-listener.ore-too-far"), 2
             );
+            return;
         }
 
-        event.setCancelled(true);
+        Map<Material, Material> materialMap = master.getOreBlocks().getOreMap();
+        if (!(
+            materialMap.containsKey(block.getType()) &&
+            master.getGameRoundManager().getGameRound().getKitchenArea().isPointInsideBoundaries(block.getLocation())
+        ))
+            return;
+
+        ItemStack drop = new ItemStack(materialMap.get(block.getType()));
+
+        if (GeneralSettings.getInstance().getRoundSettings().getGRChestDrop())
+            block.getWorld().dropItem(
+                block.getLocation().add(0, 1, 0),
+                drop
+            );
+        else {
+            HashMap<Material, Integer> contents = getPlayerInventoryMap(player);
+            if (
+                (!contents.containsKey(drop.getType()) && contents.size() + 1 < 6) ||
+                (contents.containsKey(drop.getType()) && contents.get(drop.getType()) < 16)
+            )
+                player.getInventory().addItem(drop);
+        }
     }
 
     @EventHandler
@@ -204,7 +224,7 @@ public class PlayerListener implements Listener {
         else {
             master.getGameRoundManager().getGameRound().sendActionBarMessageToPlayer(
                 player,
-                locale.getStr("player-listener.full-inventory"),
+                this.locale.getStr("player-listener.full-inventory"),
                 1
             );
             event.setCancelled(true);
@@ -252,6 +272,16 @@ public class PlayerListener implements Listener {
     }
 
     private void onPlayerDispenserIngredient(PlayerInteractEvent event, @NotNull Block chest) {
+        Player player = event.getPlayer();
+        if (Functions.distanceBetweenLocations(event.getPlayer().getLocation(), chest.getLocation()) >= 1.0) {
+            master.getGameRoundManager().getGameRound().sendActionBarMessageToPlayer(
+                player,
+                this.locale.getStr("player-listener.chest-too-far"),
+                2
+            );
+            return;
+        }
+
         Material dropping = null;
         for (Entity entity : chest.getWorld().getNearbyEntities(chest.getLocation(), 2, 2, 2))
             if (
@@ -264,16 +294,21 @@ public class PlayerListener implements Listener {
         if (dropping == null || dropping.equals(Material.AIR))
             return;
 
-        chest.getWorld().dropItem(
-            chest.getLocation().add(0, 1, 0),
-            new ItemStack(dropping)
-        );
-        /*
-        HashMap<Material, Integer> contents = getPlayerInventoryMap(event.getPlayer());
+        ItemStack drop = new ItemStack(dropping);
 
-        if ((!contents.containsKey(drop.getType()) && contents.size() + 1 < 6) || (contents.containsKey(drop.getType()) && contents.get(drop.getType()) < 16))
-            event.getPlayer().getInventory().addItem(drop);
-         */
+        if (GeneralSettings.getInstance().getRoundSettings().getGRChestDrop())
+            chest.getWorld().dropItem(
+                chest.getLocation().add(0, 1, 0),
+                drop
+            );
+        else {
+            HashMap<Material, Integer> contents = getPlayerInventoryMap(event.getPlayer());
+            if (
+                (!contents.containsKey(drop.getType()) && contents.size() + 1 < 6) ||
+                (contents.containsKey(drop.getType()) && contents.get(drop.getType()) < 16)
+            )
+                event.getPlayer().getInventory().addItem(drop);
+        }
     }
 
     private void onPlayerDeliverRecipe(PlayerInteractEvent event, @NotNull Block chest) {

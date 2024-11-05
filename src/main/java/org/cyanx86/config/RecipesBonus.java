@@ -38,7 +38,7 @@ public class RecipesBonus extends CustomConfigFile {
 
         try {
             read = Objects.requireNonNull(
-                config.getConfigurationSection("recipes_bonus")
+                config.getConfigurationSection("recipes-bonus")
             ).getValues(false);
         } catch (NullPointerException e) {
             return;

@@ -1,33 +1,34 @@
 language: "es-la"
 invalid-message-path: "No message for path '%path%'."
 # Round settings
-game_round:
-  start_countdown: 3
-  round_time: 120
-  end_intermission: 3
-  player_immobilization: 3
-score_manager:
-  value_per_order: 30
-order_manager:
-  time_for_next_order: 20
-  order_timeout: 80
-  order_stack_limit: 5
-  bonus_probability: 0.2
+game-round:
+  start-countdown: 3
+  round-time: 120
+  end-intermission: 3
+  player-immobilization: 3
+  chest-drop: false
+score-manager:
+  value-per-order: 30
+order-manager:
+  time-for-next-order: 20
+  order-timeout: 80
+  order-stack-limit: 5
+  bonus-probability: 0.2
 # Sound settings
-round_starting:
-  countdown_instrument: BIT
-  countdown_tone:
+round-starting:
+  countdown-instrument: BIT
+  countdown-tone:
     octave: 1
     tone: F
     sharped: true
-  start_tone:
+  start-tone:
     octave: 2
     tone: F
     sharped: true
-round_timer:
-  time_running_out_sound: BLOCK_ANVIL_PLACE
-  finish_sound: BLOCK_ANVIL_USE
-order_sounds:
-  order_entry_sound: BLOCK_AMETHYST_CLUSTER_HIT
-  delivered_order_sound: ENTITY_PLAYER_LEVELUP
-  lost_order_sound: BLOCK_ENCHANTMENT_TABLE_USE
+round-timer:
+  time-running-out-sound: BLOCK_ANVIL_PLACE
+  finish-sound: BLOCK_ANVIL_USE
+order-sounds:
+  order-entry-sound: BLOCK_AMETHYST_CLUSTER_HIT
+  delivered-order-sound: ENTITY_PLAYER_LEVELUP
+  lost-order-sound: BLOCK_ENCHANTMENT_TABLE_USE

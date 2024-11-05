@@ -111,6 +111,10 @@ round-titles:
     - "&eTe recuperarás en: &a%time%"
 
 item-materials:
+  COAL: "Carbón"
+  CHARCOAL: "Carbón natural"
   GOLDEN_CARROT: "Zanahoria dorada"
   BAKED_POTATO: "Papa asada"
-  RABBIT_STEW: "Sopa de conejo"
+  RABBIT_STEW: "Estofado de conejo"
+  MUSHROOM_STEW: "Estofado de champiñon"
+  COOKED_RABIT: "Conejo asado"

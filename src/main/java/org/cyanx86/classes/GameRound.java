@@ -279,6 +279,8 @@ public class GameRound {
 
         this.cleanFurnacesInventory();
         this.cleanDroppedItems();
+
+        this.showResults();
     }
 
     // Players
@@ -328,6 +330,34 @@ public class GameRound {
             furnace.getInventory().setSmelting(null);
             furnace.getInventory().setResult(null);
         }
+    }
+
+    // Other
+    private void showResults() {
+        Map<String, Object> results = this.getScores();
+        this.playersManager.sendMessageToPlayers(this.locale.getStr("round-messages.results.title"));
+        this.playersManager.sendMessageToPlayers(
+            "  " + this.locale.getStr("round-messages.results.delivered")
+                    .replace("%delivered%", String.valueOf(results.get("delivered")))
+        );
+        this.playersManager.sendMessageToPlayers(
+            "  " + this.locale.getStr("round-messages.results.lost")
+                    .replace("%lost%", String.valueOf(results.get("lost")))
+        );
+        this.playersManager.sendMessageToPlayers(
+            "  " + this.locale.getStr("round-messages.results.score")
+                    .replace("%score%", String.valueOf(results.get("score")))
+        );
+        this.playersManager.sendMessageToPlayers(
+            "  " + this.locale.getStr("round-messages.results.bonus")
+                    .replace("%bonus%", String.valueOf(results.get("bonus")))
+        );
+        this.playersManager.sendMessageToPlayers(
+            "  " + this.locale.getStr("round-messages.results.total")
+                    .replace("%total%",
+                            String.valueOf(((int)results.get("score") + (int)results.get("bonus")))
+                    )
+        );
     }
 
 }

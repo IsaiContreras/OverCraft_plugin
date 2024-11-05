@@ -10,7 +10,7 @@ round-messages:
   unable-cancel: "&cCannot cancell round. Not started yet or is finished."
   cancelled: "&aCancelled round."
   no-finished-round: "&cThere is no finished round yet."
-  round-results:
+  results:
     title: "&f&lResults:"
     delivered: "&7Delivered: &o%delivered%"
     lost: "&7Lost: &o%lost%"
