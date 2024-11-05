@@ -5,9 +5,8 @@ import org.bukkit.configuration.file.FileConfiguration;
 import org.cyanx86.utils.CustomConfigFile;
 import org.cyanx86.utils.DataFormatting;
 
-import javax.xml.crypto.Data;
-import java.util.ArrayList;
 import java.util.List;
+import org.jetbrains.annotations.NotNull;
 
 public class Locale extends CustomConfigFile {
 
@@ -75,15 +74,17 @@ public class Locale extends CustomConfigFile {
         return name;
     }
 
+    public void changeLanguage(@NotNull String language) {
+        this.changeDir(language + ".yml", "languages");
+    }
+
     // -- PROTECTED --
     @Override
-    protected void load() {
-
-    }
+    protected void load() {}
 
     @Override
     protected boolean reload() {
-        if(!this.reloadConfig())
+        if(!this.registerConfig())
             return false;
         this.load();
         return true;

@@ -18,8 +18,8 @@ public abstract class CustomConfigFile {
 
     // -- PRIVATE --
     private final OverCrafted master = OverCrafted.getInstance();
-    private final String filename;
-    private final String foldername;
+    private String filename;
+    private String foldername;
 
     private FileConfiguration fileConfig;
     private File file;
@@ -29,12 +29,18 @@ public abstract class CustomConfigFile {
     // -- [[ METHODS ]] --
 
     // -- PUBLIC --
+
+    // -- PROTECTED --
     protected CustomConfigFile(@NotNull String filename, String foldername, boolean must_create) {
         this.filename = filename;
         this.foldername = foldername;
         this.mustCreate = must_create;
     }
-    protected String getPath() { return this.filename; }
+
+    protected void changeDir(@NotNull String filename, String foldername) {
+        this.filename = filename;
+        this.foldername = foldername;
+    }
 
     // -- PRIVATE --
     protected boolean registerConfig() {

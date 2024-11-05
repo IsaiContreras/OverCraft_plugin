@@ -70,7 +70,10 @@ public class GeneralSettings extends CustomConfigFile {
         if (!this.reloadConfig())
             return false;
         this.load();
-        this.locale = new Locale(this.getLanguage());
+
+        this.locale.changeLanguage(this.getLanguage());
+        this.locale.reload();
+
         return true;
     }
 
