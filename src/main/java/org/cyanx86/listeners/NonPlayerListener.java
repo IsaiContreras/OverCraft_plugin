@@ -128,7 +128,7 @@ public class NonPlayerListener implements Listener {
 
     // -- PRIVATE --
     private boolean isRoundOff(Player player) {
-        GameRound round = master.getGameRoundManager().getGameRound();
+        GameRound round = this.master.getGameRoundManager().getGameRound();
         return (round != null && round.isPlayerInGame(player));
     }
 

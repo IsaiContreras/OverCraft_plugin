@@ -3,19 +3,18 @@ package org.cyanx86.commands;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
-
 import org.bukkit.command.TabExecutor;
+
 import org.cyanx86.OverCrafted;
 import org.cyanx86.config.GeneralSettings;
 import org.cyanx86.config.Locale;
 import org.cyanx86.utils.Messenger;
 
-import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
-
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 public class ReloadSettingsCommand implements CommandExecutor, TabExecutor {
 
@@ -148,7 +147,7 @@ public class ReloadSettingsCommand implements CommandExecutor, TabExecutor {
     }
 
     private void reloadKitchen(@NotNull CommandSender sender) {
-        if (!master.getKitchenAreaLoader().reload())
+        if (!this.master.getKitchenAreaLoader().reload())
             Messenger.msgToSender(
                 sender,
                 OverCrafted.prefix + this.locale.getStr("reload-settings-messages.not-reloaded-kitchen")
@@ -161,7 +160,7 @@ public class ReloadSettingsCommand implements CommandExecutor, TabExecutor {
     }
 
     private void reloadRecipes(@NotNull CommandSender sender) {
-        if (!master.getRecipesBonus().reload())
+        if (!this.master.getRecipesBonus().reload())
             Messenger.msgToSender(
                 sender,
                 OverCrafted.prefix + this.locale.getStr("reload-settings-messages.not-reloaded-recipes")
@@ -174,7 +173,7 @@ public class ReloadSettingsCommand implements CommandExecutor, TabExecutor {
     }
 
     private void reloadOreBlocks(@NotNull CommandSender sender) {
-        if (!master.getOreBlocks().reload())
+        if (!this.master.getOreBlocks().reload())
             Messenger.msgToSender(
                 sender,
                 OverCrafted.prefix + this.locale.getStr("reload-settings-messages.not-reloaded-oreblocks")

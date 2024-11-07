@@ -6,16 +6,15 @@ import org.bukkit.block.Block;
 import org.bukkit.block.Furnace;
 import org.bukkit.block.Smoker;
 import org.bukkit.entity.Entity;
-
 import org.bukkit.inventory.BlastingRecipe;
 import org.bukkit.inventory.FurnaceRecipe;
 import org.bukkit.inventory.Recipe;
 import org.bukkit.inventory.SmokingRecipe;
+
 import org.cyanx86.OverCrafted;
 import org.cyanx86.classes.KitchenArea;
 
 import java.util.*;
-
 import org.jetbrains.annotations.NotNull;
 
 public class Functions {

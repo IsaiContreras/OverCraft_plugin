@@ -3,8 +3,8 @@ package org.cyanx86.classes;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.Material;
-
 import org.bukkit.block.Block;
+
 import org.cyanx86.utils.Enums.ListResult;
 import org.cyanx86.utils.Primitives.Cube;
 
@@ -82,9 +82,9 @@ public class KitchenArea {
     public Location getCenterPoint() {
         return new Location(
             Bukkit.getWorld(this.world),
-            ((corners[1].getX() + corners[0].getX()) / 2),
-            ((corners[1].getY() + corners[0].getY()) / 2),
-            ((corners[1].getZ() + corners[0].getZ()) / 2)
+            ((this.corners[1].getX() + this.corners[0].getX()) / 2),
+            ((this.corners[1].getY() + this.corners[0].getY()) / 2),
+            ((this.corners[1].getZ() + this.corners[0].getZ()) / 2)
         );
     }
     public double getWidth() {
@@ -118,10 +118,10 @@ public class KitchenArea {
     public ListResult addSpawnPoint(@NotNull SpawnPoint spawnpoint) {
         if (!this.isPointInsideBoundaries(spawnpoint.getSpawnLocation()))
             return ListResult.INVALID_ITEM;
-        if (this.spawnPoints.size() == maxPlayers)
+        if (this.spawnPoints.size() == this.maxPlayers)
             return ListResult.FULL_LIST;
 
-        spawnpoint.setPlayerIndex(spawnPoints.size() + 1);
+        spawnpoint.setPlayerIndex(this.spawnPoints.size() + 1);
 
         this.spawnPoints.add(spawnpoint);
         return ListResult.SUCCESS;
@@ -205,7 +205,7 @@ public class KitchenArea {
     }
 
     public boolean isValidSetUp() {
-        return (spawnPoints.size() == this.maxPlayers && !this.recipes.isEmpty());
+        return (this.spawnPoints.size() == this.maxPlayers && !this.recipes.isEmpty());
     }
 
     // Data management

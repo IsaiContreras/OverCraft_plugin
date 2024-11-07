@@ -1,6 +1,7 @@
 package org.cyanx86.config;
 
 import org.bukkit.configuration.file.FileConfiguration;
+
 import org.cyanx86.utils.CustomConfigFile;
 import org.cyanx86.utils.Defaults;
 
@@ -38,7 +39,7 @@ public class GeneralSettings extends CustomConfigFile {
     }
 
     public String getInvalidMessagePath() {
-        return this. invalid_message_path;
+        return this.invalid_message_path;
     }
 
     public RoundSettings getRoundSettings() {

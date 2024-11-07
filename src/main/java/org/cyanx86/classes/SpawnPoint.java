@@ -4,6 +4,7 @@ import org.bukkit.Location;
 
 import java.util.HashMap;
 import java.util.Map;
+
 import org.jetbrains.annotations.NotNull;
 
 public class SpawnPoint {
@@ -53,11 +54,7 @@ public class SpawnPoint {
 
     public static SpawnPoint deserialize(@NotNull Map<String, Object> args) {
         Location location = Location.deserialize((Map<String, Object>)args.get("location"));
-
-        return new SpawnPoint(
-            location,
-            (int)args.get("player_index")
-        );
+        return new SpawnPoint(location, (int)args.get("player_index"));
     }
 
     // -- PRIVATE --

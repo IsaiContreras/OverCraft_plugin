@@ -20,7 +20,7 @@ public class DataFormatting {
         return modString.replace("_", " ");
     }
 
-    public static String repeate(int i, String s) {
+    public static String repeat(int i, String s) {
         StringBuilder sb = new StringBuilder();
         sb.append(String.valueOf(s).repeat(Math.max(0, i)));
         return sb.toString();

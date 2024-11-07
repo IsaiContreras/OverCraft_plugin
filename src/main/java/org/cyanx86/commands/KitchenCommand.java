@@ -140,7 +140,7 @@ public class KitchenCommand implements CommandExecutor, TabExecutor {
             return;
         }
 
-        KitchenAreaCreatorAssistant kacAssistant = master.getKitchenAreaCreatorAssistantManager()
+        KitchenAreaCreatorAssistant kacAssistant = this.master.getKitchenAreaCreatorAssistantManager()
                 .getAssistantByName(sender.getName());
         if (kacAssistant == null) {
             Messenger.msgToSender(
@@ -173,7 +173,7 @@ public class KitchenCommand implements CommandExecutor, TabExecutor {
         }
 
         switch (
-            master.getKitchenAreaLoader().addKitchenArea(
+            this.master.getKitchenAreaLoader().addKitchenArea(
                 name,
                 kacAssistant.getCorner(0),
                 kacAssistant.getCorner(1),
@@ -245,7 +245,7 @@ public class KitchenCommand implements CommandExecutor, TabExecutor {
         Messenger.msgToSender(sender, "&f&l------ OVERCRAFTED ------\n");
         Messenger.msgToSender(sender, this.locale.getStr("kitchen-messages.show-kitchen-list.title"));
 
-        List<KitchenArea> kitchenAreaList = master.getKitchenAreaLoader().getKitchenAreas();
+        List<KitchenArea> kitchenAreaList = this.master.getKitchenAreaLoader().getKitchenAreas();
 
         if (kitchenAreaList.isEmpty()) {
             Messenger.msgToSender(
@@ -258,7 +258,7 @@ public class KitchenCommand implements CommandExecutor, TabExecutor {
             Messenger.msgToSender(
                 sender,
                 "&7" + (i + 1) + ".- " +
-                        "&o" + master.getKitchenAreaLoader().getKitchenAreas().get(i).getName()
+                        "&o" + this.master.getKitchenAreaLoader().getKitchenAreas().get(i).getName()
             );
         }
     }
@@ -339,7 +339,7 @@ public class KitchenCommand implements CommandExecutor, TabExecutor {
         }
 
         String name = args[1].toLowerCase();
-        switch(master.getKitchenAreaLoader().removeKitchenArea(name)) {
+        switch(this.master.getKitchenAreaLoader().removeKitchenArea(name)) {
             case NOT_FOUND -> {
                 Messenger.msgToSender(
                     sender,
@@ -372,7 +372,7 @@ public class KitchenCommand implements CommandExecutor, TabExecutor {
             return;
 
         List<String> availableKitchenAreas = new ArrayList<>();
-        for (KitchenArea ktcItem : master.getKitchenAreaLoader().getKitchenAreas()) {
+        for (KitchenArea ktcItem : this.master.getKitchenAreaLoader().getKitchenAreas()) {
             if (!((Player)sender).getWorld().getName().equals(ktcItem.getWorld()))
                 continue;
             availableKitchenAreas.add(ktcItem.getName());

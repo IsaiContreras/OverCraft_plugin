@@ -4,6 +4,7 @@ import org.bukkit.Instrument;
 import org.bukkit.Note;
 import org.bukkit.Sound;
 import org.bukkit.configuration.file.FileConfiguration;
+
 import org.cyanx86.utils.Defaults.RoundSounds;
 import org.cyanx86.utils.Functions;
 
@@ -17,8 +18,6 @@ public class SoundSettings {
     // -- PUBLIC --
 
     // -- PRIVATE --
-    private static SoundSettings instance;
-
     private Instrument countDownInstrument;
     private Note countDownTone;
     private Note startTone;

@@ -5,12 +5,10 @@ import org.bukkit.Note;
 import org.bukkit.Sound;
 import org.bukkit.entity.Player;
 
-import org.cyanx86.OverCrafted;
 import org.cyanx86.classes.PlayerState;
+import org.cyanx86.utils.Enums.ListResult;
 
 import java.util.*;
-
-import org.cyanx86.utils.Enums.ListResult;
 import org.jetbrains.annotations.NotNull;
 
 public class GamePlayersManager {
@@ -85,19 +83,12 @@ public class GamePlayersManager {
 
     public void sendSoundToPlayer(@NotNull Sound sound, float volume, float pitch) {
         for (PlayerState playerState : this.players)
-            playerState.sendSoundToPlayer(
-                sound,
-                volume,
-                pitch
-            );
+            playerState.sendSoundToPlayer(sound, volume, pitch);
     }
 
     public void sendNoteToPlayer(@NotNull Instrument instrument, @NotNull Note note) {
         for (PlayerState playerState : this.players)
-            playerState.sendNoteToPlayer(
-                instrument,
-                note
-            );
+            playerState.sendNoteToPlayer(instrument, note);
     }
 
     // -- PRIVATE --

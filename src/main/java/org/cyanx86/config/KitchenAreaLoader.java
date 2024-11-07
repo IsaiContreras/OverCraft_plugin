@@ -39,7 +39,7 @@ public class KitchenAreaLoader extends CustomConfigFile {
         List<Map<?, ?>> ktcMapList = config.getMapList("kitchen-areas");
 
         for (Map<?, ?> ktcMap : ktcMapList)
-            kitchenAreas.add(KitchenArea.deserialize((Map<String, Object>)ktcMap));
+            this.kitchenAreas.add(KitchenArea.deserialize((Map<String, Object>)ktcMap));
     }
 
     @Override

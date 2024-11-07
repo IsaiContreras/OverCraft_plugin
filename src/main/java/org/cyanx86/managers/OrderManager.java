@@ -2,11 +2,9 @@ package org.cyanx86.managers;
 
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
-import org.bukkit.Sound;
 import org.bukkit.scheduler.BukkitTask;
-
-import org.bukkit.scoreboard.Objective;
 import org.bukkit.scoreboard.Scoreboard;
+
 import org.cyanx86.OverCrafted;
 import org.cyanx86.classes.Order;
 import org.cyanx86.classes.OrderDisplayer;
@@ -19,8 +17,6 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Optional;
-
-import org.cyanx86.utils.Messenger;
 import org.jetbrains.annotations.NotNull;
 
 public class OrderManager {
@@ -45,11 +41,8 @@ public class OrderManager {
     private final int orderStackLimit;
     private final float bonusProbability;
 
-    private Objective ordersDisplayer;
-
     private int time;
     private BukkitTask task;
-    private int taskId;
 
     // -- [[ METHODS ]] --
 
@@ -124,18 +117,17 @@ public class OrderManager {
 
     public void startGenerator() {
         this.time = 0;
-        this.task = Bukkit.getScheduler().runTaskTimer(master, () -> {
+        this.task = Bukkit.getScheduler().runTaskTimer(this.master, () -> {
             if (this.time == 0) {
                 this.newOrder();
                 this.time = this.timeForNextOrder;
             } else
                 this.time--;
         }, 20L, 20L);
-        this.taskId = this.task.getTaskId();
     }
 
     public void stopGenerator() {
-        Bukkit.getScheduler().cancelTask(this.taskId);
+        this.task.cancel();
         this.clearOrders();
         this.displayer.clearScore();
         this.task.cancel();
@@ -172,7 +164,7 @@ public class OrderManager {
         int orderNumber = 1;
 
         for(Order order : this.orderList) {
-            String state = DataFormatting.repeate(orderNumber, "§r");
+            String state = DataFormatting.repeat(orderNumber, "§r");
             String object = GeneralSettings.getInstance().getLocale().getMatName(order.getRecipe());
 
             String name = state + object;

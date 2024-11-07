@@ -4,15 +4,13 @@ import org.bukkit.*;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.scheduler.BukkitTask;
-
-import org.bukkit.scoreboard.Score;
 import org.bukkit.scoreboard.Scoreboard;
+
 import org.cyanx86.OverCrafted;
 import org.cyanx86.config.GeneralSettings;
 import org.cyanx86.config.Locale;
 import org.cyanx86.utils.Messenger;
 
-import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
 import org.jetbrains.annotations.NotNull;
@@ -65,10 +63,7 @@ public class PlayerState {
     }
 
     public void sendMessageToPlayer(@NotNull String message) {
-        Messenger.msgToSender(
-            this.player,
-            message
-        );
+        Messenger.msgToSender(this.player, message);
     }
 
     public void sendTitleToPlayer(@NotNull String message1, @NotNull String message2, int fadeIn, int time, int fadeOut) {
@@ -76,38 +71,23 @@ public class PlayerState {
     }
 
     public void sendActionBarToPlayer(@NotNull String message) {
-        if (blockActionBar) return;
-        Messenger.actionBarToPlayer(
-            this.player,
-            message
-        );
+        if (this.blockActionBar) return;
+        Messenger.actionBarToPlayer(this.player, message);
     }
 
     public void sendActionBarToPlayerForTime(@NotNull String message, int timeSeconds) {
         if (this.actionBarBlockTask != null)
             this.cancelActionBarBlockTimer();
         this.setActionBarBlockTimer(timeSeconds);
-        Messenger.actionBarToPlayer(
-            this.player,
-            message
-        );
+        Messenger.actionBarToPlayer(this.player, message);
     }
 
     public void sendSoundToPlayer(@NotNull Sound sound, float volume, float pitch) {
-        this.player.playSound(
-            this.player.getLocation(),
-            sound,
-            volume,
-            pitch
-        );
+        this.player.playSound(this.player.getLocation(), sound, volume, pitch);
     }
 
     public void sendNoteToPlayer(@NotNull Instrument instrument, @NotNull Note note) {
-        this.player.playNote(
-            this.player.getLocation(),
-            instrument,
-            note
-        );
+        this.player.playNote(this.player.getLocation(), instrument, note);
     }
 
     public void restorePlayer() {
@@ -116,7 +96,7 @@ public class PlayerState {
         this.player.teleport(this.prevLocation);
         this.player.getInventory().setMaxStackSize(64);
         this.player.getInventory().clear();
-        this.player.getInventory().setContents(prevInventory);
+        this.player.getInventory().setContents(this.prevInventory);
         this.player.setGameMode(this.prevGameMode);
         this.player.setFoodLevel(this.prevFoodLevel);
         this.mobilize();

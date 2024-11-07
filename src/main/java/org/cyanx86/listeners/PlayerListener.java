@@ -21,15 +21,14 @@ import org.bukkit.inventory.*;
 
 import org.cyanx86.OverCrafted;
 import org.cyanx86.classes.GameRound;
+import org.cyanx86.config.GeneralSettings;
+import org.cyanx86.config.Locale;
+import org.cyanx86.utils.Functions;
 
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Objects;
-
-import org.cyanx86.config.GeneralSettings;
-import org.cyanx86.config.Locale;
-import org.cyanx86.utils.Functions;
 import org.jetbrains.annotations.NotNull;
 
 public class PlayerListener implements Listener {
@@ -48,7 +47,7 @@ public class PlayerListener implements Listener {
     @EventHandler
     public void onPlayerMoves(PlayerMoveEvent event) {
         Player player = event.getPlayer();
-        GameRound round = master.getGameRoundManager().getGameRound();
+        GameRound round = this.master.getGameRoundManager().getGameRound();
 
         if (this.isNotRoundPlayerRequisites(player))
             return;
@@ -68,7 +67,7 @@ public class PlayerListener implements Listener {
 
     @EventHandler
     public void onPlayerBreaksBlock(BlockBreakEvent event) {
-        GameRound round = master.getGameRoundManager().getGameRound();
+        GameRound round = this.master.getGameRoundManager().getGameRound();
         Player player = event.getPlayer();
         Block block = event.getBlock();
         if (this.isNotRoundPlayerRequisites(player))
@@ -83,10 +82,10 @@ public class PlayerListener implements Listener {
             return;
         }
 
-        Map<Material, Material> materialMap = master.getOreBlocks().getOreMap();
+        Map<Material, Material> materialMap = this.master.getOreBlocks().getOreMap();
         if (!(
             materialMap.containsKey(block.getType()) &&
-            master.getGameRoundManager().getGameRound().getKitchenArea().isPointInsideBoundaries(block.getLocation())
+            round.getKitchenArea().isPointInsideBoundaries(block.getLocation())
         ))
             return;
 
@@ -112,7 +111,7 @@ public class PlayerListener implements Listener {
         Entity entity = event.getEntity();
 
         if (!(
-            master.getGameRoundManager().getGameRound() != null &&
+            this.master.getGameRoundManager().getGameRound() != null &&
             (entity instanceof ItemFrame || entity instanceof Painting) &&
             Functions.entityBelongsKitchenArea(entity)
         ))
@@ -137,7 +136,7 @@ public class PlayerListener implements Listener {
         Entity entity = event.getEntity();
 
         if (!(
-            master.getGameRoundManager().getGameRound() != null &&
+            this.master.getGameRoundManager().getGameRound() != null &&
             (entity instanceof ItemFrame || entity instanceof Painting) &&
             Functions.entityBelongsKitchenArea(entity)
         ))
@@ -222,7 +221,7 @@ public class PlayerListener implements Listener {
         if ((!contents.containsKey(drop.getType()) && contents.size() + 1 < 6) || (contents.containsKey(drop.getType()) && contents.get(drop.getType()) < 16))
             return;
         else {
-            master.getGameRoundManager().getGameRound().sendActionBarMessageToPlayer(
+            this.master.getGameRoundManager().getGameRound().sendActionBarMessageToPlayer(
                 player,
                 this.locale.getStr("player-listener.full-inventory"),
                 1
@@ -233,7 +232,7 @@ public class PlayerListener implements Listener {
 
     // -- PRIVATE --
     private boolean isNotRoundPlayerRequisites(Player player){
-        GameRound round = master.getGameRoundManager().getGameRound();
+        GameRound round = this.master.getGameRoundManager().getGameRound();
         return (
             round == null ||
             round.getCurrentRoundState() == GameRound.ROUNDSTATE.ENDED ||
@@ -274,7 +273,7 @@ public class PlayerListener implements Listener {
     private void onPlayerDispenserIngredient(PlayerInteractEvent event, @NotNull Block chest) {
         Player player = event.getPlayer();
         if (Functions.distanceBetweenLocations(event.getPlayer().getLocation(), chest.getLocation()) >= 1.0) {
-            master.getGameRoundManager().getGameRound().sendActionBarMessageToPlayer(
+            this.master.getGameRoundManager().getGameRound().sendActionBarMessageToPlayer(
                 player,
                 this.locale.getStr("player-listener.chest-too-far"),
                 2
@@ -331,7 +330,7 @@ public class PlayerListener implements Listener {
         if (item == null)
             return;
 
-        if (master.getGameRoundManager().getGameRound().dispatchOrder(item.getType())) {
+        if (this.master.getGameRoundManager().getGameRound().dispatchOrder(item.getType())) {
             if (item.getAmount() == 1)
                 player.getInventory().setItem(EquipmentSlot.HAND, new ItemStack(Material.AIR));
             else
@@ -362,7 +361,6 @@ public class PlayerListener implements Listener {
         if (item.getType().isFuel()) {
             insertedItem = this.playerRefuelFurnace(
                 furnace,
-                item,
                 event.getPlayer()
             );
         }
@@ -373,9 +371,9 @@ public class PlayerListener implements Listener {
                 event.getPlayer()
             );
         else {
-            master.getGameRoundManager().getGameRound().sendActionBarMessageToPlayer(
+            this.master.getGameRoundManager().getGameRound().sendActionBarMessageToPlayer(
                 event.getPlayer(),
-                locale.getStr("player-listener.not-smeltable"),
+                this.locale.getStr("player-listener.not-smeltable"),
                 1
             );
             return;
@@ -390,13 +388,13 @@ public class PlayerListener implements Listener {
             item.setAmount(item.getAmount() - 1);
     }
 
-    private boolean playerRefuelFurnace(Furnace furnace, ItemStack item, Player player) {
-        GameRound round = master.getGameRoundManager().getGameRound();
+    private boolean playerRefuelFurnace(Furnace furnace, Player player) {
+        GameRound round = this.master.getGameRoundManager().getGameRound();
 
         if (furnace.getBurnTime() > 0) {
             round.sendActionBarMessageToPlayer(
                 player,
-                locale.getStr("player-listener.furnace-burning"),
+                this.locale.getStr("player-listener.furnace-burning"),
                 2
             );
             return false;
@@ -404,7 +402,7 @@ public class PlayerListener implements Listener {
         else if (furnace.getInventory().getFuel() != null) {
             round.sendActionBarMessageToPlayer(
                 player,
-                locale.getStr("player-listener.furnace-fueled"),
+                this.locale.getStr("player-listener.furnace-fueled"),
                 2
             );
             return false;
@@ -413,19 +411,19 @@ public class PlayerListener implements Listener {
         furnace.getInventory().setFuel(new ItemStack(Material.COAL, 1));
         round.sendActionBarMessageToPlayer(
             player,
-            locale.getStr("player-listener.furnace-refueled"),
+            this.locale.getStr("player-listener.furnace-refueled"),
             2
         );
         return true;
     }
 
     private boolean playerInsertSmeltableToFurnace(Furnace furnace, ItemStack item, Player player) {
-        GameRound round = master.getGameRoundManager().getGameRound();
+        GameRound round = this.master.getGameRoundManager().getGameRound();
 
         if (furnace.getInventory().getSmelting() != null) {
             round.sendActionBarMessageToPlayer(
                 player,
-                locale.getStr("player-listener.furnace-smelting-inside"),
+                this.locale.getStr("player-listener.furnace-smelting-inside"),
                 2
             );
             return false;
@@ -434,8 +432,8 @@ public class PlayerListener implements Listener {
         furnace.getInventory().setSmelting(new ItemStack(item.getType(), 1));
         round.sendActionBarMessageToPlayer(
             player,
-            locale.getStr("player-listener.furnace-smeltable-inserted")
-                    .replace("%item%", locale.getMatName(item.getType())),
+            this.locale.getStr("player-listener.furnace-smeltable-inserted")
+                    .replace("%item%", this.locale.getMatName(item.getType())),
             2
         );
         return true;

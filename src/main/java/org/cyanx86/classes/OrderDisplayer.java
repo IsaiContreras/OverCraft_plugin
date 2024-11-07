@@ -3,13 +3,11 @@ package org.cyanx86.classes;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.scoreboard.*;
-import org.cyanx86.utils.Messenger;
 
-import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.List;
 
 public class OrderDisplayer {
+
     // -- [[ ATTRIBUTES ]] --
 
     // -- PUBLIC --
@@ -27,13 +25,13 @@ public class OrderDisplayer {
 
     // -- PUBLIC --
     public OrderDisplayer() {
-        InitializeDisplayer();
+        this.InitializeDisplayer();
     }
 
     public void addLine(int rowNumber, String line, Order order) {
         this.lines.put(line, order);
         Score score = this.objective.getScore(line);
-        score.setScore(10-rowNumber);
+        score.setScore(10 - rowNumber);
 
         switch (order.getState()) {
             case "Green":
@@ -58,7 +56,7 @@ public class OrderDisplayer {
     public void changeTeam(Order order, String team) {
         for(String line : this.lines.keySet()) {
             if (this.lines.get(line) == order){
-                Team temp = scoreboard.getTeam(team);
+                Team temp = this.scoreboard.getTeam(team);
                 if(temp != null)
                     temp.addEntry(line);
             }
@@ -74,9 +72,9 @@ public class OrderDisplayer {
             this.objective = this.scoreboard.registerNewObjective("Orders", Criteria.DUMMY, ChatColor.BLUE + "ORDENES");
             this.objective.setDisplaySlot(DisplaySlot.SIDEBAR);
 
-            this.green = scoreboard.registerNewTeam("Green");
-            this.yellow = scoreboard.registerNewTeam("Yellow");
-            this.red = scoreboard.registerNewTeam("Red");
+            this.green = this.scoreboard.registerNewTeam("Green");
+            this.yellow = this.scoreboard.registerNewTeam("Yellow");
+            this.red = this.scoreboard.registerNewTeam("Red");
 
             this.green.setColor(ChatColor.GREEN);
             this.yellow.setColor(ChatColor.YELLOW);

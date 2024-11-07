@@ -16,19 +16,23 @@ public class Primitives {
         public double back;
 
         public Cube (@NotNull Location corner1, @NotNull Location corner2) {
-            left = Math.min(corner1.getBlockX(), corner2.getBlockX());
-            right = Math.max(corner1.getBlockX(), corner2.getBlockX());
-            bottom = Math.min(corner1.getBlockY(), corner1.getBlockY());
-            top = Math.max(corner1.getBlockY(), corner2.getBlockY());
-            back = Math.min(corner1.getBlockZ(), corner2.getBlockZ());
-            front = Math.max(corner1.getBlockZ(), corner2.getBlockZ());
+            this.left = Math.min(corner1.getBlockX(), corner2.getBlockX());
+            this.right = Math.max(corner1.getBlockX(), corner2.getBlockX());
+            this.bottom = Math.min(corner1.getBlockY(), corner1.getBlockY());
+            this.top = Math.max(corner1.getBlockY(), corner2.getBlockY());
+            this.back = Math.min(corner1.getBlockZ(), corner2.getBlockZ());
+            this.front = Math.max(corner1.getBlockZ(), corner2.getBlockZ());
         }
 
         public double getWidth() {
-            return (right - left);
+            return (this.right - this.left);
         }
-        public double getHeight() { return (top - bottom); }
-        public double getDepth() { return (front - back); }
+        public double getHeight() {
+            return (this.top - this.bottom);
+        }
+        public double getDepth() {
+            return (this.front - this.back);
+        }
 
     }
 

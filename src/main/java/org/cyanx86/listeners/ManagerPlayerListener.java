@@ -45,7 +45,7 @@ public class ManagerPlayerListener implements Listener {
             return;
 
         // Register GameAreaCornerAssistant
-        master.getKitchenAreaCreatorAssistantManager().signInAssistant(player);
+        this.master.getKitchenAreaCreatorAssistantManager().signInAssistant(player);
 
         Messenger.msgToConsole(
             OverCrafted.prefix +
@@ -57,7 +57,7 @@ public class ManagerPlayerListener implements Listener {
     @EventHandler
     public void onManagerDisconnects(PlayerQuitEvent event) {
         Player player = event.getPlayer();
-        if (master.getKitchenAreaCreatorAssistantManager().eraseAssistant(player) == Enums.ListResult.NOT_FOUND)
+        if (this.master.getKitchenAreaCreatorAssistantManager().eraseAssistant(player) == Enums.ListResult.NOT_FOUND)
             return;
         Messenger.msgToConsole(
             OverCrafted.prefix +
@@ -77,7 +77,7 @@ public class ManagerPlayerListener implements Listener {
     @EventHandler
     public void onPlayerDisconnects(PlayerQuitEvent event) {
         Player player = event.getPlayer();
-        GameRound round = master.getGameRoundManager().getGameRound();
+        GameRound round = this.master.getGameRoundManager().getGameRound();
 
         if (round == null || !round.isPlayerInGame(player))
             return;
@@ -89,7 +89,7 @@ public class ManagerPlayerListener implements Listener {
     private void onManagerCreatesKitchenAreaCorner(PlayerInteractEvent event) {
         Player player = event.getPlayer();
         ItemStack item = event.getItem();
-        KitchenAreaCreatorAssistant kacAssistant = master.getKitchenAreaCreatorAssistantManager()
+        KitchenAreaCreatorAssistant kacAssistant = this.master.getKitchenAreaCreatorAssistantManager()
                 .getAssistantByName(player.getName());
 
         if (
@@ -148,7 +148,7 @@ public class ManagerPlayerListener implements Listener {
         if (kitchenArea == null) {
             Messenger.msgToSender(
                 player,
-                OverCrafted.prefix + locale.getStr("kitchen-messages.not-in-kitchen")
+                OverCrafted.prefix + this.locale.getStr("kitchen-messages.not-in-kitchen")
             );
             return;
         }
@@ -157,14 +157,14 @@ public class ManagerPlayerListener implements Listener {
             case INVALID_ITEM -> {
                 Messenger.msgToSender(
                     player,
-                    OverCrafted.prefix + locale.getStr("kitchen-messages.spawnpoint-outside-boundaries")
+                    OverCrafted.prefix + this.locale.getStr("kitchen-messages.spawnpoint-outside-boundaries")
                 );
                 return;
             }
             case FULL_LIST -> {
                 Messenger.msgToSender(
                     player,
-                    OverCrafted.prefix + locale.getStr("kitchen-messages.spawnpoint-full-list")
+                    OverCrafted.prefix + this.locale.getStr("kitchen-messages.spawnpoint-full-list")
                 );
                 return;
             }

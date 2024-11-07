@@ -44,30 +44,30 @@ public abstract class CustomConfigFile {
 
     // -- PRIVATE --
     protected boolean registerConfig() {
-        if (foldername != null)
-            file = new File(master.getDataFolder() + File.separator + foldername, filename);
+        if (this.foldername != null)
+            this.file = new File(this.master.getDataFolder() + File.separator + this.foldername, this.filename);
         else
-            file = new File(master.getDataFolder(), filename);
+            this.file = new File(this.master.getDataFolder(), this.filename);
 
         boolean fileCreated = false;
-        if (!file.exists()) {
-            if (mustCreate) {
+        if (!this.file.exists()) {
+            if (this.mustCreate) {
                 try {
-                    fileCreated = file.createNewFile();
+                    fileCreated = this.file.createNewFile();
                 } catch (IOException e) {
                     return false;
                 }
             } else {
-                if (foldername != null)
-                    master.saveResource(foldername + File.separator + filename, false);
+                if (this.foldername != null)
+                    this.master.saveResource(this.foldername + File.separator + this.filename, false);
                 else
-                    master.saveResource(filename, false);
+                    this.master.saveResource(this.filename, false);
             }
         }
 
-        fileConfig = new YamlConfiguration();
+        this.fileConfig = new YamlConfiguration();
         try {
-            fileConfig.load(file);
+            this.fileConfig.load(this.file);
         } catch(IOException | InvalidConfigurationException e) {
             return false;
         }
@@ -76,28 +76,28 @@ public abstract class CustomConfigFile {
 
     protected void saveConfig() {
         try {
-            fileConfig.save(file);
+            this.fileConfig.save(this.file);
         } catch (IOException ignored) { }
     }
 
     protected FileConfiguration getConfig() {
-        if (fileConfig == null)
+        if (this.fileConfig == null)
             reloadConfig();
-        return fileConfig;
+        return this.fileConfig;
     }
 
     protected boolean reloadConfig() {
-        if (fileConfig == null) {
-            if (foldername != null)
-                file = new File(master.getDataFolder() + File.separator + foldername, filename);
+        if (this.fileConfig == null) {
+            if (this.foldername != null)
+                this.file = new File(this.master.getDataFolder() + File.separator + this.foldername, this.filename);
             else
-                file = new File(master.getDataFolder(), filename);
+                this.file = new File(this.master.getDataFolder(), this.filename);
         }
 
-        fileConfig = YamlConfiguration.loadConfiguration(file);
-        if (file != null) {
-            YamlConfiguration defConfig = YamlConfiguration.loadConfiguration(file);
-            fileConfig.setDefaults(defConfig);
+        this.fileConfig = YamlConfiguration.loadConfiguration(this.file);
+        if (this.file != null) {
+            YamlConfiguration defConfig = YamlConfiguration.loadConfiguration(this.file);
+            this.fileConfig.setDefaults(defConfig);
             return true;
         }
         else

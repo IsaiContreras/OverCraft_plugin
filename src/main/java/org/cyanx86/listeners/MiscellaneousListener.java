@@ -81,7 +81,7 @@ public class MiscellaneousListener implements Listener {
 
     @EventHandler
     public void onFurnaceSmelt(FurnaceSmeltEvent event) {
-        GameRound round = master.getGameRoundManager().getGameRound();
+        GameRound round = this.master.getGameRoundManager().getGameRound();
         if (
             !Functions.blockBelongsKitchenArea(event.getBlock()) ||
             !(round == null || round.getCurrentRoundState() != GameRound.ROUNDSTATE.ENDED)

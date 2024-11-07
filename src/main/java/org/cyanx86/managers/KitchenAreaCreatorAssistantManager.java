@@ -2,7 +2,6 @@ package org.cyanx86.managers;
 
 import org.bukkit.entity.Player;
 
-import org.cyanx86.OverCrafted;
 import org.cyanx86.classes.KitchenAreaCreatorAssistant;
 import org.cyanx86.utils.Enums.ListResult;
 

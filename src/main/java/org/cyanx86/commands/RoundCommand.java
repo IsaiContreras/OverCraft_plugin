@@ -4,9 +4,9 @@ import org.bukkit.Bukkit;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
-
 import org.bukkit.command.TabExecutor;
 import org.bukkit.entity.Player;
+
 import org.cyanx86.OverCrafted;
 import org.cyanx86.classes.GameRound;
 import org.cyanx86.classes.KitchenArea;
@@ -15,7 +15,6 @@ import org.cyanx86.config.Locale;
 import org.cyanx86.utils.Messenger;
 
 import java.util.*;
-
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -149,7 +148,7 @@ public class RoundCommand implements CommandExecutor, TabExecutor {
             );
             return;
         }
-        if(!master.getGameRoundManager().startRound()) {
+        if(!this.master.getGameRoundManager().startRound()) {
             Messenger.msgToSender(
                 sender,
                 OverCrafted.prefix + this.locale.getStr("round-messages.requirements-needed")
@@ -165,7 +164,7 @@ public class RoundCommand implements CommandExecutor, TabExecutor {
             );
             return;
         }
-        if (!master.getGameRoundManager().terminateRound(null)) {
+        if (!this.master.getGameRoundManager().terminateRound(null)) {
             Messenger.msgToSender(
                 sender,
                 OverCrafted.prefix + this.locale.getStr("round-messages.unable-cancel")
@@ -175,12 +174,12 @@ public class RoundCommand implements CommandExecutor, TabExecutor {
 
         Messenger.msgToSender(
             sender,
-            OverCrafted.prefix + locale.getStr("round-messages.cancelled")
+            OverCrafted.prefix + this.locale.getStr("round-messages.cancelled")
         );
     }
 
     private void scmResults(@NotNull CommandSender sender) {
-        GameRound round = master.getGameRoundManager().getGameRound();
+        GameRound round = this.master.getGameRoundManager().getGameRound();
         if (round == null || round.getCurrentRoundState() != GameRound.ROUNDSTATE.ENDED) {
             Messenger.msgToSender(
                 sender,
@@ -228,7 +227,7 @@ public class RoundCommand implements CommandExecutor, TabExecutor {
             return;
         }
 
-        KitchenArea kitchenArea = master.getKitchenAreaLoader().getByName(args[1].toLowerCase());
+        KitchenArea kitchenArea = this.master.getKitchenAreaLoader().getByName(args[1].toLowerCase());
         if (kitchenArea == null) {
             Messenger.msgToSender(
                 sender,
@@ -244,7 +243,7 @@ public class RoundCommand implements CommandExecutor, TabExecutor {
             return;
         }
 
-        master.getGameRoundManager().setKitchenArea(kitchenArea);
+        this.master.getGameRoundManager().setKitchenArea(kitchenArea);
 
         Messenger.msgToSender(
             sender,
@@ -274,7 +273,7 @@ public class RoundCommand implements CommandExecutor, TabExecutor {
             return;
         }
 
-        switch (master.getGameRoundManager().addPlayer(player)) {
+        switch (this.master.getGameRoundManager().addPlayer(player)) {
             case ERROR -> {
                 Messenger.msgToSender(
                     sender,
@@ -331,18 +330,18 @@ public class RoundCommand implements CommandExecutor, TabExecutor {
             return;
         }
 
-        switch (master.getGameRoundManager().removePlayer(player)) {
+        switch (this.master.getGameRoundManager().removePlayer(player)) {
             case EMPTY_LIST -> {
                 Messenger.msgToSender(
                     sender,
-                    OverCrafted.prefix + locale.getStr("playerlist-messages.emtpy-list")
+                    OverCrafted.prefix + this.locale.getStr("playerlist-messages.emtpy-list")
                 );
                 return;
             }
             case NOT_FOUND -> {
                 Messenger.msgToSender(
-                        sender,
-                        OverCrafted.prefix + locale.getStr("playerlist-messages.player-not-found-list")
+                    sender,
+                    OverCrafted.prefix + this.locale.getStr("playerlist-messages.player-not-found-list")
                 );
                 return;
             }
@@ -369,7 +368,7 @@ public class RoundCommand implements CommandExecutor, TabExecutor {
             Player current = null;
 
             try {
-                current = master.getGameRoundManager().getGamePlayers().get(i);
+                current = this.master.getGameRoundManager().getGamePlayers().get(i);
             } catch (Exception ignored) { }
 
             if (current == null) {
@@ -385,7 +384,7 @@ public class RoundCommand implements CommandExecutor, TabExecutor {
     }
 
     private void scmResetPlayers(@NotNull CommandSender sender) {
-        switch(master.getGameRoundManager().clearPlayerList()) {
+        switch(this.master.getGameRoundManager().clearPlayerList()) {
             case EMPTY_LIST -> {
                 Messenger.msgToSender(
                     sender,
@@ -403,7 +402,7 @@ public class RoundCommand implements CommandExecutor, TabExecutor {
             }
         }
 
-        for (Player gamePlayer : master.getGameRoundManager().getGamePlayers()) {
+        for (Player gamePlayer : this.master.getGameRoundManager().getGamePlayers()) {
             Player current;
             try {
                 current = gamePlayer;
@@ -425,7 +424,7 @@ public class RoundCommand implements CommandExecutor, TabExecutor {
             @NotNull CommandSender sender, @NotNull List<String> completions, @NotNull String input
     ) {
         List<String> availableKitchenAreas = new ArrayList<>();
-        for (KitchenArea ktcItem : master.getKitchenAreaLoader().getKitchenAreas()) {
+        for (KitchenArea ktcItem : this.master.getKitchenAreaLoader().getKitchenAreas()) {
             if (!((Player)sender).getWorld().getName().equals(ktcItem.getWorld()))
                 continue;
             availableKitchenAreas.add(ktcItem.getName());

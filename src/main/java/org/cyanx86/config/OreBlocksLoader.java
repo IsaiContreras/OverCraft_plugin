@@ -2,6 +2,7 @@ package org.cyanx86.config;
 
 import org.bukkit.Material;
 import org.bukkit.configuration.file.FileConfiguration;
+
 import org.cyanx86.utils.CustomConfigFile;
 
 import java.util.HashMap;
@@ -67,7 +68,7 @@ public class OreBlocksLoader extends CustomConfigFile {
     }
 
     @Override
-    protected void save() { }
+    protected void save() {}
 
     // List managing
     public Map<Material, Material> getOreMap() {

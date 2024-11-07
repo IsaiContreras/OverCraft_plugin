@@ -1,13 +1,11 @@
 package org.cyanx86.classes;
 
 import org.bukkit.Bukkit;
-import org.bukkit.ChatColor;
 import org.bukkit.Material;
 import org.bukkit.scheduler.BukkitTask;
 
 import org.cyanx86.OverCrafted;
 import org.cyanx86.managers.OrderManager;
-import org.cyanx86.utils.Messenger;
 
 import org.jetbrains.annotations.NotNull;
 

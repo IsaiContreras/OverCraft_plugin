@@ -6,6 +6,7 @@ import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.command.TabExecutor;
 import org.bukkit.entity.Player;
+
 import org.cyanx86.OverCrafted;
 import org.cyanx86.classes.KitchenArea;
 import org.cyanx86.config.GeneralSettings;
@@ -13,12 +14,12 @@ import org.cyanx86.config.Locale;
 import org.cyanx86.utils.Enums;
 import org.cyanx86.utils.Functions;
 import org.cyanx86.utils.Messenger;
-import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
 
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 public class RecipesCommand implements CommandExecutor, TabExecutor {
 
@@ -124,7 +125,7 @@ public class RecipesCommand implements CommandExecutor, TabExecutor {
         else
             Messenger.msgToSender(
                 sender,
-                OverCrafted.prefix + locale.getStr("common-messages.invalid-arguments")
+                OverCrafted.prefix + this.locale.getStr("common-messages.invalid-arguments")
             );
     }
 
@@ -136,7 +137,7 @@ public class RecipesCommand implements CommandExecutor, TabExecutor {
         else
             Messenger.msgToSender(
                 sender,
-                OverCrafted.prefix + locale.getStr("common-messages.invalid-arguments")
+                OverCrafted.prefix + this.locale.getStr("common-messages.invalid-arguments")
             );
     }
 
@@ -161,7 +162,7 @@ public class RecipesCommand implements CommandExecutor, TabExecutor {
         if (kitchenArea.clearRecipes() == Enums.ListResult.EMPTY_LIST) {
             Messenger.msgToSender(
                 sender,
-                OverCrafted.prefix + locale.getStr("kitchen-messages.recipe-empty-list")
+                OverCrafted.prefix + this.locale.getStr("kitchen-messages.recipe-empty-list")
             );
             return;
         }
@@ -178,7 +179,7 @@ public class RecipesCommand implements CommandExecutor, TabExecutor {
         if (args.length != 2) {
             Messenger.msgToSender(
                 sender,
-                OverCrafted.prefix + locale.getStr("common-messages.invalid-arguments")
+                OverCrafted.prefix + this.locale.getStr("common-messages.invalid-arguments")
             );
             return;
         }
@@ -187,7 +188,7 @@ public class RecipesCommand implements CommandExecutor, TabExecutor {
         if (kitchenArea == null) {
             Messenger.msgToSender(
                 sender,
-                OverCrafted.prefix + locale.getStr("kitchen-messages.kitchen-not-found")
+                OverCrafted.prefix + this.locale.getStr("kitchen-messages.kitchen-not-found")
             );
             return;
         }
@@ -201,7 +202,7 @@ public class RecipesCommand implements CommandExecutor, TabExecutor {
         for (Material materialItem : kitchenArea.getRecipes()) {
             Messenger.msgToSender(
                 sender,
-                "&7  - " + locale.getMatName(materialItem) + "."
+                "&7  - " + this.locale.getMatName(materialItem) + "."
             );
         }
     }
@@ -362,7 +363,7 @@ public class RecipesCommand implements CommandExecutor, TabExecutor {
             @NotNull CommandSender sender, @NotNull List<String> completions, @NotNull String input
     ) {
         List<String> availableKitchenAreas = new ArrayList<>();
-        for (KitchenArea ktcItem : master.getKitchenAreaLoader().getKitchenAreas()) {
+        for (KitchenArea ktcItem : this.master.getKitchenAreaLoader().getKitchenAreas()) {
             if (!((Player)sender).getWorld().getName().equals(ktcItem.getWorld()))
                 continue;
             availableKitchenAreas.add(ktcItem.getName());

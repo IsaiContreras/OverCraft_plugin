@@ -66,7 +66,7 @@ public class RecipesBonus extends CustomConfigFile {
     }
 
     @Override
-    protected void save() { }
+    protected void save() {}
 
     public int getBonusValue(Material material) {
         return this.bonusList.get(material) != null ? this.bonusList.get(material) : 0;

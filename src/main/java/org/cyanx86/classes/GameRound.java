@@ -5,12 +5,10 @@ import org.bukkit.block.Block;
 import org.bukkit.block.Furnace;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.EntityType;
-import org.bukkit.entity.Item;
 import org.bukkit.entity.Player;
-import org.bukkit.inventory.ItemStack;
 import org.bukkit.scheduler.BukkitTask;
-
 import org.bukkit.scoreboard.Scoreboard;
+
 import org.cyanx86.OverCrafted;
 import org.cyanx86.config.GeneralSettings;
 import org.cyanx86.config.Locale;
@@ -104,7 +102,8 @@ public class GameRound {
 
     // Actions
     public boolean terminateRound(String reason) {
-        if (this.currentState == ROUNDSTATE.ENDED) return false;
+        if (this.currentState == ROUNDSTATE.ENDED)
+            return false;
 
         String message = (reason != null ? reason : this.locale.getStr("round-events.round-cancelled"));
 
@@ -124,7 +123,8 @@ public class GameRound {
     // Players
     public void spawnPlayer(@NotNull Player player, boolean immobilize) {
         PlayerState playerState = this.playersManager.getPlayerState(player);
-        if (playerState == null) return;
+        if (playerState == null)
+            return;
 
         SpawnPoint spawnpoint = this.getPlayerSpawn(playerState);
         playerState.moveToLocation(spawnpoint.getSpawnLocation());
@@ -240,7 +240,6 @@ public class GameRound {
             }
 
             this.time--;
-            // Display timer
         }, 20L, 20L);
     }
 
@@ -327,7 +326,8 @@ public class GameRound {
             if (!(block.getState() instanceof Furnace furnace))
                 continue;
 
-            furnace.setBurnTime((short)-1);
+            furnace.setBurnTime((short)0);
+            furnace.update();
             furnace.getInventory().setFuel(null);
             furnace.getInventory().setSmelting(null);
             furnace.getInventory().setResult(null);

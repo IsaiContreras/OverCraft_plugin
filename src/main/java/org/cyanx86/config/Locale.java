@@ -2,6 +2,7 @@ package org.cyanx86.config;
 
 import org.bukkit.Material;
 import org.bukkit.configuration.file.FileConfiguration;
+
 import org.cyanx86.utils.CustomConfigFile;
 import org.cyanx86.utils.DataFormatting;
 
@@ -16,7 +17,6 @@ public class Locale extends CustomConfigFile {
     // -- PUBLIC --
 
     // -- PRIVATE --
-    private static Locale instance;
 
     // -- [[ METHODS ]] --
 
@@ -91,9 +91,7 @@ public class Locale extends CustomConfigFile {
     }
 
     @Override
-    protected void save() {
-
-    }
+    protected void save() {}
 
     // -- PRIVATE --
 

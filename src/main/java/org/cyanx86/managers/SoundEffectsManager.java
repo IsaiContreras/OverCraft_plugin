@@ -47,15 +47,15 @@ public class SoundEffectsManager {
 
     public void playCountDownNote() {
         this.playersManager.sendNoteToPlayer(
-            countDownInstrument,
-            countDownTone
+            this.countDownInstrument,
+            this.countDownTone
         );
     }
 
     public void playStartRound() {
         this.playersManager.sendNoteToPlayer(
-            countDownInstrument,
-            startTone
+            this.countDownInstrument,
+            this.startTone
         );
     }
 

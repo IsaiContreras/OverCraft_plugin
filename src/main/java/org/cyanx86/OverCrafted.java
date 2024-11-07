@@ -58,7 +58,7 @@ public class OverCrafted extends JavaPlugin {
         this.setupEvents();
 
         Messenger.msgToConsole(
-            prefix + "&ePlugin activo. &fVersion: " + version
+            prefix + "&ePlugin activo. &fVersion: " + this.version
         );
     }
 
