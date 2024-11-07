@@ -184,6 +184,7 @@ public class GameRound {
     // Actions
     private void startCountdown() {
         this.playersManager.sendMessageToPlayers(
+            OverCrafted.prefix +
             this.locale.getStr("round-events.round-started")
         );
         this.time = this.startCountdownTime;
@@ -271,7 +272,8 @@ public class GameRound {
 
     private void endRound(String reason) {
         this.playersManager.sendMessageToPlayers(
-            reason != null ? reason : this.locale.getStr("round-events.round-finished")
+            OverCrafted.prefix +
+            (reason != null ? reason : this.locale.getStr("round-events.round-finished"))
         );
 
         this.currentState = ROUNDSTATE.ENDED;

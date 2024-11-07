@@ -62,7 +62,7 @@ public class GamePlayersManager {
 
     public void sendMessageToPlayers(@NotNull String message) {
         for (PlayerState playerstate : this.players)
-            playerstate.sendMessageToPlayer(OverCrafted.prefix + message);
+            playerstate.sendMessageToPlayer(message);
     }
 
     public void sendTitleToPlayers(@NotNull String message1, @NotNull String message2, int fadeIn, int time, int fadeOut) {
