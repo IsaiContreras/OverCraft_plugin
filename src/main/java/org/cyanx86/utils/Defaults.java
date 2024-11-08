@@ -19,6 +19,7 @@ public class Defaults {
             public static int endIntermission = 3;
             public static int playerImmobilization = 3;
             public static boolean chestDrop = false;
+            public static double dispencingDistance = 1.5;
         }
 
         public static class ScoreManager {

@@ -39,6 +39,7 @@ public class PlayerListener implements Listener {
 
     // -- PRIVATE --
     private final OverCrafted master = OverCrafted.getInstance();
+    private final GeneralSettings genaralSettings = GeneralSettings.getInstance();
     private final Locale locale = GeneralSettings.getInstance().getLocale();
 
     // -- [[ METHODS ]] --
@@ -75,9 +76,13 @@ public class PlayerListener implements Listener {
 
         event.setCancelled(true);
 
-        if (Functions.distanceBetweenLocations(player.getLocation(), block.getLocation()) >= 1.0) {
+        if (Functions.distanceBetweenLocations(player.getLocation(), block.getLocation()) >=
+                this.genaralSettings.getRoundSettings().getGrDispensingDistance()
+        ) {
             round.sendActionBarMessageToPlayer(
-                player, this.locale.getStr("player-listener.ore-too-far"), 2
+                player,
+                this.locale.getStr("player-listener.block-too-far"),
+                1
             );
             return;
         }
@@ -152,6 +157,7 @@ public class PlayerListener implements Listener {
 
         this.onPlayerInteractsWithChest(event);
         this.onPlayerInsertItemInFurnace(event);
+        this.onPlayerInteractsWithComposter(event);
         this.onPlayerOpensDoor(event);
     }
 
@@ -266,21 +272,22 @@ public class PlayerListener implements Listener {
 
         event.setCancelled(true);
 
+        if (Functions.distanceBetweenLocations(event.getPlayer().getLocation(), block.getLocation()) >=
+                this.genaralSettings.getRoundSettings().getGrDispensingDistance()
+        ) {
+            this.master.getGameRoundManager().getGameRound().sendActionBarMessageToPlayer(
+                event.getPlayer(),
+                this.locale.getStr("player-listener.block-too-far"),
+                1
+            );
+            return;
+        }
+
         this.onPlayerDispenserIngredient(event, block);
         this.onPlayerDeliverRecipe(event, block);
     }
 
     private void onPlayerDispenserIngredient(PlayerInteractEvent event, @NotNull Block chest) {
-        Player player = event.getPlayer();
-        if (Functions.distanceBetweenLocations(event.getPlayer().getLocation(), chest.getLocation()) >= 1.0) {
-            this.master.getGameRoundManager().getGameRound().sendActionBarMessageToPlayer(
-                player,
-                this.locale.getStr("player-listener.chest-too-far"),
-                2
-            );
-            return;
-        }
-
         Material dropping = null;
         for (Entity entity : chest.getWorld().getNearbyEntities(chest.getLocation(), 2, 2, 2))
             if (
@@ -297,8 +304,7 @@ public class PlayerListener implements Listener {
 
         if (GeneralSettings.getInstance().getRoundSettings().getGRChestDrop())
             chest.getWorld().dropItem(
-                chest.getLocation().add(0, 1, 0),
-                drop
+                chest.getLocation().add(0, 1, 0), drop
             );
         else {
             HashMap<Material, Integer> contents = getPlayerInventoryMap(event.getPlayer());
@@ -338,6 +344,50 @@ public class PlayerListener implements Listener {
         }
     }
 
+    // -- Composter interaction modifications
+    private void onPlayerInteractsWithComposter(PlayerInteractEvent event) {
+        Block block = event.getClickedBlock();
+        if (
+            block == null ||
+            !(
+                block.getType().equals(Material.COMPOSTER) &&
+                event.getAction().equals(Action.RIGHT_CLICK_BLOCK) &&
+                Objects.equals(event.getHand(), EquipmentSlot.HAND)
+            )
+        )
+            return;
+
+        event.setCancelled(true);
+
+        Player player = event.getPlayer();
+        if (Functions.distanceBetweenLocations(player.getLocation(), block.getLocation()) >=
+                this.genaralSettings.getRoundSettings().getGrDispensingDistance()
+        ) {
+            this.master.getGameRoundManager().getGameRound().sendActionBarMessageToPlayer(
+                player,
+                this.locale.getStr("player-listener.block-too-far"),
+                1
+            );
+            return;
+        }
+
+        ItemStack item = event.getItem();
+        if (item == null) {
+            this.master.getGameRoundManager().getGameRound().sendActionBarMessageToPlayer(
+                player, this.locale.getStr("player-listener.composter-no-item"), 1
+            );
+            return;
+        }
+
+        if (item.getType().equals(Material.STONE_PICKAXE))
+            return;
+
+        if (item.getAmount() == 1)
+            event.getPlayer().getInventory().setItem(EquipmentSlot.HAND, new ItemStack(Material.AIR));
+        else
+            item.setAmount(item.getAmount() - 1);
+    }
+
     // -- Furnace interaction modifications
     private void onPlayerInsertItemInFurnace(PlayerInteractEvent event) {
         Block block = event.getClickedBlock();
@@ -353,28 +403,35 @@ public class PlayerListener implements Listener {
 
         event.setCancelled(true);
 
+        Player player = event.getPlayer();
+        if (Functions.distanceBetweenLocations(player.getLocation(), block.getLocation()) >=
+                this.genaralSettings.getRoundSettings().getGrDispensingDistance()
+        ) {
+            this.master.getGameRoundManager().getGameRound().sendActionBarMessageToPlayer(
+                player,
+                this.locale.getStr("player-listener.block-too-far"),
+                1
+            );
+            return;
+        }
+
         ItemStack item = event.getItem();
         if (item == null)
             return;
 
-        boolean insertedItem = false;
+        boolean insertedItem;
         if (item.getType().isFuel()) {
             insertedItem = this.playerRefuelFurnace(
-                furnace,
-                event.getPlayer()
+                furnace, player
             );
         }
         else if (Functions.isSmeltable(item.getType(), furnace))
             insertedItem = this.playerInsertSmeltableToFurnace(
-                furnace,
-                item,
-                event.getPlayer()
+                furnace, item, player
             );
         else {
             this.master.getGameRoundManager().getGameRound().sendActionBarMessageToPlayer(
-                event.getPlayer(),
-                this.locale.getStr("player-listener.not-smeltable"),
-                1
+                player, this.locale.getStr("player-listener.not-smeltable"), 1
             );
             return;
         }
@@ -383,7 +440,7 @@ public class PlayerListener implements Listener {
             return;
 
         if (item.getAmount() == 1)
-            event.getPlayer().getInventory().setItem(EquipmentSlot.HAND, new ItemStack(Material.AIR));
+            player.getInventory().setItem(EquipmentSlot.HAND, new ItemStack(Material.AIR));
         else
             item.setAmount(item.getAmount() - 1);
     }
@@ -393,26 +450,20 @@ public class PlayerListener implements Listener {
 
         if (furnace.getBurnTime() > 0) {
             round.sendActionBarMessageToPlayer(
-                player,
-                this.locale.getStr("player-listener.furnace-burning"),
-                2
+                player, this.locale.getStr("player-listener.furnace-burning"), 2
             );
             return false;
         }
         else if (furnace.getInventory().getFuel() != null) {
             round.sendActionBarMessageToPlayer(
-                player,
-                this.locale.getStr("player-listener.furnace-fueled"),
-                2
+                player, this.locale.getStr("player-listener.furnace-fueled"), 2
             );
             return false;
         }
 
         furnace.getInventory().setFuel(new ItemStack(Material.COAL, 1));
         round.sendActionBarMessageToPlayer(
-            player,
-            this.locale.getStr("player-listener.furnace-refueled"),
-            2
+            player, this.locale.getStr("player-listener.furnace-refueled"), 2
         );
         return true;
     }
@@ -422,9 +473,7 @@ public class PlayerListener implements Listener {
 
         if (furnace.getInventory().getSmelting() != null) {
             round.sendActionBarMessageToPlayer(
-                player,
-                this.locale.getStr("player-listener.furnace-smelting-inside"),
-                2
+                player, this.locale.getStr("player-listener.furnace-smelting-inside"), 2
             );
             return false;
         }

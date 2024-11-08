@@ -94,8 +94,8 @@ player-listener:
   furnace-smeltable-inserted: "&aYou put &e&o%item%&r&a in the furnace."
   not-smeltable: "&cThis item is not smeltable."
   full-inventory: "&cInventory is full."
-  chest-too-far: "&cYou are too far from the chest."
-  ore-too-far: "&cYou are too far from the ore."
+  block-too-far: "&cYou are too far from that block."
+  composter-no-item: "&cNo item in hand."
 
 round-events:
   round-terminated: "Round terminated for: %reason%"

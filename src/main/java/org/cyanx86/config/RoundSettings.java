@@ -16,6 +16,7 @@ public class RoundSettings {
     private int grEndIntermission;
     private int grPlayerImmobilizationTime;
     private boolean grChestDrop;
+    private double grDispensingDistance;
 
     private int smValuePerOrder;
 
@@ -36,6 +37,7 @@ public class RoundSettings {
     public int getGRIntermissionTime() { return this.grEndIntermission; }
     public int getGRPlayerImmobilizationTime() { return this.grPlayerImmobilizationTime; }
     public boolean getGRChestDrop() { return this.grChestDrop; }
+    public double getGrDispensingDistance() { return this.grDispensingDistance; }
 
     public int getSMValuePerOrder() { return this.smValuePerOrder; }
 
@@ -60,6 +62,9 @@ public class RoundSettings {
         } catch (NullPointerException | ClassCastException ignored) { }
         try { if (config.get("game-round.chest-drop") != null)
             this.grChestDrop = (boolean)config.get("game-round.chest-drop");
+        } catch (NullPointerException | ClassCastException ignored) { }
+        try { if (config.get("game-round.dispencing-distance") != null)
+            this.grDispensingDistance = (double) config.get("game-round.dispencing-distance");
         } catch (NullPointerException | ClassCastException ignored) { }
 
         try { if (config.get("score-manager.value-per-order") != null)
@@ -86,6 +91,7 @@ public class RoundSettings {
         config.set("game-round.end-intermission", this.grEndIntermission);
         config.set("game-round.player-immobilization", this.grPlayerImmobilizationTime);
         config.set("game-round.chest-drop", this.grChestDrop);
+        config.set("game-round.dispencing-distance", this.grDispensingDistance);
 
         config.set("score-manager.value-per-order", this.smValuePerOrder);
 
@@ -104,6 +110,7 @@ public class RoundSettings {
         this.grEndIntermission = GameRound.endIntermission;
         this.grPlayerImmobilizationTime = GameRound.playerImmobilization;
         this.grChestDrop = GameRound.chestDrop;
+        this.grDispensingDistance = GameRound.dispencingDistance;
         // Score Manager Settings
         this.smValuePerOrder = ScoreManager.valuePerOrder;
         // Order Manager Settings

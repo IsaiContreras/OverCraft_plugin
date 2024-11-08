@@ -7,6 +7,7 @@ game-round:
   end-intermission: 3
   player-immobilization: 3
   chest-drop: false
+  dispensing-distance: 1.5
 score-manager:
   value-per-order: 30
 order-manager:
