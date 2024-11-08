@@ -43,10 +43,10 @@ kitchen-messages:
   name-used: "&cThere is already a Kitchen with this name."
   kitchen-not-found: "&cThere is no Kitchen with this name."
   kitchen-overlapped: "&cThere is a Kitchen using this space."
-  kitchen-selected: "&Kitchen &r&o%kitchen%&r&a selected for next game."
-  kitchen-not-selected: "&cSelect a Kitchen first."
-  kitchen-created: "&Kitchen &r&o%kitchen%&r&a created."
-  kitchen-deleted: "&Kitchen &r&o%kitchen%&r&a deleted."
+  kitchen-selected: "&aKitchen &r&o%kitchen%&r&a selected for next game."
+  kitchen-not-selected: "&aSelect a Kitchen first."
+  kitchen-created: "&aKitchen &r&o%kitchen%&r&a created."
+  kitchen-deleted: "&aKitchen &r&o%kitchen%&r&a deleted."
   show-kitchen-list:
     title: "&f&Kitchen Areas:"
     empty-list: "&7&o** Empty **"
@@ -94,6 +94,8 @@ player-listener:
   furnace-smeltable-inserted: "&aYou put &e&o%item%&r&a in the furnace."
   not-smeltable: "&cThis item is not smeltable."
   full-inventory: "&cInventory is full."
+  chest-too-far: "&cYou are too far from the chest."
+  ore-too-far: "&cYou are too far from the ore."
 
 round-events:
   round-terminated: "Round terminated for: %reason%"

@@ -94,6 +94,8 @@ player-listener:
   furnace-smeltable-inserted: "&aPusiste &e&o%item%&r&a en el horno."
   not-smeltable: "&cEste objeto no se puede cocinar."
   full-inventory: "&cEl inventario está lleno."
+  chest-too-far: "&cEstas muy lejos del cofre."
+  ore-too-far: "&cEstas muy lejos del mineral."
 
 round-events:
   round-terminated: "Ronda terminada por: %reason%"
@@ -111,10 +113,3 @@ round-titles:
     - "&eTe recuperarás en: &a%time%"
 
 item-materials:
-  COAL: "Carbón"
-  CHARCOAL: "Carbón natural"
-  GOLDEN_CARROT: "Zanahoria dorada"
-  BAKED_POTATO: "Papa asada"
-  RABBIT_STEW: "Estofado de conejo"
-  MUSHROOM_STEW: "Estofado de champiñon"
-  COOKED_RABIT: "Conejo asado"

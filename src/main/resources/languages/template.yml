@@ -94,6 +94,8 @@ player-listener:
   furnace-smeltable-inserted:         # Player put smeltable item in furnace.
   not-smeltable:                      # Item is not smeltable.
   full-inventory:                     # Player inventory is full.
+  chest-too-far:                      # Player is too far from the food chest.
+  ore-too-far:                        # Player is too far from the ore.
 
 round-events: # SEPARATOR
   round-terminated:                   # Round terminated for <reason>.
